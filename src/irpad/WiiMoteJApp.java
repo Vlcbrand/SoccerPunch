@@ -16,6 +16,6 @@ public class WiiMoteJApp
 
         frame.getContentPane().add(view);
         frame.pack();
-        //frame.setVisible(true);
+        frame.setVisible(true);
     }
 }

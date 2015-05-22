@@ -1,5 +1,7 @@
 package irpad;
 
+import wiiusej.WiiUseApiManager;
+import wiiusej.Wiimote;
 import wiiusej.test.Tests;
 import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
 import wiiusej.wiiusejevents.physicalevents.IREvent;
@@ -20,7 +22,7 @@ public class WiiMoteController implements WiimoteListener
 
         Tests.main(null);
 
-        /*
+
         Wiimote[] wiimotes = WiiUseApiManager.getWiimotes(1, true);
 
         if (wiimotes != null) {
@@ -32,7 +34,7 @@ public class WiiMoteController implements WiimoteListener
             // Set IR sensivity.
             wiimote.setIrSensitivity(0);
             wiimote.setIrSensitivity(3);
-        }*/
+        }
 
         System.exit(0);
     }
