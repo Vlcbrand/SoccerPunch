@@ -1,5 +1,5 @@
 # Soccer Punch
-Soccer game with power-ups.
+Soccer game with Power-Ups.
 
 ### File Dependencies:
 - Windows: [dll files][1]
@@ -7,7 +7,7 @@ Soccer game with power-ups.
 - Complete: [files][2]
 
 ### Project Files:
-- IntelliJ IDEA: [soccerpunch.iml][3] [.idea files][5]
+- IntelliJ IDEA: [SoccerPunch.iml][3] [.idea][5]
 - Eclipse: [.project][4]
 
 [0]: https://www.dropbox.com/s/gpdrzwek6ziq72g/dependencies_linux.tar.gz?dl=0
