@@ -28,7 +28,7 @@ class SoccerController extends WiimoteAdapter
     private Timer timer; // Wordt waarschijnlijk vervangen door Thread.
     private Wiimote[] motes;
 
-    public SoccerController(SoccerFrame view, SoccerModel model)
+    SoccerController(SoccerFrame view, SoccerModel model)
     {
         this.view = view;
         this.model = model;
@@ -76,7 +76,6 @@ class SoccerController extends WiimoteAdapter
 
         return motes[index];
     }
-
 
     @Override public void onMotionSensingEvent(MotionSensingEvent e)
     {
