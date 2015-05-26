@@ -46,7 +46,6 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 
-
 ### Eclipse template
 *.pydevproject
 .metadata
@@ -85,6 +84,9 @@ local.properties
 # TeXlipse plugin
 .texlipse
 
+## Dynamic libraries
+*.dll
+*.so
 
 ### Java template
 *.class
