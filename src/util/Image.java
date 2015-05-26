@@ -21,9 +21,11 @@ import javax.imageio.ImageIO;
  */
 public final class Image
 {
-    private static Image instance = null;
     public final static Color COLOR_DEFAULT = new Color(240, 227, 98);
     public final static int FONT_SIZE = 12, MARGIN_DEFAULT = 15;
+    public final static String FOLDER_DEFAULT = "img/";
+
+    private static Image instance = null;
 
     private Image()
     {
@@ -51,12 +53,14 @@ public final class Image
         File file;
 
         // Indien het pad in bezit is van absolute kenmerken, deze aannemen als absoluut.
-        if (path.contains(":") || path.startsWith("/"))
+        if (path.contains(":") || path.startsWith("/")) {
             file = new File(path);
-        else if (new File(System.getProperty("user.dir") + "/" + path).exists())
+        } else if (new File(System.getProperty("user.dir") + "/" + path).exists()) {
             file = new File(System.getProperty("user.dir") + "/" + path);
-        else
-            file = new File(Image.class.getResource(path).getPath());
+        } else {
+            // Poging tot het ophalen van de standaard map.
+            file = new File(System.getProperty("user.dir") + "/" + FOLDER_DEFAULT + path);
+        }
 
         if (!path.isEmpty()) {
             if (file.exists()) {
