@@ -1,26 +1,22 @@
 package app.entity;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import util.Image;
 
 public class Goal extends JComponent
     implements Drawable
 {
-    public static final int EAST = 0, WEST = 1;
-
+    private static final int EAST = 0, WEST = 1;
     private int locX;
     private int locY;
     private double scaleW;
     private double scaleH;
     private BufferedImage image;
-    private Point2D loc;
     private int side;
+    private Rectangle collisionRec = new Rectangle();
 
     /**
      * @param side {@link #EAST} of {@link #WEST}.
@@ -32,12 +28,8 @@ public class Goal extends JComponent
         this.scaleW = scaleW;
         this.scaleH = scaleH;
         this.side = side;
-
-        try {
-            image = ImageIO.read(new File("images/goal.gif"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        image = Image.get("goal.gif");
+        setRect();
     }
 
     @Override public void draw(Graphics2D g2d)
@@ -65,9 +57,19 @@ public class Goal extends JComponent
         g2d.drawImage(image, tx, null);
     }
 
-    public Point2D getLoc()
+    private void setRect()
     {
-        loc.setLocation(locX, locY);
-        return loc;
+        double width = image.getWidth() * scaleW;
+        double height = image.getHeight() * scaleH;
+
+        collisionRec.setRect(locX, locX, width, height);
+
+        //System.out.println("W: " + width);
+        //System.out.println("H: " + height);
+    }
+
+    public Rectangle getRect()
+    {
+        return collisionRec;
     }
 }
