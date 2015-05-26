@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class SoccerPanel extends JPanel
+class SoccerPanel extends JPanel
 {
     Field field = new Field(50,50, 600,400);
     public SoccerPanel()
@@ -22,5 +22,4 @@ public class SoccerPanel extends JPanel
         g2.setColor(Color.white);
         field.draw(g2);
     }
-
 }

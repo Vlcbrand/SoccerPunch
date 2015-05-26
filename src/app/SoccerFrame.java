@@ -1,5 +1,7 @@
 package app;
 
+import util.Resource;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -22,7 +24,7 @@ class SoccerFrame extends JFrame
 
     public SoccerFrame()
     {
-        final int minWidth = 800, minHeight = 600;
+        final int minWidth = Resource.getInteger("app.width.min"), minHeight = Resource.getInteger("app.height.min");
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout(0, 0));
@@ -38,6 +40,5 @@ class SoccerFrame extends JFrame
 
     public void refresh()
     {
-
     }
 }

@@ -15,7 +15,7 @@ import java.util.*;
  */
 final public class Resource extends ResourceBundle
 {
-    public static final String NAME_DEFAULT = "app";
+    public static final String NAME_DEFAULT = "config";
 
     private static Resource instance = null;
     private static String fileName = NAME_DEFAULT;
