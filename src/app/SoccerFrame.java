@@ -8,8 +8,6 @@ import java.awt.*;
  */
 class SoccerFrame extends JFrame
 {
-    private final GraphicsDevice device;
-
     public static void main(final String... args)
     {
         try {
@@ -22,52 +20,24 @@ class SoccerFrame extends JFrame
         EventQueue.invokeLater(() -> new SoccerFrame().setVisible(true));
     }
 
-    SoccerFrame()
+    public SoccerFrame()
     {
-        device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        final int minWidth = 800, minHeight = 600;
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout(0, 0));
-        this.setMinimumSize(this.getMinimumSize());
-        this.setSize(this.getMinimumSize());
+        this.setMinimumSize(new Dimension(minWidth, minHeight));
         this.setLocationRelativeTo(null);
+        this.setSize(minWidth, minHeight);
 
-        this.enterFullScreenMode(); // Test.
+        JPanel panel1 = new SoccerPanel();
+        this.getContentPane().add(panel1);
+        this.pack();
+
     }
 
     public void refresh()
     {
-    }
 
-    private void enterFullScreenMode()
-    {
-        if (device.getFullScreenWindow() == null) {
-            this.dispose();
-            this.setUndecorated(true);
-            this.setResizable(false);
-
-            device.setFullScreenWindow(this);
-        }
-    }
-
-    private void leaveFullScreenMode()
-    {
-        if (device.getFullScreenWindow() != null) {
-            this.setVisible(false);
-            this.dispose();
-            this.setUndecorated(false);
-
-            device.setFullScreenWindow(null);
-
-            this.setResizable(true);
-            this.setVisible(true);
-
-            this.repaint();
-        }
-    }
-
-    @Override public Dimension getMinimumSize()
-    {
-        return new Dimension(800, 600);
     }
 }
