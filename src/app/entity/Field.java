@@ -12,8 +12,8 @@ public class Field extends JComponent implements Drawable
 {
     int x, y, xBorder, yBorder;
     Rectangle2D fieldRect, bKL, bKR, sKL, sKR;
-    Ellipse2D circleLeft, circleRight, penaltyLeft, penaltyRight, centerDot;
-    Line2D middleLine;
+    Ellipse2D circleLeft, circleRight, penaltyLeft, penaltyRight, centerDot,centerCircle;
+    Line2D centerLine;
     Shape[] lines;
     Shape[] ellipses;
 
@@ -41,12 +41,13 @@ public class Field extends JComponent implements Drawable
         penaltyRight = new Ellipse2D.Double(xBorder+ 1095, yBorder+440, 10,10);
         circleRight = new Ellipse2D.Double(xBorder + x, yBorder + 125, x/4, y/3);
 
-        middleLine = new Line2D.Double(xBorder+600,yBorder,xBorder+600,yBorder+900);
+        centerLine = new Line2D.Double(xBorder+600,yBorder,xBorder+600,yBorder+900);
+        centerDot = new Ellipse2D.Double(xBorder+595, yBorder+445, 10,10);
+        centerCircle = new Ellipse2D.Double(xBorder+510, yBorder+360,180,180);
 
 
-
-        lines = new Shape[] {fieldRect, bKL, sKL, bKR,sKR,middleLine};
-        ellipses = new Shape[] {penaltyLeft,penaltyRight};
+        lines = new Shape[] {fieldRect, bKL, sKL, bKR,sKR,centerLine};
+        ellipses = new Shape[] {penaltyLeft,penaltyRight,centerDot};
     }
 
     @Override public void draw(Graphics2D g2d)
@@ -62,6 +63,7 @@ public class Field extends JComponent implements Drawable
             g2d.draw(s);
             g2d.fill(s);
         }
+        g2d.draw(centerCircle);
 
 
 
