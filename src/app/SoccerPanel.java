@@ -8,10 +8,10 @@ import java.awt.*;
 
 public class SoccerPanel extends JPanel
 {
-    Field field = new Field(50,50, 600,400);
+    Field field = new Field(250,50 ,1200,900);
     public SoccerPanel()
     {
-        setPreferredSize(new Dimension(500, 500));
+        setPreferredSize(new Dimension(1700,1000));
         setBackground(Color.green);
     }
 
