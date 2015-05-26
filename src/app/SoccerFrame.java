@@ -29,9 +29,15 @@ class SoccerFrame extends JFrame
         this.setMinimumSize(new Dimension(minWidth, minHeight));
         this.setLocationRelativeTo(null);
         this.setSize(minWidth, minHeight);
+
+        JPanel panel1 = new SoccerPanel();
+        this.getContentPane().add(panel1);
+        this.pack();
+
     }
 
     public void refresh()
     {
+
     }
 }
