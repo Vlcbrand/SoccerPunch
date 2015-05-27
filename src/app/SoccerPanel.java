@@ -1,5 +1,6 @@
 package app;
 
+import app.entity.Drawable;
 import app.entity.Field;
 
 import javax.swing.*;
@@ -8,19 +9,50 @@ import java.awt.*;
 
 public class SoccerPanel extends JPanel
 {
-    Field field = new Field(250,50 ,1200,900);
+    private static Dimension preferredSize;
+
+    private Field field;
+    private Drawable[] drawables;
+
+    static {
+        preferredSize = new Dimension(1024, 600);
+    }
+
     public SoccerPanel()
     {
-        setPreferredSize(new Dimension(1700,1000));
-        setBackground(Color.green);
+        super(null);
+
+        final int width = (int)this.getPreferredSize().getWidth();
+        final int height = (int)this.getPreferredSize().getHeight();
+
+        field = new Field(width, height);
+
+        this.drawables = new Drawable[] {
+            field
+        };
     }
 
-    public void paintComponent(Graphics g)
+    /**
+     * Biedt nieuwe waarden aan alle tekenbare objecten.
+     */
+    private void refreshDrawables()
+    {
+        field.refreshField(this.getWidth(), this.getHeight());
+    }
+
+    @Override public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D)g;
-        g2.setColor(Color.white);
-        field.draw(g2);
+        Graphics2D g2d = (Graphics2D)g;
+
+        this.refreshDrawables(); // Ververs alle objecten met nieuwe waarden.
+
+        for (Drawable object : drawables)
+            object.draw(g2d);
     }
 
+    @Override public Dimension getPreferredSize()
+    {
+        return preferredSize;
+    }
 }

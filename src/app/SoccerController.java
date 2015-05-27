@@ -22,13 +22,13 @@ class SoccerController extends WiimoteAdapter
 {
     protected static final int PLAYERS = 1;
 
-    protected SoccerFrame view;
+    protected SoccerPanel view;
     protected SoccerModel model;
 
     private Timer timer; // Wordt waarschijnlijk vervangen door Thread.
     private Wiimote[] motes;
 
-    SoccerController(SoccerFrame view, SoccerModel model)
+    SoccerController(SoccerPanel view, SoccerModel model)
     {
         this.view = view;
         this.model = model;
@@ -51,7 +51,7 @@ class SoccerController extends WiimoteAdapter
 
     /**
      * Verkrijg alle Wiimotes in de directe omgeving.
-     * @param amount hoeveelheid.
+     * @param amount hoeveelheid
      */
     private void getMotes(int amount)
     {
@@ -60,8 +60,7 @@ class SoccerController extends WiimoteAdapter
 
     /**
      * Voeg een Wiimote toe voor gebruik.
-     * @param index 0-based index van een mote.
-     * @return de toegevoegde Wiimote.
+     * @return de toegevoegde Wiimote
      */
     private Wiimote addMote(int index)
     {
@@ -102,6 +101,5 @@ class SoccerController extends WiimoteAdapter
 
     @Override public void actionPerformed(ActionEvent actionEvent)
     {
-        view.refresh();
     }
 }

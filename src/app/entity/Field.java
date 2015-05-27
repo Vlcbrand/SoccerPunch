@@ -2,71 +2,87 @@ package app.entity;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.lang.reflect.Array;
 
-public class Field extends JComponent implements Drawable
+public class Field extends JComponent
+    implements Drawable
 {
-    int x, y, xBorder, yBorder;
-    Rectangle2D fieldRect, bKL, bKR, sKL, sKR;
-    Ellipse2D circleLeft, circleRight, penaltyLeft, penaltyRight, centerDot,centerCircle;
-    Line2D centerLine;
-    Shape[] lines;
-    Shape[] ellipses;
+    private int width, height;
+    private Shape[] lines, spots;
 
-    public Field(int xBorder, int yBorder, int x, int y)
+    public Field(int parentWidth, int parentHeight)
     {
-        this.x = x;
-        this.y = y;
-        this.xBorder = xBorder;
-        this.yBorder = yBorder;
-
-        setField();
+        this.refreshField(parentWidth, parentHeight);
     }
 
-    public void setField()
+    public void refreshField()
     {
-        fieldRect = new Rectangle2D.Double(xBorder, yBorder, x, y);
+        refreshField(this.width, this.height);
+    }
 
-        bKL = new Rectangle2D.Double(xBorder, yBorder + 250, 165, 400);
-        sKL = new Rectangle2D.Double(xBorder, yBorder + 360, 55, 180);
-        penaltyLeft = new Ellipse2D.Double(xBorder + 105, yBorder + 440, 10, 10);
-        circleLeft = new Ellipse2D.Double(xBorder + 150, yBorder + 350, 60, 140);
+    public void refreshField(int width, int height)
+    {
+        // Beïnvloeden veldgrootte.
+        final int horizontalScale = width/120; // Factor voor horizontale afmetingen.
+        final int verticalScale = height/90; // Factor voor verticale afmetingen.
+        final int goalWidth = 50; // Dit opvragen in toekomst.
+        final int fieldX = width/10 + goalWidth;
+        final int fieldY = height/10;
 
-        bKR = new Rectangle2D.Double(xBorder +1035, yBorder + 250, 165, 400);
-        sKR = new Rectangle2D.Double(xBorder+1145, yBorder+360, 55, 180);
-        penaltyRight = new Ellipse2D.Double(xBorder+ 1095, yBorder+440, 10,10);
-        circleRight = new Ellipse2D.Double(xBorder + x, yBorder + 125, x/4, y/3);
+        // Veldgrootte.
+        this.width = width - fieldX*2;
+        this.height = height - fieldY*2;
 
-        centerLine = new Line2D.Double(xBorder+600,yBorder,xBorder+600,yBorder+900);
-        centerDot = new Ellipse2D.Double(xBorder+595, yBorder+445, 10,10);
-        centerCircle = new Ellipse2D.Double(xBorder+510, yBorder+360,180,180);
+        // Startpunten.
+        final int centerX = fieldX + this.width/2;
+        final int centerY = fieldY + this.height/2;
 
+        // Maten van overige veldonderdelen.
+        final int centerCircleSize = (int)(horizontalScale*9.15);
+        final int centerSpotSize = centerCircleSize/8;
+        final int penaltyAreaWidth = (int)(horizontalScale*16.5), penaltyAreaHeight = (int)(verticalScale*40.3);
+        final int goalAreaWidth = (int)(horizontalScale*5.5), goalAreaHeight = (int)(verticalScale*(40.3-22));
 
-        lines = new Shape[] {fieldRect, bKL, sKL, bKR,sKR,centerLine};
-        ellipses = new Shape[] {penaltyLeft,penaltyRight,centerDot};
+        // Tekent veldgrenzen.
+        Rectangle2D fieldRect = new Rectangle2D.Double(fieldX, fieldY, this.width, this.height);
+
+        // Midden veldonderdelen.
+        Line2D centerLine = new Line2D.Double(centerX, fieldY, centerX, fieldY + this.height);
+        Ellipse2D centerCircle = new Ellipse2D.Double(centerX - centerCircleSize/2, centerY - centerCircleSize/2, centerCircleSize, centerCircleSize);
+        Ellipse2D centerSpot = new Ellipse2D.Double(centerX - centerSpotSize/2, centerY - centerSpotSize/2, centerSpotSize, centerSpotSize);
+
+        // Goal veldonderdelen.
+        Rectangle2D leftPenaltyArea = new Rectangle.Double(fieldX, centerY - penaltyAreaHeight/2, penaltyAreaWidth, penaltyAreaHeight);
+        Rectangle2D leftGoalArea = new Rectangle.Double(fieldX, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
+        Rectangle2D rightPenaltyArea = new Rectangle.Double(fieldX + this.width - penaltyAreaWidth, centerY - penaltyAreaHeight/2, penaltyAreaWidth, penaltyAreaHeight);
+        Rectangle2D rightGoalArea = new Rectangle.Double(fieldX + this.width - goalAreaWidth, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
+
+        // Lines worden getekent en spots worden gevuld.
+        lines = new Shape[] {fieldRect, centerCircle, centerLine, leftPenaltyArea, rightPenaltyArea, leftGoalArea, rightGoalArea};
+        spots = new Shape[] {centerSpot};
     }
 
     @Override public void draw(Graphics2D g2d)
     {
-        super.paintComponent(g2d);
+        final BasicStroke stroke = new BasicStroke(4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
+        g2d.setStroke(stroke);
 
-        float dash[] = {10, 0f};
-        g2d.setStroke(new BasicStroke(5.0f, BasicStroke.JOIN_BEVEL, BasicStroke.CAP_SQUARE, 10.0f, dash, 0.0f));
-        g2d.draw(fieldRect);
         for (Shape s : lines)
             g2d.draw(s);
-        for (Shape s : ellipses){
-            g2d.draw(s);
+
+        for (Shape s : spots)
             g2d.fill(s);
-        }
-        g2d.draw(centerCircle);
+    }
 
+    @Override public int getWidth()
+    {
+        return this.width;
+    }
 
-
-        g2d.setClip(new Rectangle2D.Double(xBorder, yBorder + 250, 165, 400));
+    @Override public int getHeight()
+    {
+        return this.height;
     }
 }
