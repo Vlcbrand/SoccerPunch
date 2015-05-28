@@ -1,5 +1,7 @@
 package app;
 
+import util.Resource;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -9,6 +11,7 @@ import java.awt.event.KeyEvent;
  */
 class SoccerFrame extends JFrame
 {
+    private static final Dimension minimumSize;
     private final GraphicsDevice device;
 
     public static void main(final String... args)
@@ -21,6 +24,10 @@ class SoccerFrame extends JFrame
         }
 
         EventQueue.invokeLater(() -> new SoccerFrame().setVisible(true));
+    }
+
+    static {
+        minimumSize = new Dimension(Resource.getInteger("app.width.min"), Resource.getInteger("app.height.min"));
     }
 
     SoccerFrame()
@@ -75,6 +82,6 @@ class SoccerFrame extends JFrame
 
     @Override public Dimension getMinimumSize()
     {
-        return new Dimension(800, 600);
+        return minimumSize;
     }
 }
