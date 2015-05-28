@@ -40,10 +40,10 @@ public class Field extends JComponent
         final int centerY = fieldY + this.height/2;
 
         // Maten van overige veldonderdelen.
-        final int centerCircleSize = (int)(horizontalScale*9.15);
-        final int centerSpotSize = centerCircleSize/8;
-        final int penaltyAreaWidth = (int)(horizontalScale*16.5), penaltyAreaHeight = (int)(verticalScale*40.3);
-        final int goalAreaWidth = (int)(horizontalScale*5.5), goalAreaHeight = (int)(verticalScale*(40.3-22));
+        final int centerCircleSize = (int)(horizontalScale*9.15*2);
+        final int centerSpotSize = centerCircleSize/16;
+        final int penaltyAreaWidth = (int)(horizontalScale*16.5 *.8), penaltyAreaHeight = (int)(verticalScale*40.3);
+        final int goalAreaWidth = (int)(horizontalScale*5.5 * .9), goalAreaHeight = (int)(verticalScale*(40.3-22));
 
         // Tekent veldgrenzen.
         Rectangle2D fieldRect = new Rectangle2D.Double(fieldX, fieldY, this.width, this.height);
