@@ -1,13 +1,17 @@
 package app.entity;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
-public class Field implements Drawable
+public class Field extends JComponent implements Drawable
 {
     private int width, height;
+
+
+    private int fieldX, fieldY, goalAreaWidth, goalAreaHeight;
     private Shape[] lines, spots;
 
     public Field(int parentWidth, int parentHeight)
@@ -26,8 +30,8 @@ public class Field implements Drawable
         final int horizontalScale = width/120; // Factor voor horizontale afmetingen.
         final int verticalScale = height/90; // Factor voor verticale afmetingen.
         final int goalWidth = 50; // Dit opvragen in toekomst.
-        final int fieldX = width/10 + goalWidth;
-        final int fieldY = height/10;
+        this.fieldX = width/10 + goalWidth;
+        this.fieldY = height/10;
 
         // Veldgrootte.
         this.width = width - fieldX*2;
@@ -40,8 +44,9 @@ public class Field implements Drawable
         // Maten van overige veldonderdelen.
         final int centerCircleSize = (int)(horizontalScale*9.15*2);
         final int centerSpotSize = centerCircleSize/16;
-        final int penaltyAreaWidth = (int)(horizontalScale*16.5 *.8), penaltyAreaHeight = (int)(verticalScale*40.3);
-        final int goalAreaWidth = (int)(horizontalScale*5.5 * .9), goalAreaHeight = (int)(verticalScale*(40.3-22));
+        final int penaltyAreaWidth = (int)(horizontalScale*16.5*.8), penaltyAreaHeight = (int)(verticalScale*40.3);
+        goalAreaWidth = (int)(horizontalScale*5.5*.9);
+        goalAreaHeight = (int)(verticalScale*(40.3 - 22));
 
         // Tekent veldgrenzen.
         Rectangle2D fieldRect = new Rectangle2D.Double(fieldX, fieldY, this.width, this.height);
@@ -74,13 +79,34 @@ public class Field implements Drawable
             g2d.fill(s);
     }
 
-    public int getWidth()
+    @Override public int getWidth()
     {
         return this.width;
     }
 
-    public int getHeight()
+    @Override public int getHeight()
     {
         return this.height;
+    }
+
+    public int getFieldX()
+    {
+        return fieldX;
+    }
+
+    public int getFieldY()
+    {
+        return fieldY;
+    }
+
+    public int getGoalAreaWidth()
+    {
+        return goalAreaWidth;
+    }
+
+    public int getGoalAreaHeight()
+    {
+
+        return goalAreaHeight;
     }
 }
