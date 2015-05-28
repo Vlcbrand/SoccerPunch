@@ -34,6 +34,10 @@ class SoccerFrame extends JFrame
     {
         device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
+        final SoccerPanel panel = new SoccerPanel();
+        final SoccerModel model = new SoccerModel();
+        final SoccerController ctrl = new SoccerController(panel, model);
+
         // F11 voor Full Screen en ESC voor reguliere scherm.
         JRootPane rootPane = this.getRootPane();
         rootPane.registerKeyboardAction(e -> this.leaveFullScreenMode(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);

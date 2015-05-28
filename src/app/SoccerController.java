@@ -9,30 +9,26 @@ import wiiusej.wiiusejevents.physicalevents.NunchukEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukInsertedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukRemovedEvent;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 /**
  * Bezit over een {@link SoccerFrame} en een {@link SoccerModel}.
  * Deze controller vangt events op van de Wiimotes en verwerkt deze.
  */
-class SoccerController extends WiimoteAdapter
-    implements ActionListener
+class SoccerController extends WiimoteAdapter implements Runnable
 {
     protected static final int PLAYERS = 1;
 
     protected SoccerPanel view;
     protected SoccerModel model;
 
-    private Timer timer; // Wordt waarschijnlijk vervangen door Thread.
     private Wiimote[] motes;
+    private boolean isRunning;
 
     SoccerController(SoccerPanel view, SoccerModel model)
     {
         this.view = view;
         this.model = model;
-        this.timer = new Timer(1000/60, this);
+
+        this.isRunning = false;
 
         this.getMotes(PLAYERS);
 
@@ -46,7 +42,8 @@ class SoccerController extends WiimoteAdapter
 
     public void start()
     {
-        this.timer.start();
+        this.isRunning = true;
+
     }
 
     /**
@@ -76,6 +73,13 @@ class SoccerController extends WiimoteAdapter
         return motes[index];
     }
 
+    @Override public void run()
+    {
+        while (isRunning) {
+            // TODO: renderen.
+        }
+    }
+
     @Override public void onMotionSensingEvent(MotionSensingEvent e)
     {
         model.update(e);
@@ -97,9 +101,5 @@ class SoccerController extends WiimoteAdapter
             return;
 
         model.expansionUpdate(e);
-    }
-
-    @Override public void actionPerformed(ActionEvent actionEvent)
-    {
     }
 }
