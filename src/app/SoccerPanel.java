@@ -18,7 +18,7 @@ class SoccerPanel extends JPanel
         preferredSize = new Dimension(1024, 600);
     }
 
-    public SoccerPanel()
+    SoccerPanel()
     {
         super(null);
 

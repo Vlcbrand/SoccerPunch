@@ -9,6 +9,8 @@ import wiiusej.wiiusejevents.physicalevents.NunchukEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukInsertedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukRemovedEvent;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Bezit over een {@link SoccerFrame} en een {@link SoccerModel}.
  * Deze controller vangt events op van de Wiimotes en verwerkt deze.
@@ -20,6 +22,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
     protected SoccerPanel view;
     protected SoccerModel model;
 
+    private Thread runner;
     private Wiimote[] motes;
     private boolean isRunning;
 
@@ -28,9 +31,9 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.view = view;
         this.model = model;
 
-        this.isRunning = false;
-
+        this.runner = new Thread(this);
         this.getMotes(PLAYERS);
+        this.isRunning = false;
 
         if (motes == null)
             return;
@@ -43,7 +46,14 @@ class SoccerController extends WiimoteAdapter implements Runnable
     public void start()
     {
         this.isRunning = true;
+        this.runner.start();
+    }
 
+    public void stop()
+    {
+        this.isRunning = false;
+        this.runner.interrupt();
+        this.runner = null;
     }
 
     /**
@@ -75,8 +85,15 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
     @Override public void run()
     {
+        final int maxFPS = 30;
+        final long bestTime = 1000000000l/maxFPS;
+
+        long lastLoopTime = System.nanoTime();
+
         while (isRunning) {
-            // TODO: renderen.
+            // Tijdsverschil berekenen.
+            final long now = System.nanoTime();
+            final long delta = now - lastLoopTime;
         }
     }
 
