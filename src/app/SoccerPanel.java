@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class SoccerPanel extends JPanel
+class SoccerPanel extends JPanel
 {
     private static Dimension preferredSize;
 

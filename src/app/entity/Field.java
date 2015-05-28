@@ -1,13 +1,11 @@
 package app.entity;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
-public class Field extends JComponent
-    implements Drawable
+public class Field implements Drawable
 {
     private int width, height;
     private Shape[] lines, spots;
@@ -76,12 +74,12 @@ public class Field extends JComponent
             g2d.fill(s);
     }
 
-    @Override public int getWidth()
+    public int getWidth()
     {
         return this.width;
     }
 
-    @Override public int getHeight()
+    public int getHeight()
     {
         return this.height;
     }

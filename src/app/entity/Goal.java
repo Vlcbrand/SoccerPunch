@@ -1,13 +1,12 @@
 package app.entity;
 
-import javax.swing.*;
+import util.Image;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import util.Image;
 
-public class Goal extends JComponent
-    implements Drawable
+public class Goal implements Drawable
 {
     private static final int EAST = 0, WEST = 1;
     private int locX;
@@ -34,7 +33,6 @@ public class Goal extends JComponent
 
     @Override public void draw(Graphics2D g2d)
     {
-        super.paintComponent(g2d);
         AffineTransform tx = new AffineTransform();
 
         // goal verplaatsen.
