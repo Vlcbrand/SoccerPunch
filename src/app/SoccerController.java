@@ -10,6 +10,8 @@ import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukInsertedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukRemovedEvent;
 
+import java.awt.geom.AffineTransform;
+
 /**
  * Bezit over een {@link SoccerFrame} en een {@link SoccerModel}.
  * Deze controller vangt events op van de Wiimotes en verwerkt deze.

@@ -1,16 +1,14 @@
 package app;
 
-import app.entity.Field;
 import app.entity.FieldPlayer;
 import app.entity.PhysicalPlayer;
-import wiiusej.wiiusejevents.physicalevents.ButtonsEvent;
+import util.WiimoteButton;
 import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
 import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
 import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Bezit én verwerkt spellogica.
@@ -20,8 +18,8 @@ class SoccerModel
     static final int FIELDPLAYERS_SUPPORTED = 8;
     static final int PLAYERS_SUPPORTED = 2;
 
-    FieldPlayer[] fieldPlayers;
-    PhysicalPlayer[] physicalPlayers;
+    private FieldPlayer[] fieldPlayers;
+    private PhysicalPlayer[] physicalPlayers;
 
     SoccerModel()
     {
@@ -54,17 +52,17 @@ class SoccerModel
         return this.physicalPlayers;
     }
 
-    public void buttonUpdate(WiimoteButtonsEvent e)
+    public void buttonUpdate(final WiimoteButtonsEvent e)
     {
         final PhysicalPlayer player = this.physicalPlayers[e.getWiimoteId() - 1];
     }
 
-    public void motionUpdate(MotionSensingEvent e)
+    public void motionUpdate(final MotionSensingEvent e)
     {
         //this.physicalPlayers[e.getWiimoteId() - 1].;
     }
 
-    public void expansionUpdate(ExpansionEvent e)
+    public void expansionUpdate(final ExpansionEvent e)
     {
         //this.physicalPlayers[e.getWiimoteId() - 1];
     }
