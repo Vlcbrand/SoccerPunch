@@ -1,19 +1,19 @@
 package app.entity;
 
-public class Player
+public class PhysicalPlayer
 {
     private int x, y;
     private int currentPlayer;
     private int currentCharacter;
 
-    public Player(int x, int y)
+    public PhysicalPlayer(int x, int y)
     {
         this.x = x;
         this.y = y;
         this.currentPlayer = -1;
     }
 
-    public Player(int x, int y, int currentPlayer)
+    public PhysicalPlayer(int x, int y, int currentPlayer)
     {
         this.x = x;
         this.y = y;

@@ -2,7 +2,7 @@ package app;
 
 import app.entity.Drawable;
 import app.entity.Field;
-import app.entity.Player;
+import app.entity.PhysicalPlayer;
 import util.Resource;
 
 import javax.swing.*;
@@ -14,7 +14,7 @@ class SoccerPanel extends JPanel
 
     private Field field;
     private Drawable[] drawables;
-    private Player[] players;
+    private PhysicalPlayer[] players;
 
     static
     {
@@ -52,7 +52,7 @@ class SoccerPanel extends JPanel
         for (Drawable object : drawables)
             object.draw(g2d);
 
-        for (Player player : players) {
+        for (PhysicalPlayer player : players) {
             g2d.setColor(Color.black);
             g2d.drawOval(player.getX(), player.getY(), 10, 10);
             g2d.setColor(Color.red);

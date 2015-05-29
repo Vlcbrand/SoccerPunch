@@ -1,6 +1,6 @@
 package app;
 
-import app.entity.Player;
+import app.entity.PhysicalPlayer;
 import wiiusej.wiiusejevents.physicalevents.ButtonsEvent;
 import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
 import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
@@ -10,14 +10,16 @@ import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
  */
 class SoccerModel
 {
-    Player[] players;
+    static final int PLAYERS = 2;
 
-    SoccerModel(int players)
+    PhysicalPlayer[] players;
+
+    SoccerModel()
     {
-        this.players = new Player[players];
+        this.players = new PhysicalPlayer[PLAYERS];
 
-        for (int i = 0; i < players; i++)
-            this.players[i] = new Player(300 + i*50, 300 + i*50);
+        for (int i = 0; i < PLAYERS; i++)
+            this.players[i] = new PhysicalPlayer(300 + i*50, 300 + i*50);
     }
 
     public int getNumberOfPlayers()
@@ -40,7 +42,7 @@ class SoccerModel
         //this.players[e.getWiimoteId()].update(e);
     }
 
-    public Player[] getPlayers()
+    public PhysicalPlayer[] getPlayers()
     {
         return this.players;
     }

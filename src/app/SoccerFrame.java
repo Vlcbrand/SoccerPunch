@@ -11,8 +11,6 @@ import java.awt.event.KeyEvent;
  */
 class SoccerFrame extends JFrame
 {
-    static final int PLAYERS = 2;
-
     private static final Dimension minimumSize;
     private final GraphicsDevice device;
 
@@ -39,7 +37,7 @@ class SoccerFrame extends JFrame
 
         device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
-        final SoccerModel model = new SoccerModel(PLAYERS);
+        final SoccerModel model = new SoccerModel();
         final SoccerPanel panel = new SoccerPanel(model);
         final SoccerController ctrl = new SoccerController(panel, model);
 

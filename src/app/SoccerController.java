@@ -41,13 +41,38 @@ class SoccerController extends WiimoteAdapter implements Runnable
         // Tweede poging tot verbinden.
         if (motes.length == 0)
             this.getMotes(model.getNumberOfPlayers());
+
+        this.addMotes();
+    }
+
+    /**
+     * Verkrijg alle Wiimotes in de directe omgeving.
+     * @param amount hoeveelheid
+     */
+    private void getMotes(int amount)
+    {
+        this.motes = WiiUseApiManager.getWiimotes(amount, false);
+    }
+
+    /**
+     * Voeg een Wiimote toe voor gebruik.
+     * @return de toegevoegde Wiimote
+     */
+    private void addMotes()
+    {
+        if (motes.length <= 0)
+            return;
+
+        for (int i = 0; i < motes.length; i++) {
+            motes[i].setLeds(i == 0, i == 1, i == 2, i == 3);
+            motes[i].addWiiMoteEventListeners(this);
+            motes[i].activateMotionSensing();
+        }
     }
 
     public void start()
     {
         if (runner == null) {
-            System.out.println("Started!");
-
             this.runner = new Thread(this);
             this.runner.start();
             this.isRunning = true;
@@ -71,34 +96,15 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.isPaused = false;
     }
 
-    /**
-     * Verkrijg alle Wiimotes in de directe omgeving.
-     * @param amount hoeveelheid
-     */
-    private void getMotes(int amount)
+    private void simpleGameLoop()
     {
-        this.motes = WiiUseApiManager.getWiimotes(amount, false);
-    }
-
-    /**
-     * Voeg een Wiimote toe voor gebruik.
-     * @return de toegevoegde Wiimote
-     */
-    private Wiimote addMote(int index)
-    {
-        if (motes.length < 0 || index > motes.length)
-            return null;
-
-        for (int i = 0; i < motes.length; i++) {
-            motes[i].setLeds(i == 0, i == 1, i == 2, i == 3);
-            motes[i].addWiiMoteEventListeners(this);
-            motes[i].activateMotionSensing();
+        while (isRunning) {
+            view.repaint();
+            sleep(100l);
         }
-
-        return motes[index];
     }
 
-    @Override public void run()
+    private void advancedGameLoop()
     {
         final double HERTZ = 30;
         final double MAX_FPS = 30;
@@ -136,7 +142,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
                 // Bereken de frames.
                 final int nowInSeconds = (int)(lastUpdateTime/SECOND_IN_NANOS);
                 if (nowInSeconds > lastUpdateTimeInSeconds) {
-                    System.out.printf("FRAMES %1$d, FPS %2$d", frames, FPS);
+                    System.out.printf("FRAMES %1$d, FPS %2$d\n", frames, FPS);
 
                     FPS = frames;
                     frames = 0;
@@ -149,17 +155,27 @@ class SoccerController extends WiimoteAdapter implements Runnable
                     // Andere processen de kans geven om CPU tijd te nemen.
                     Thread.yield();
 
-                    try {
-                        // Stopt de applicatie van het overnemen van de CPU.
-                        Thread.sleep(1);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
+                    // Stopt de applicatie van het overnemen van de CPU.
+                    sleep(1);
 
                     now = System.nanoTime();
                 }
             }
         }
+    }
+
+    private static void sleep(long millis)
+    {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override public void run()
+    {
+        this.simpleGameLoop();
     }
 
     @Override public void onMotionSensingEvent(MotionSensingEvent e)
