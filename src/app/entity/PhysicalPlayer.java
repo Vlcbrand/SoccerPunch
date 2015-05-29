@@ -2,57 +2,22 @@ package app.entity;
 
 public class PhysicalPlayer
 {
-    private int x, y;
-    private int currentPlayer;
-    private int currentCharacter;
+    final int id;
 
-    public PhysicalPlayer(int x, int y)
+    FieldPlayer controlledPlayer;
+
+    public PhysicalPlayer(int id)
     {
-        this.x = x;
-        this.y = y;
-        this.currentPlayer = -1;
+        this.id = id;
     }
 
-    public PhysicalPlayer(int x, int y, int currentPlayer)
+    public void controlFieldPlayer(FieldPlayer player)
     {
-        this.x = x;
-        this.y = y;
-        this.currentPlayer = currentPlayer;
+        this.controlledPlayer = player;
     }
 
-    public void move(int dx, int dy)
+    public FieldPlayer getControlledPlayer()
     {
-        this.x += dx;
-        this.y += dy;
-    }
-
-    public void setControllerID(int id)
-    {
-        this.currentPlayer = id;
-    }
-
-    public void nextCharacter()
-    {
-        this.currentCharacter = this.currentCharacter < 4 ? currentCharacter += 1 : 0;
-    }
-
-    public int getCurrentCharacter()
-    {
-        return this.currentCharacter;
-    }
-
-    public int getCurrentPlayer()
-    {
-        return this.currentPlayer;
-    }
-
-    public int getX()
-    {
-        return this.x;
-    }
-
-    public int getY()
-    {
-        return this.y;
+        return this.controlledPlayer;
     }
 }

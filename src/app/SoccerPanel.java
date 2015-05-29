@@ -2,6 +2,7 @@ package app;
 
 import app.entity.Drawable;
 import app.entity.Field;
+import app.entity.FieldPlayer;
 import app.entity.PhysicalPlayer;
 import util.Resource;
 
@@ -14,7 +15,7 @@ class SoccerPanel extends JPanel
 
     private Field field;
     private Drawable[] drawables;
-    private PhysicalPlayer[] players;
+    private FieldPlayer[] players;
 
     static
     {
@@ -25,7 +26,7 @@ class SoccerPanel extends JPanel
     {
         super(null);
 
-        this.players = model.getPlayers();
+        this.players = model.getFieldPlayers();
 
         final int width = (int)this.getPreferredSize().getWidth();
         final int height = (int)this.getPreferredSize().getHeight();
@@ -51,13 +52,6 @@ class SoccerPanel extends JPanel
 
         for (Drawable object : drawables)
             object.draw(g2d);
-
-        for (PhysicalPlayer player : players) {
-            g2d.setColor(Color.black);
-            g2d.drawOval(player.getX(), player.getY(), 10, 10);
-            g2d.setColor(Color.red);
-            g2d.drawString("P" + player.getCurrentPlayer(), player.getX() + 10, player.getY() - 5);
-        }
     }
 
     @Override public Dimension getPreferredSize()
