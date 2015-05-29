@@ -11,6 +11,8 @@ import java.awt.event.KeyEvent;
  */
 class SoccerFrame extends JFrame
 {
+    static final int PLAYERS = 2;
+
     private static final Dimension minimumSize;
     private final GraphicsDevice device;
 
@@ -26,19 +28,21 @@ class SoccerFrame extends JFrame
         EventQueue.invokeLater(() -> new SoccerFrame().setVisible(true));
     }
 
-    static {
+    static
+    {
         minimumSize = new Dimension(Resource.getInteger("app.width.min"), Resource.getInteger("app.height.min"));
     }
 
     SoccerFrame()
     {
+        super("Soccer Punch!");
+
         device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
-        final SoccerPanel panel = new SoccerPanel();
-        final SoccerModel model = new SoccerModel();
+        final SoccerModel model = new SoccerModel(PLAYERS);
+        final SoccerPanel panel = new SoccerPanel(model);
         final SoccerController ctrl = new SoccerController(panel, model);
 
-        // F11 voor Full Screen en ESC voor reguliere scherm.
         JRootPane rootPane = this.getRootPane();
         rootPane.registerKeyboardAction(e -> this.leaveFullScreenMode(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
         rootPane.registerKeyboardAction(e -> this.enterFullScreenMode(), KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -48,7 +52,7 @@ class SoccerFrame extends JFrame
         this.setMinimumSize(this.getMinimumSize());
         this.setLocationRelativeTo(null);
 
-        this.setContentPane(new SoccerPanel());
+        this.setContentPane(panel);
 
         this.enterFullScreenMode(); // TEST.
     }

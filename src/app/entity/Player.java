@@ -1,47 +1,58 @@
 package app.entity;
 
-import java.awt.*;
-import java.awt.geom.Ellipse2D;
-
 public class Player
-    implements Drawable
 {
-    public double x, y;
+    private int x, y;
+    private int currentPlayer;
+    private int currentCharacter;
 
-    private final int step = 5;
-
-    public Player()
+    public Player(int x, int y)
     {
-        x = 390;
-        y = 290;
+        this.x = x;
+        this.y = y;
+        this.currentPlayer = -1;
     }
 
-    public void up()
+    public Player(int x, int y, int currentPlayer)
     {
-        y -= step;
+        this.x = x;
+        this.y = y;
+        this.currentPlayer = currentPlayer;
     }
 
-    public void down()
+    public void move(int dx, int dy)
     {
-        y += step;
+        this.x += dx;
+        this.y += dy;
     }
 
-    public void left()
+    public void setControllerID(int id)
     {
-        x -= step;
+        this.currentPlayer = id;
     }
 
-    public void right()
+    public void nextCharacter()
     {
-        x += step;
+        this.currentCharacter = this.currentCharacter < 4 ? currentCharacter += 1 : 0;
     }
 
-    @Override public void draw(Graphics2D g2d)
+    public int getCurrentCharacter()
     {
-        Ellipse2D ellipse = new Ellipse2D.Double(x, y, 20, 20);
+        return this.currentCharacter;
+    }
 
-        g2d.setColor(Color.BLACK);
-        g2d.fill(ellipse);
+    public int getCurrentPlayer()
+    {
+        return this.currentPlayer;
+    }
+
+    public int getX()
+    {
+        return this.x;
+    }
+
+    public int getY()
+    {
+        return this.y;
     }
 }
-

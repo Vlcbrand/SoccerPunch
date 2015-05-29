@@ -5,8 +5,8 @@
 <properties>
     <comment>Configuratie</comment>
 
-    <entry key="app.width">1024</entry>
-    <entry key="app.width.min">800</entry>
-    <entry key="app.height">768</entry>
+    <entry key="app.width">1200</entry>
+    <entry key="app.width.min">1024</entry>
+    <entry key="app.height">640</entry>
     <entry key="app.height.min">600</entry>
 </properties>
