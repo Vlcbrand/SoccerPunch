@@ -3,23 +3,21 @@ package app.entity;
 import app.SoccerConstants;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+import java.awt.geom.*;
+import java.awt.image.*;
 
 public class Field implements Drawable
 {
     static final SoccerConstants goalOpenFrom;
     static final BufferedImage goalImage;
+    AffineTransform txLeft;
+    AffineTransform txRight;
 
     private int width, height;
 
     private Shape[] lines, spots;
 
-    static
-    {
+    static {
         goalOpenFrom = SoccerConstants.SOUTH;
         goalImage = util.Image.get("goal.gif");
     }
@@ -71,14 +69,40 @@ public class Field implements Drawable
         Rectangle2D leftGoalArea = new Rectangle.Double(fieldX, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
         Rectangle2D rightPenaltyArea = new Rectangle.Double(fieldX + this.width - penaltyAreaWidth, centerY - penaltyAreaHeight/2, penaltyAreaWidth, penaltyAreaHeight);
         Rectangle2D rightGoalArea = new Rectangle.Double(fieldX + this.width - goalAreaWidth, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
-
-        // Tijdelijke goals.
         Rectangle2D leftGoal = new Rectangle.Double(fieldX - goalWidth, centerY - goalHeight/2, goalWidth, goalHeight);
         Rectangle2D rightGoal = new Rectangle.Double(fieldX + this.width, centerY - goalHeight/2, goalWidth, goalHeight);
 
+        //linkerdoel met afbeelding
+        //transforms worden van beneden afgewerkt.
+        txLeft = new AffineTransform();
+        //zet het doel op de juiste positie
+        txLeft.translate(fieldX - leftGoal.getWidth(),
+                 centerY - (leftGoal.getHeight() / 2));
+        //schaalt het doel
+        double leftGoalScaleW = leftGoal.getWidth() / goalImage.getHeight();
+        double leftGoalScaleH = leftGoal.getHeight() / goalImage.getWidth();
+        txLeft.scale(leftGoalScaleW, leftGoalScaleH);
+        //roteert het doel en zet het doel terug op de beginpositie
+        txLeft.translate(goalImage.getHeight() - goalImage.getHeight(), goalImage.getWidth());
+        txLeft.rotate(Math.toRadians(-90));
+
+        //rechterdoel met afbeelding
+        //transforms worden van beneden afgewerkt.
+        txRight = new AffineTransform();
+        //zet het doel op de juiste positie
+        txRight.translate(fieldX + this.width,
+                centerY - (rightGoal.getHeight() / 2));
+        //schaalt het doel
+        double rightGoalScaleW = rightGoal.getWidth() / goalImage.getHeight();
+        double rightGoalScaleH = rightGoal.getHeight() / goalImage.getWidth();
+        txRight.scale(rightGoalScaleW, rightGoalScaleH);
+        //roteert het doel en zet het doel terug op de beginpositie
+        txRight.translate(goalImage.getHeight(), 0);
+        txRight.rotate(Math.toRadians(90));
+
         // Lines worden getekent en spots worden gevuld.
         lines = new Shape[] {fieldRect, centerCircle, centerLine, leftPenaltyArea, rightPenaltyArea, leftGoalArea, rightGoalArea};
-        spots = new Shape[] {centerSpot, leftGoal, rightGoal};
+        spots = new Shape[] {centerSpot};
     }
 
     /**
@@ -99,7 +123,8 @@ public class Field implements Drawable
             case EAST:
                 theta = 90;
                 break;
-            default: case SOUTH:
+            default:
+            case SOUTH:
                 theta = 180;
                 break;
             case WEST:
@@ -108,7 +133,8 @@ public class Field implements Drawable
 
         // In de juiste richting draaien.
         switch (fieldSide) {
-            default: case WEST:
+            default:
+            case WEST:
                 theta += 90;
                 break;
             case EAST:
@@ -120,6 +146,11 @@ public class Field implements Drawable
 
     @Override public void draw(Graphics2D g2d)
     {
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+
         final BasicStroke stroke = new BasicStroke(4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
         g2d.setStroke(stroke);
 
@@ -128,5 +159,8 @@ public class Field implements Drawable
 
         for (Shape s : spots)
             g2d.fill(s);
+
+        g2d.drawImage(goalImage, txLeft, null);
+        g2d.drawImage(goalImage, txRight, null);
     }
 }
