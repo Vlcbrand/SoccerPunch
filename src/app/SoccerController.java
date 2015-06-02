@@ -10,6 +10,8 @@ import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukInsertedEvent;
 import wiiusej.wiiusejevents.wiiuseapievents.NunchukRemovedEvent;
 
+import java.awt.geom.AffineTransform;
+
 /**
  * Bezit over een {@link SoccerFrame} en een {@link SoccerModel}.
  * Deze controller vangt events op van de Wiimotes en verwerkt deze.
@@ -33,14 +35,14 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         this.isRunning = false;
         this.isPaused = false;
-        this.getMotes(model.getNumberOfPlayers());
+        this.getMotes(model.getNumberOfPhysicalPlayers());
 
         if (motes == null)
             return;
 
         // Tweede poging tot verbinden.
         if (motes.length == 0)
-            this.getMotes(model.getNumberOfPlayers());
+            this.getMotes(model.getNumberOfPhysicalPlayers());
 
         this.addMotes();
     }
@@ -128,7 +130,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
                     updates++;
                 }
 
-                // Indien een update te lang heeft geduurd, deze niet volledig bijhouden.
+                // Indien een motionUpdate te lang heeft geduurd, deze niet volledig bijhouden.
                 if (now - lastUpdateTime > UPDATETIME_IN_NANOS)
                     lastUpdateTime = now - UPDATETIME_IN_NANOS;
 
@@ -150,7 +152,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
                     lastUpdateTimeInSeconds = nowInSeconds;
                 }
 
-                // Maximum update- en rendertijden hanteren.
+                // Maximum motionUpdate- en rendertijden hanteren.
                 while (now - lastRenderTime < RENDERTIME_IN_NANOS && now - lastUpdateTime < UPDATETIME_IN_NANOS) {
                     // Andere processen de kans geven om CPU tijd te nemen.
                     Thread.yield();
@@ -180,7 +182,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
     @Override public void onMotionSensingEvent(MotionSensingEvent e)
     {
-        model.update(e);
+        model.motionUpdate(e);
     }
 
     @Override public void onButtonsEvent(WiimoteButtonsEvent e)
