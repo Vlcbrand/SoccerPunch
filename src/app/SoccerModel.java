@@ -1,95 +1,49 @@
 package app;
 
-import app.entity.FieldPlayer;
-import app.entity.PhysicalPlayer;
-import util.WiimoteButton;
-import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
-import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
-import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
+import app.entity.Field;
+import app.entity.Player;
 
-import java.util.HashSet;
-import java.util.Set;
+import javax.swing.*;
+import java.util.*;
 
 /**
  * Bezit én verwerkt spellogica.
  */
 class SoccerModel
 {
-    static final int FIELDPLAYERS_SUPPORTED = 8;
-    static final int PLAYERS_SUPPORTED = 2;
-
-    private FieldPlayer[] fieldPlayers;
-    private PhysicalPlayer[] physicalPlayers;
+    private Map<SoccerConstants, List<Player>> fieldPlayers;
 
     SoccerModel()
     {
-        this.fieldPlayers = new FieldPlayer[FIELDPLAYERS_SUPPORTED];
-        this.physicalPlayers = new PhysicalPlayer[PLAYERS_SUPPORTED];
+        this.fieldPlayers = new TreeMap<>();
     }
 
-    public int getNumberOfPhysicalPlayers()
+    public void createNewFieldPlayers(Field field)
     {
-        return this.physicalPlayers.length;
-    }
+        fieldPlayers.clear();
 
-    public int getNumberOfFieldPlayers()
-    {
-        return this.fieldPlayers.length;
-    }
-
-    public FieldPlayer[] getFieldPlayers()
-    {
-        return this.fieldPlayers;
-    }
-
-    public PhysicalPlayer getPhysicalPlayer(int numb)
-    {
-        return this.physicalPlayers[numb - 1];
-    }
-
-    public PhysicalPlayer[] getPhysicalPlayers()
-    {
-        return this.physicalPlayers;
-    }
-
-    public void buttonUpdate(final WiimoteButtonsEvent e)
-    {
-        final PhysicalPlayer player = this.physicalPlayers[e.getWiimoteId() - 1];
-    }
-
-    public void motionUpdate(final MotionSensingEvent e)
-    {
-        //this.physicalPlayers[e.getWiimoteId() - 1].;
-    }
-
-    public void expansionUpdate(final ExpansionEvent e)
-    {
-        //this.physicalPlayers[e.getWiimoteId() - 1];
-    }
-
-    public FieldPlayer chooseNextFieldPlayer(PhysicalPlayer physicalPlayer)
-    {
-        final int x = physicalPlayer.getControlledPlayer().getX();
-        final int y = physicalPlayer.getControlledPlayer().getY();
-
-        FieldPlayer nearestPlayer = null;
-
-        for (FieldPlayer fieldPlayer : fieldPlayers) {
-            if (fieldPlayer.equals(physicalPlayer.getControlledPlayer()))
-                continue;
-
-            if (nearestPlayer == null && !fieldPlayer.isControlled()) {
-                nearestPlayer = fieldPlayer;
-                continue;
+        fieldPlayers.forEach((side, players) -> {
+            for (int i = 0; i < Field.FIELD_PLAYERS_SUPPORTED/2; i++) {
+                final Player player = new Player(side);
+                final int[] posXY = field.getDefaultPositions(side)[i];
+                player.setPosition(posXY[0], posXY[1]);
+                players.add(player);
             }
+        });
+    }
 
-            if (nearestPlayer == null)
-                continue;
+    public Player[] getFieldPlayers()
+    {
+        if (fieldPlayers.size() == 0)
+            return null;
 
-            if (Math.min(nearestPlayer.getX(), nearestPlayer.getY()) > Math.min(fieldPlayer.getX(), fieldPlayer.getY()))
-                nearestPlayer = fieldPlayer;
-        }
+        final ArrayList<Player> list = new ArrayList<>(this.fieldPlayers.get(SoccerConstants.WEST));
+        list.addAll(this.fieldPlayers.get(SoccerConstants.EAST));
+        return (Player[])list.toArray();
+    }
 
-        return nearestPlayer;
+    public Player[] getFieldPlayers(WindowConstants side)
+    {
+        return (Player[])this.fieldPlayers.get(side).toArray();
     }
 }

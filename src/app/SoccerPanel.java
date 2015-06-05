@@ -2,8 +2,7 @@ package app;
 
 import app.entity.Drawable;
 import app.entity.Field;
-import app.entity.FieldPlayer;
-import app.entity.PhysicalPlayer;
+import app.entity.Player;
 import util.Resource;
 
 import javax.swing.*;
@@ -11,14 +10,16 @@ import java.awt.*;
 
 class SoccerPanel extends JPanel
 {
-    private static Dimension preferredSize;
+    private final static Dimension minimumSize, preferredSize;
 
-    private Field field;
-    private Drawable[] drawables;
-    private FieldPlayer[] players;
+    private final Field field;
+    private final Drawable[] mainComponents;
+
+    private Drawable[] fieldPlayers;
 
     static
     {
+        minimumSize = new Dimension(Resource.getInteger("app.width.min"), Resource.getInteger("app.height.min"));
         preferredSize = new Dimension(Resource.getInteger("app.width"), Resource.getInteger("app.height"));
     }
 
@@ -26,19 +27,19 @@ class SoccerPanel extends JPanel
     {
         super(null);
 
-        this.players = model.getFieldPlayers();
-
         final int width = (int)this.getPreferredSize().getWidth();
         final int height = (int)this.getPreferredSize().getHeight();
 
-        this.drawables = new Drawable[] {
+        this.mainComponents = new Drawable[] {
             field = new Field(width, height)
         };
+
+        this.fieldPlayers = model.getFieldPlayers();
     }
 
-    private void updateBackground()
+    public Field getInnerField()
     {
-        field.update(this.getWidth(), this.getHeight());
+        return this.field;
     }
 
     @Override public void paintComponent(Graphics g)
@@ -46,12 +47,22 @@ class SoccerPanel extends JPanel
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
 
-        g2d.setColor(Color.black);
+        // Update onderdelen vóór het tekenen.
+        field.update(this.getWidth(), this.getHeight());
 
-        this.updateBackground(); // Ververs alle objecten met nieuwe waarden.
+        // Teken alle onderdelen.
+        if (mainComponents != null)
+            for (Drawable component : mainComponents)
+                component.draw(g2d);
 
-        for (Drawable object : drawables)
-            object.draw(g2d);
+        if (fieldPlayers != null)
+            for (Drawable fieldPlayer : fieldPlayers)
+                fieldPlayer.draw(g2d);
+    }
+
+    @Override public Dimension getMinimumSize()
+    {
+        return minimumSize;
     }
 
     @Override public Dimension getPreferredSize()

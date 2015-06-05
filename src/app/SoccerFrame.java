@@ -1,7 +1,5 @@
 package app;
 
-import util.Resource;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -11,24 +9,17 @@ import java.awt.event.KeyEvent;
  */
 class SoccerFrame extends JFrame
 {
-    private static final Dimension minimumSize;
     private final GraphicsDevice device;
 
     public static void main(final String... args)
     {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            UIManager.getLookAndFeelDefaults().put("Button.showMnemonics", true);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         EventQueue.invokeLater(() -> new SoccerFrame().setVisible(true));
-    }
-
-    static
-    {
-        minimumSize = new Dimension(Resource.getInteger("app.width.min"), Resource.getInteger("app.height.min"));
     }
 
     SoccerFrame()
@@ -47,12 +38,11 @@ class SoccerFrame extends JFrame
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout(0, 0));
-        this.setMinimumSize(this.getMinimumSize());
+        this.setMinimumSize(panel.getMinimumSize());
         this.setLocationRelativeTo(null);
-
         this.setContentPane(panel);
 
-        this.enterFullScreenMode(); // TEST.
+        this.pack();
     }
 
     private void enterFullScreenMode()
@@ -84,10 +74,5 @@ class SoccerFrame extends JFrame
             this.repaint();
             this.requestFocus();
         }
-    }
-
-    @Override public Dimension getMinimumSize()
-    {
-        return minimumSize;
     }
 }

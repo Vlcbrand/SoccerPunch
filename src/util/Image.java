@@ -7,7 +7,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Image is voornamelijk verantwoordelijk voor het veilig inladen van afbeelding.
- * In tegenstelling tot resource management, zal Image altijd een afbeelding produceren.
+ * In tegenstelling tot ImageIO, zal Image <u>altijd</u> een afbeelding produceren.
  *
  * <ul>
  *  Gebruik (altijd met file extension):

@@ -1,30 +1,25 @@
 package app;
 
-import util.WiimoteAdapter;
+import app.wii.WiimoteAdapter;
 import wiiusej.WiiUseApiManager;
 import wiiusej.Wiimote;
-import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
-import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
-import wiiusej.wiiusejevents.physicalevents.NunchukEvent;
 import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
-import wiiusej.wiiusejevents.wiiuseapievents.NunchukInsertedEvent;
-import wiiusej.wiiusejevents.wiiuseapievents.NunchukRemovedEvent;
-
-import java.awt.geom.AffineTransform;
 
 /**
  * Bezit over een {@link SoccerFrame} en een {@link SoccerModel}.
- * Deze controller vangt events op van de Wiimotes en verwerkt deze.
  */
 class SoccerController extends WiimoteAdapter implements Runnable
 {
     static final int SECOND_IN_NANOS = 1000000000;
+    static final int PLAYERS_SUPPORTED = 2;
 
     private SoccerPanel view;
     private SoccerModel model;
 
-    private Thread runner;
     private Wiimote[] motes;
+    private SoccerPlayer[] players;
+
+    private Thread runner;
     private boolean isRunning, isPaused;
     private int frames, FPS;
 
@@ -35,25 +30,24 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         this.isRunning = false;
         this.isPaused = false;
-        this.getMotes(model.getNumberOfPhysicalPlayers());
+        //this.getMotes();
 
         if (motes == null)
             return;
 
         // Tweede poging tot verbinden.
         if (motes.length == 0)
-            this.getMotes(model.getNumberOfPhysicalPlayers());
+            this.getMotes();
 
         this.addMotes();
     }
 
     /**
      * Verkrijg alle Wiimotes in de directe omgeving.
-     * @param amount hoeveelheid
      */
-    private void getMotes(int amount)
+    private void getMotes()
     {
-        this.motes = WiiUseApiManager.getWiimotes(amount, false);
+        this.motes = WiiUseApiManager.getWiimotes(PLAYERS_SUPPORTED, false);
     }
 
     /**
@@ -62,12 +56,22 @@ class SoccerController extends WiimoteAdapter implements Runnable
      */
     private void addMotes()
     {
-        if (motes.length <= 0)
+        final int connectedMotes = motes.length;
+
+        if (connectedMotes <= 0)
             return;
 
-        for (int i = 0; i < motes.length; i++) {
+        // Voor elke veronden Wiimote een speler.
+        players = new SoccerPlayer[connectedMotes];
+
+        // Speler 1 kan het spel starten.
+        motes[0].addWiiMoteEventListeners(this);
+
+        // Wiimote bruikbaar maken en koppelen aan speler.
+        for (int i = 0; i < connectedMotes; i++) {
+            players[i] = new SoccerPlayer(motes[i]);
             motes[i].setLeds(i == 0, i == 1, i == 2, i == 3);
-            motes[i].addWiiMoteEventListeners(this);
+            motes[i].addWiiMoteEventListeners(players[i]);
             motes[i].activateMotionSensing();
         }
     }
@@ -98,14 +102,27 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.isPaused = false;
     }
 
+    /**
+     * Eenvoudige lus, waarbij enkel wordt voorkomen dat het spel te snel loopt.
+     */
     private void simpleGameLoop()
     {
+        final int MILLIS_PER_LOOP = 15;
+
+        model.createNewFieldPlayers(view.getInnerField());
+
         while (isRunning) {
+            long now = System.currentTimeMillis();
+
             view.repaint();
-            sleep(100l);
+
+            sleep(now + MILLIS_PER_LOOP - System.currentTimeMillis());
         }
     }
 
+    /**
+     * Geavanceerde lus, waarbij een fps- en update speed grens wordt aangehouden.
+     */
     private void advancedGameLoop()
     {
         final double HERTZ = 30;
@@ -180,37 +197,11 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.simpleGameLoop();
     }
 
-    @Override public void onMotionSensingEvent(MotionSensingEvent e)
-    {
-        model.motionUpdate(e);
-    }
-
     @Override public void onButtonsEvent(WiimoteButtonsEvent e)
     {
-        if (e.isButtonAPressed() && e.isButtonBPressed()) {
+        if (!isRunning && e.isButtonAPressed())
             this.start();
-            // Niets meer doen.
-            return;
-        }
-
-        model.buttonUpdate(e);
-    }
-
-    @Override public void onExpansionEvent(ExpansionEvent e)
-    {
-        if (!NunchukEvent.class.isInstance(e))
-            return;
-
-        model.expansionUpdate(e);
-    }
-
-    @Override public void onNunchukInsertedEvent(NunchukInsertedEvent e)
-    {
-        System.out.println("Nunchuk inserted...");
-    }
-
-    @Override public void onNunchukRemovedEvent(NunchukRemovedEvent e)
-    {
-        System.out.println("Nunchuck removed...");
+        else if (isRunning && e.isButtonAPressed() && e.isButtonBPressed())
+            this.stop();
     }
 }

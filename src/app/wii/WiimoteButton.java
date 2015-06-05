@@ -1,6 +1,4 @@
-package util;
-
-import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
+package app.wii;
 
 /**
  * Created by nikita on 29-05-2015

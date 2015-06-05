@@ -1,4 +1,4 @@
-package util;
+package app.wii;
 
 import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
 import wiiusej.wiiusejevents.physicalevents.IREvent;

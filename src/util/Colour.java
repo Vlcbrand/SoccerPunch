@@ -8,7 +8,7 @@ import java.awt.*;
  * @author Nikita
  * @since 05-01-2014
  */
-public class Colour
+public final class Colour
 {
     private Colour()
     {
