@@ -43,6 +43,8 @@ class SoccerFrame extends JFrame
         this.setContentPane(panel);
 
         this.pack();
+
+        enterFullScreenMode();
     }
 
     private void enterFullScreenMode()
