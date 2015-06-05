@@ -12,6 +12,7 @@ public class Field implements Drawable
     static final BufferedImage goalImage;
     AffineTransform txLeft;
     AffineTransform txRight;
+    Rectangle2D fieldRect;
 
     private int width, height;
 
@@ -57,7 +58,7 @@ public class Field implements Drawable
         final int goalHeight = (int)Math.max(verticalScale*7.5, goalAreaHeight);
 
         // Tekent veldgrenzen.
-        Rectangle2D fieldRect = new Rectangle2D.Double(fieldX, fieldY, this.width, this.height);
+        fieldRect = new Rectangle2D.Double(fieldX, fieldY, this.width, this.height);
 
         // Midden veldonderdelen.
         Line2D centerLine = new Line2D.Double(centerX, fieldY, centerX, fieldY + this.height);
@@ -142,6 +143,11 @@ public class Field implements Drawable
         }
 
         return Math.toRadians(theta);
+    }
+
+    public Rectangle2D getField()
+    {
+        return fieldRect;
     }
 
     @Override public void draw(Graphics2D g2d)

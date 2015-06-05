@@ -34,7 +34,6 @@ class SoccerFrame extends JFrame
     SoccerFrame()
     {
         super("Soccer Punch!");
-
         device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
         final SoccerModel model = new SoccerModel();

@@ -1,21 +1,23 @@
 package app;
 
-import app.entity.Drawable;
-import app.entity.Field;
-import app.entity.FieldPlayer;
-import app.entity.PhysicalPlayer;
+import app.entity.*;
+import app.physics.BallPhysics;
 import util.Resource;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 class SoccerPanel extends JPanel
 {
     private static Dimension preferredSize;
 
+    private BallPhysics ballPhysics = new BallPhysics();
     private Field field;
+    private Ball ball;
     private Drawable[] drawables;
     private FieldPlayer[] players;
+    Point2D ballLoc = new Point2D.Double(10, 10);
 
     static
     {
@@ -32,13 +34,38 @@ class SoccerPanel extends JPanel
         final int height = (int)this.getPreferredSize().getHeight();
 
         this.drawables = new Drawable[] {
-            field = new Field(width, height)
+            field = new Field(width, height),
+                ball = new Ball(400, 400)
         };
+        updateBall();
     }
 
     private void updateBackground()
     {
         field.update(this.getWidth(), this.getHeight());
+    }
+
+    private void updateBall()
+    {
+        Thread ballThread = new Thread(new Runnable()
+        {
+            @Override public void run()
+            {
+                while(true)
+                {
+                    try {
+                        ball.ballMotion(field.getField());
+                        repaint();
+                        Thread.sleep(1000/60);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        ballThread.start();
+        ball.kickBall(10, 0);
     }
 
     @Override public void paintComponent(Graphics g)
