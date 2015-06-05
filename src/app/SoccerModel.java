@@ -4,6 +4,7 @@ import app.entity.Field;
 import app.entity.Player;
 
 import javax.swing.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -16,12 +17,12 @@ class SoccerModel
     SoccerModel()
     {
         this.fieldPlayers = new TreeMap<>();
+        this.fieldPlayers.put(SoccerConstants.EAST, new LinkedList<>());
+        this.fieldPlayers.put(SoccerConstants.WEST, new LinkedList<>());
     }
 
     public void createNewFieldPlayers(Field field)
     {
-        fieldPlayers.clear();
-
         fieldPlayers.forEach((side, players) -> {
             for (int i = 0; i < Field.FIELD_PLAYERS_SUPPORTED/2; i++) {
                 final Player player = new Player(side);
@@ -32,18 +33,13 @@ class SoccerModel
         });
     }
 
-    public Player[] getFieldPlayers()
+    public List<Player> getFieldPlayers()
     {
         if (fieldPlayers.size() == 0)
             return null;
 
-        final ArrayList<Player> list = new ArrayList<>(this.fieldPlayers.get(SoccerConstants.WEST));
-        list.addAll(this.fieldPlayers.get(SoccerConstants.EAST));
-        return (Player[])list.toArray();
-    }
-
-    public Player[] getFieldPlayers(WindowConstants side)
-    {
-        return (Player[])this.fieldPlayers.get(side).toArray();
+        List<Player> players = this.fieldPlayers.get(SoccerConstants.EAST);
+        players.addAll(this.fieldPlayers.get(SoccerConstants.WEST));
+        return players;
     }
 }

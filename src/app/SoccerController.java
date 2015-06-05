@@ -32,6 +32,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.isPaused = false;
         //this.getMotes();
 
+        model.createNewFieldPlayers(view.getInnerField());
+
         if (motes == null)
             return;
 
@@ -88,7 +90,6 @@ class SoccerController extends WiimoteAdapter implements Runnable
     public void stop()
     {
         this.isRunning = false;
-        this.runner.interrupt();
         this.runner = null;
     }
 

@@ -97,32 +97,25 @@ public class Field implements Drawable
 
         // Bereken hulpwaarden voor standaardposities.
         final int positionsPerSide = FIELD_PLAYERS_SUPPORTED/2;
-        final int posSpacingX = (this.width/2) / (positionsPerSide - 2);
-        final int posSpacingY = (this.height/2) / (positionsPerSide - 2);
-        final int posLeftFirst = fieldX + posSpacingX;
-        final int posRightFirst = fieldX + this.width - posSpacingX;
-        final int posUpperHalf = centerY - posSpacingY;
-        final int posLowerHalf = centerY + posSpacingY;
+        final int playerOffset = Player.SIZE/2;
+        final int posXSpacing = (this.width/2) / (positionsPerSide + 1);
+        final int posYSpacing = (this.height/2) / 2;
+        final int posXLeftFirst = fieldX + posXSpacing*2;
+        final int posXRightFirst = fieldX + this.width - posXSpacing*2;
+        final int posYUpperHalf = centerY - posYSpacing - playerOffset;
+        final int posYLowerHalf = centerY + posYSpacing - playerOffset;
 
-        // Bereken posities van keepers en spitsen.
-        defaultLeftPositions[0] = new int[] {fieldX + posSpacingX + 20, centerY - 10};
-        defaultLeftPositions[1] = new int[] {centerX - posSpacingX - 20, centerY - 10};
-        defaultRightPositions[0] = new int[] {this.width - fieldX - posSpacingX - 20, centerY - 10};
-        defaultRightPositions[1] = new int[] {centerX + posSpacingX + 20, centerY - 10};
+        // Bereken linkse posities.
+        defaultLeftPositions[0] = new int[] {posXLeftFirst, centerY - playerOffset};
+        defaultLeftPositions[1] = new int[] {centerX - posXSpacing - playerOffset*2, centerY - playerOffset};
+        defaultLeftPositions[2] = new int[] {posXLeftFirst + posXSpacing, posYUpperHalf};
+        defaultLeftPositions[3] = new int[] {posXLeftFirst + posXSpacing, posYLowerHalf};
 
-        // Bereken overige linker standaardposities.
-        for (int i = 2; i < positionsPerSide; i++)
-            if (i < positionsPerSide/2)
-                defaultLeftPositions[i] = new int[] {posLeftFirst + (i - 1)*posSpacingX, posUpperHalf};
-            else
-                defaultLeftPositions[i] = new int[] {posLeftFirst + (i - 1)*posSpacingX, posLowerHalf};
-
-        // Bereken overige rechter standaardposities.
-        for (int i = 2; i < positionsPerSide; i++)
-            if (i < positionsPerSide/2)
-                defaultRightPositions[i] = new int[] {posRightFirst - (i - 1)*posSpacingX, posUpperHalf};
-            else
-                defaultRightPositions[i] = new int[] {posRightFirst - (i - 1)*posSpacingX, posLowerHalf};
+        // Bereken rechtse posities.
+        defaultRightPositions[0] = new int[] {posXRightFirst - playerOffset*2, centerY - playerOffset};
+        defaultRightPositions[1] = new int[] {centerX + posXSpacing, centerY - playerOffset};
+        defaultRightPositions[2] = new int[] {posXRightFirst - posXSpacing, posYUpperHalf};
+        defaultRightPositions[3] = new int[] {posXRightFirst - posXSpacing, posYLowerHalf};
 
         // Lines worden getekent en spots worden gevuld.
         lines = new Shape[] {fieldRect, centerCircle, centerLine, leftPenaltyArea, rightPenaltyArea, leftGoalArea, rightGoalArea};

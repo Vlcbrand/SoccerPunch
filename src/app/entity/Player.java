@@ -9,6 +9,8 @@ import java.awt.*;
  */
 public class Player implements Drawable
 {
+    public static final int SIZE = 20;
+
     private final SoccerConstants side;
     private int x, y;
 
@@ -30,7 +32,7 @@ public class Player implements Drawable
 
     @Override public void draw(Graphics2D g2d)
     {
-        g2d.setPaint(Color.black);
-        g2d.drawOval(this.x, this.y, 10, 10);
+        g2d.setPaint(side.equals(SoccerConstants.EAST) ? Color.red : Color.blue);
+        g2d.fillOval(this.x, this.y, 20, 20);
     }
 }
