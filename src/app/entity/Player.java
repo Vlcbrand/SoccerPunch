@@ -35,4 +35,14 @@ public class Player implements Drawable
         g2d.setPaint(side.equals(SoccerConstants.EAST) ? Color.red : Color.blue);
         g2d.fillOval(this.x, this.y, 20, 20);
     }
+
+    @Override public int getWidth()
+    {
+        return SIZE;
+    }
+
+    @Override public int getHeight()
+    {
+        return SIZE;
+    }
 }

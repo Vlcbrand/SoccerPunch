@@ -7,18 +7,18 @@ import util.Resource;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 class SoccerPanel extends JPanel
 {
     private final static Dimension minimumSize, preferredSize;
 
+    private final int width, height;
     private final Field field;
     private final SoccerModel model;
     private final Drawable[] mainComponents;
-
-    private List<Player> fieldPlayers;
 
     static
     {
@@ -32,11 +32,11 @@ class SoccerPanel extends JPanel
 
         this.model = model;
 
-        final int width = (int)this.getPreferredSize().getWidth();
-        final int height = (int)this.getPreferredSize().getHeight();
+        this.width = (int)this.getPreferredSize().getWidth();
+        this.height = (int)this.getPreferredSize().getHeight();
 
         this.mainComponents = new Drawable[] {
-            field = new Field(width, height)
+            field = new Field(this.width, this.height)
         };
     }
 
@@ -49,19 +49,32 @@ class SoccerPanel extends JPanel
     {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        // Update onderdelen vóór het tekenen.
-        this.field.update(this.getWidth(), this.getHeight());
-        this.fieldPlayers = this.model.getFieldPlayers();
+        BufferedImage scene = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D sceneGraphics = (Graphics2D)scene.getGraphics();
+        sceneGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Teken alle onderdelen.
+        // Update onderdelen.
+        List<Player> fieldPlayers = this.model.getFieldPlayers();
+
+        // Teken onderdelen.
         if (mainComponents != null)
             for (Drawable component : mainComponents)
-                component.draw(g2d);
+                component.draw(sceneGraphics);
 
         if (fieldPlayers != null)
             for (Drawable fieldPlayer : fieldPlayers)
-                fieldPlayer.draw(g2d);
+                fieldPlayer.draw(sceneGraphics);
+
+        // Scale met het hoofdscherm.
+        AffineTransform tx = new AffineTransform();
+        final double parentWidth = this.getParent().getWidth();
+        final double parentHeight = this.getParent().getHeight();
+        tx.scale(parentWidth/this.width, parentHeight/this.height);
+
+        sceneGraphics.dispose();
+        g2d.drawImage(scene, tx, this);
     }
 
     @Override public Dimension getMinimumSize()

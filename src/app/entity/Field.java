@@ -117,7 +117,7 @@ public class Field implements Drawable
         defaultRightPositions[2] = new int[] {posXRightFirst - posXSpacing, posYUpperHalf};
         defaultRightPositions[3] = new int[] {posXRightFirst - posXSpacing, posYLowerHalf};
 
-        // Lines worden getekent en spots worden gevuld.
+        // Lines worden getekend en spots worden gevuld.
         lines = new Shape[] {fieldRect, centerCircle, centerLine, leftPenaltyArea, rightPenaltyArea, leftGoalArea, rightGoalArea};
         spots = new Shape[] {centerSpot};
     }
@@ -218,5 +218,15 @@ public class Field implements Drawable
         // Tekent doelen.
         g2d.drawImage(goalImage, leftGoalTransform, null);
         g2d.drawImage(goalImage, rightGoalTransform, null);
+    }
+
+    @Override public int getWidth()
+    {
+        return this.width;
+    }
+
+    @Override public int getHeight()
+    {
+        return this.height;
     }
 }
