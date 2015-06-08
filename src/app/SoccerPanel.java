@@ -35,7 +35,7 @@ class SoccerPanel extends JPanel
 
         this.drawables = new Drawable[] {
             field = new Field(width, height),
-                ball = new Ball(400, 400)
+                ball = new Ball(400, 400, 20)
         };
         updateBall();
     }
@@ -65,7 +65,7 @@ class SoccerPanel extends JPanel
         });
 
         ballThread.start();
-        ball.kickBall(10, 0);
+        ball.kickBall(20, 45);
     }
 
     @Override public void paintComponent(Graphics g)

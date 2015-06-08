@@ -1,6 +1,7 @@
 package app.entity;
 
 import app.SoccerConstants;
+import org.w3c.dom.css.Rect;
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -13,6 +14,7 @@ public class Field implements Drawable
     AffineTransform txLeft;
     AffineTransform txRight;
     Rectangle2D fieldRect;
+    Rectangle2D[] fieldBorders;
 
     private int width, height;
 
@@ -168,5 +170,7 @@ public class Field implements Drawable
 
         g2d.drawImage(goalImage, txLeft, null);
         g2d.drawImage(goalImage, txRight, null);
+
+
     }
 }

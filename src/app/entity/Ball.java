@@ -15,14 +15,15 @@ public class Ball extends BallPhysics implements Drawable
     private Rectangle2D ball;
     private static BufferedImage ballImage = util.Image.get("ball.gif");
 
-    public Ball(double locX, double locY)
+    public Ball(double locX, double locY, int ballSize)
     {
         super.locX = locX;
         super.locY = locY;
+        super.ballSize = ballSize;
     }
 
     @Override public void draw(Graphics2D g2d)
     {
-        g2d.fillRect((int)getLocX(), (int)getLocY(), 10, 10);
+        g2d.fillRect((int)getLocX(), (int)getLocY(), ballSize, ballSize);
     }
 }

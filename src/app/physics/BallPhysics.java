@@ -11,26 +11,53 @@ import java.awt.geom.Rectangle2D;
  */
 public class BallPhysics
 {
+    protected int ballSize;
     protected double locX;
     protected double locY;
     private double hSpeed;
     private double vSpeed;
-    private Rectangle2D ball;
 
     public void ballMotion(Rectangle2D field)
     {
         //rolweerstand
         if (hSpeed > 0 || hSpeed < 0) {
-            hSpeed = hSpeed*0.99;
+            hSpeed = hSpeed * 0.99;
             locX = locX + hSpeed;
         }
-
         if (vSpeed > 0 || vSpeed < 0) {
-            vSpeed = vSpeed*0.99;
+            vSpeed = vSpeed * 0.99;
             locY = locY + vSpeed;
         }
 
-        //if (vSpeed > 0 || vSpeed < 0 && ball)
+        //botsing muur met loodrechte hoek
+        if (!field.intersects(locX, locY, ballSize, ballSize) && vSpeed == 0)
+        {
+            hSpeed = -hSpeed * 0.50;
+            locX = locX + hSpeed;
+        }
+        if (!field.intersects(locX, locY, ballSize, ballSize) && hSpeed == 0)
+        {
+            vSpeed = -vSpeed * 0.50;
+            locY = locY + vSpeed;
+        }
+
+        //botsing muur
+        if (!field.intersects(locX, locY, ballSize, ballSize) && hSpeed != 0)
+        {
+            vSpeed = vSpeed * 0.50;
+            locY = locY + vSpeed;
+
+            hSpeed = -hSpeed * 0.50;
+            locX = locX + hSpeed;
+        }
+        if (!field.intersects(locX, locY, ballSize, ballSize) && vSpeed != 0)
+        {
+            hSpeed = hSpeed * 0.50;
+            locX = locX + hSpeed;
+
+            vSpeed = -vSpeed * 0.50;
+            locY = locY + vSpeed;
+        }
     }
 
     public void kickBall(int force, int degrees)
