@@ -3,12 +3,13 @@ package app;
 import app.entity.Field;
 import app.entity.Player;
 
-import javax.swing.*;
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
- * Bezit én verwerkt spellogica.
+ * Bezit én verwerkt spelers, spellogica en punten.
  */
 class SoccerModel
 {
@@ -31,6 +32,14 @@ class SoccerModel
                 players.add(player);
             }
         });
+    }
+
+    public List<Player> getFieldPlayers(SoccerConstants side)
+    {
+        if (fieldPlayers.size() == 0)
+            return null;
+
+        return this.fieldPlayers.get(side);
     }
 
     public List<Player> getFieldPlayers()

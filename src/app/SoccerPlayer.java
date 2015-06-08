@@ -1,5 +1,6 @@
 package app;
 
+import app.entity.Player;
 import app.wii.WiimoteAdapter;
 import app.wii.WiimoteButton;
 import wiiusej.Wiimote;
@@ -15,39 +16,43 @@ class SoccerPlayer extends WiimoteAdapter
 {
     public final Wiimote mote;
 
+    private final SoccerConstants side;
     private final Set<WiimoteButton> pressedButtons;
 
-    public SoccerPlayer(Wiimote mote)
+    private Player controlledPlayer;
+
+    public SoccerPlayer(Wiimote mote, SoccerConstants side)
     {
         this.mote = mote;
+        this.side = side;
         this.pressedButtons = new HashSet<>();
+    }
+
+    public void controlPlayer(Player player)
+    {
+        // Reset de speler.
+        if (this.controlledPlayer != null) {
+            this.controlledPlayer.setState(false);
+            this.controlledPlayer.setTitle("CPU");
+        }
+
+        this.controlledPlayer = player;
+        this.controlledPlayer.setState(true);
+        this.controlledPlayer.setTitle("P" + mote.getId());
+    }
+
+    public Player getControlledPlayer()
+    {
+        return this.controlledPlayer;
+    }
+
+    public SoccerConstants getSide()
+    {
+        return this.side;
     }
 
     public Set<WiimoteButton> getPressedButtons()
     {
         return this.pressedButtons;
-    }
-
-    @Override public void onButtonsEvent(WiimoteButtonsEvent e)
-    {
-        if (e.isButtonUpPressed())
-            pressedButtons.add(WiimoteButton.UP);
-        else if (e.isButtonUpJustReleased())
-            pressedButtons.remove(WiimoteButton.UP);
-
-        if (e.isButtonDownPressed())
-            pressedButtons.add(WiimoteButton.DOWN);
-        else if (e.isButtonDownJustReleased())
-            pressedButtons.remove(WiimoteButton.DOWN);
-
-        if (e.isButtonLeftPressed())
-            pressedButtons.add(WiimoteButton.LEFT);
-        else if (e.isButtonLeftJustReleased())
-            pressedButtons.remove(WiimoteButton.LEFT);
-
-        if (e.isButtonRightPressed())
-            pressedButtons.add(WiimoteButton.RIGHT);
-        else if (e.isButtonRightJustReleased())
-            pressedButtons.remove(WiimoteButton.RIGHT);
     }
 }

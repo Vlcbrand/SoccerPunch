@@ -11,18 +11,47 @@ public class Player implements Drawable
 {
     public static final int SIZE = 20;
 
+    private String title;
     private final SoccerConstants side;
     private int x, y;
+    private boolean isControlled;
 
     public Player(SoccerConstants side)
     {
         this.side = side;
+        this.title = "CPU";
+        this.isControlled = false;
     }
 
     public void setPosition(int x, int y)
     {
         this.x = x;
         this.y = y;
+    }
+
+    public int getX()
+    {
+        return this.x;
+    }
+
+    public int getY()
+    {
+        return this.y;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    public void setState(Boolean isControlled)
+    {
+        this.isControlled = isControlled;
+    }
+
+    public boolean isControlled()
+    {
+        return this.isControlled;
     }
 
     public SoccerConstants getSide()
@@ -34,6 +63,7 @@ public class Player implements Drawable
     {
         g2d.setPaint(side.equals(SoccerConstants.EAST) ? Color.red : Color.blue);
         g2d.fillOval(this.x, this.y, 20, 20);
+        g2d.drawString(title.trim(), this.x + 10, this.y - 2);
     }
 
     @Override public int getWidth()
