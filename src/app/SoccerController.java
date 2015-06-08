@@ -48,7 +48,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         this.addMotes();
 
-        this.players[0].controlPlayer(model.getFieldPlayers(SoccerConstants.WEST).get(1));
+//        this.players[0].controlPlayer(model.getFieldPlayers(SoccerConstants.WEST).get(1));
     }
 
     /**
