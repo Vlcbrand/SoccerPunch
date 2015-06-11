@@ -1,92 +1,88 @@
 package app.physics;
 
-import app.entity.Field;
-
 /**
- * Created byCurrent Tom Remeeus on 4-6-2015.
+ * Created by Tom Remeeus on 4-6-2015.
  */
 public class BallPhysics
 {
     protected int ballSize;
-    protected double locX;
-    protected double locY;
-    private double hSpeed;
-    private double vSpeed;
-    private int top;
-    private int bot;
-    private int left;
-    private int right;
+    protected double x, y;
 
-    protected void ballMotion(int top, int bot, int left, int right)
+    private double hSpeed, vSpeed;
+    private int top, bot, left, right;
+
+    private void step()
+    {
+        // Correctie vooraf.
+        if (y < top) {
+            this.y = top + ballSize;
+            vSpeed = -vSpeed;
+        } else if (y > bot) {
+            this.y = bot - ballSize;
+            vSpeed = -vSpeed;
+        } else if (x > right) {
+            this.x = right - ballSize;
+            hSpeed = -hSpeed;
+        } else if (x < left) {
+            this.x = left + ballSize;
+            hSpeed = -hSpeed;
+        }
+
+        //horizontale botsing
+        if ((x <= left || x >= (right - ballSize)))
+            hSpeed = -hSpeed;
+
+        //verticale botsing
+        if ((y <= top || y >= (bot - ballSize)))
+            vSpeed = -vSpeed;
+
+        this.x += hSpeed;
+        this.y += vSpeed;
+    }
+
+    public void update(int top, int bot, int left, int right)
     {
         this.top = top;
         this.bot = bot;
         this.left = left;
         this.right = right;
 
-        //rolweerstand
-        if (hSpeed > 0 || hSpeed < 0) {
-            //hSpeed = hSpeed * 0.99;
-            locX = locX + hSpeed;
-        }
-        if (vSpeed > 0 || vSpeed < 0) {
-            //vSpeed = vSpeed * 0.99;
-            locY = locY + vSpeed;
-        }
-
-        //horizontale botsing
-        if ((locX <= left || locX >= (right - ballSize)))
-        {
-            System.out.println("horizontale boem");
-            //hSpeed = -hSpeed * 0.50;
-            hSpeed = -hSpeed;
-            locX = locX + hSpeed;
-
-            //vSpeed = vSpeed * 0.50;
-            locY = locY + vSpeed;
-        }
-
-        //verticale botsing
-        if ((locY <= top || locY >= (bot - ballSize)))
-        {
-            System.out.println("verticale boem");
-           // vSpeed = -vSpeed * 0.50;
-            vSpeed = -vSpeed;
-            locY = locY + vSpeed;
-
-            //hSpeed = hSpeed * 0.50;
-            locX = locX + hSpeed;
-        }
+        this.step();
     }
 
-    protected void kickBall(int force, int degrees)
+    public void accelerate(int force, int degrees)
     {
         double radians = Math.toRadians(degrees);
 
-        hSpeed = Math.cos(radians) * force;
-        vSpeed = Math.sin(radians) * force;
+        hSpeed = Math.cos(radians)*force;
+        vSpeed = Math.sin(radians)*force;
     }
 
-    protected double getLocX()
+    protected double getX()
     {
-        return locX;
+        return x;
     }
-    protected double getLocY()
+
+    protected double getY()
     {
-        return locY;
+        return y;
     }
+
     protected int getTop()
     {
         return top;
     }
-    protected int getBot()
+
+    protected int getBottom()
     {
         return bot;
     }
+
     protected int getLeft()
     {
         return left;
     }
+
     protected int getRight()
     {
         return right;

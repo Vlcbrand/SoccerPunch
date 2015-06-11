@@ -1,7 +1,9 @@
 package app;
 
-import app.entity.*;
-import app.physics.BallPhysics;
+import app.entity.Ball;
+import app.entity.Drawable;
+import app.entity.Field;
+import app.entity.FieldPlayer;
 import util.Resource;
 
 import javax.swing.*;
@@ -11,14 +13,12 @@ class SoccerPanel extends JPanel
 {
     private static Dimension preferredSize;
 
-    private BallPhysics ballPhysics = new BallPhysics();
     private Field field;
     private Ball ball;
     private Drawable[] drawables;
     private FieldPlayer[] players;
 
-    static
-    {
+    static {
         preferredSize = new Dimension(Resource.getInteger("app.width"), Resource.getInteger("app.height"));
     }
 
@@ -33,7 +33,7 @@ class SoccerPanel extends JPanel
 
         this.drawables = new Drawable[] {
             field = new Field(width, height),
-                ball = new Ball(200, 200, 20)
+            ball = new Ball(width/2, height/2, 20)
         };
 
         updateBall();
@@ -47,25 +47,37 @@ class SoccerPanel extends JPanel
 
     private void updateBall()
     {
-        Thread ballThread = new Thread(new Runnable()
-        {
-            @Override public void run()
-            {
-                while(true)
-                {
-                    try {
-                        ball.ballMotion(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight());
-                        repaint();
-                        Thread.sleep(1000/60);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+        new Thread(() -> {
+            // Verantwoordelijk voor offsetberekening.
+            int newWidth = this.getWidth();
+            int newHeight = this.getHeight();
+            int oldWidth = newWidth;
+            int oldHeight = newHeight;
 
-        ballThread.start();
-        ball.kickBall(10, 33);
+            while (true) {
+                // Niewe afmetingen opvragen.
+                newWidth = this.getWidth();
+                newHeight = this.getHeight();
+
+                if (oldWidth != newWidth || oldHeight != newHeight)
+                    ball.offset(newWidth - oldWidth, newHeight - oldHeight);
+
+                ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight());
+                this.repaint();
+
+                try {
+                    Thread.sleep(1000/60);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                // Oude afmetingen onthouden.
+                oldWidth = this.getWidth();
+                oldHeight = this.getHeight();
+            }
+        }).start();
+
+        ball.accelerate(10, 33);
     }
 
     @Override public void paintComponent(Graphics g)

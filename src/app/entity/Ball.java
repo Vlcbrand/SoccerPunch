@@ -13,19 +13,9 @@ public class Ball extends BallPhysics implements Drawable
 
     public Ball(double locX, double locY, int ballSize)
     {
-        super.locX = locX;
-        super.locY = locY;
+        super.x = locX;
+        super.y = locY;
         super.ballSize = ballSize;
-    }
-
-    public void kickBall(int force, int degrees)
-    {
-        super.kickBall(force, degrees);
-    }
-
-    public void ballMotion(int top, int bot, int left, int right)
-    {
-        super.ballMotion(top, bot, left, right);
     }
 
     public void scale()
@@ -35,10 +25,8 @@ public class Ball extends BallPhysics implements Drawable
         wScale = wCurrent / wMin;
 
         double hMin = 506 - 56;
-        double hCurrent = super.getBot() - super.getTop();
+        double hCurrent = super.getBottom() - super.getTop();
         hScale = hCurrent / hMin;
-
-        System.out.println(hScale);
 
         if (wScale == 0)
             wScale = 1;
@@ -46,18 +34,14 @@ public class Ball extends BallPhysics implements Drawable
             hScale = 1;
     }
 
-    private double relativeX()
+    public void offset(int dx, int dy)
     {
-        System.out.println(getLocX());
-        return getLocX() * wScale;
-    }
-    private double relativeY()
-    {
-        return getLocY() * hScale;
+        super.x += dx;
+        super.y += dy;
     }
 
     @Override public void draw(Graphics2D g2d)
     {
-        g2d.fillRect((int)getLocX(), (int)getLocY(), ballSize, ballSize);
+        g2d.fillRect((int)getX(), (int)getY(), ballSize, ballSize);
     }
 }
