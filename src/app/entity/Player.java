@@ -14,6 +14,7 @@ public class Player implements Drawable
     private String title;
     private final SoccerConstants side;
     private int x, y;
+    private double[] dxdy;
     private boolean isControlled;
 
     public Player(SoccerConstants side)
@@ -21,12 +22,23 @@ public class Player implements Drawable
         this.side = side;
         this.title = "CPU";
         this.isControlled = false;
+        this.dxdy = new double[] {0, 0};
     }
 
     public void setPosition(int x, int y)
     {
         this.x = x;
         this.y = y;
+    }
+
+    public void setMovement(double[] dxdy)
+    {
+        this.dxdy = dxdy;
+    }
+
+    public double[] getMovement()
+    {
+        return this.dxdy;
     }
 
     public int getX()

@@ -26,9 +26,10 @@ class SoccerModel
     {
         fieldPlayers.forEach((side, players) -> {
             for (int i = 0; i < Field.FIELD_PLAYERS_SUPPORTED/2; i++) {
-                final Player player = new Player(side);
                 final int[] posXY = field.getDefaultPositions(side)[i];
+                final Player player = new Player(side);
                 player.setPosition(posXY[0], posXY[1]);
+
                 players.add(player);
             }
         });
@@ -49,6 +50,7 @@ class SoccerModel
 
         List<Player> players = this.fieldPlayers.get(SoccerConstants.EAST);
         players.addAll(this.fieldPlayers.get(SoccerConstants.WEST));
+
         return players;
     }
 }

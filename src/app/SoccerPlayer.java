@@ -4,6 +4,9 @@ import app.entity.Player;
 import app.wii.WiimoteAdapter;
 import app.wii.WiimoteButton;
 import wiiusej.Wiimote;
+import wiiusej.wiiusejevents.physicalevents.JoystickEvent;
+import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
+import wiiusej.wiiusejevents.physicalevents.NunchukButtonsEvent;
 import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 
 import java.util.HashSet;
@@ -30,15 +33,20 @@ class SoccerPlayer extends WiimoteAdapter
 
     public void controlPlayer(Player player)
     {
-        // Reset de speler.
-        if (this.controlledPlayer != null) {
-            this.controlledPlayer.setState(false);
-            this.controlledPlayer.setTitle("CPU");
-        }
+        final Player old = this.controlledPlayer;
 
-        this.controlledPlayer = player;
-        this.controlledPlayer.setState(true);
-        this.controlledPlayer.setTitle("P" + mote.getId());
+        if (this.controlledPlayer == null)
+            this.controlledPlayer = player;
+
+        if (player != old || old == null) {
+            this.controlledPlayer = player;
+            this.controlledPlayer.setState(true);
+            this.controlledPlayer.setTitle("P" + mote.getId());
+            if (old != null) {
+                old.setState(false);
+                old.setTitle("CPU");
+            }
+        }
     }
 
     public Player getControlledPlayer()
@@ -51,8 +59,18 @@ class SoccerPlayer extends WiimoteAdapter
         return this.side;
     }
 
+    public void pressButton(WiimoteButton button)
+    {
+        this.pressedButtons.add(button);
+    }
+
     public Set<WiimoteButton> getPressedButtons()
     {
         return this.pressedButtons;
+    }
+
+    public void releaseButton(WiimoteButton button)
+    {
+        this.pressedButtons.remove(button);
     }
 }

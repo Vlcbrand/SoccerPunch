@@ -3,10 +3,15 @@ package app;
 import app.entity.Player;
 import app.wii.WiimoteAdapter;
 import app.wii.WiimoteButton;
+import com.sun.istack.internal.NotNull;
 import wiiusej.WiiUseApiManager;
 import wiiusej.Wiimote;
+import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
+import wiiusej.wiiusejevents.physicalevents.JoystickEvent;
+import wiiusej.wiiusejevents.physicalevents.NunchukEvent;
 import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -32,12 +37,11 @@ class SoccerController extends WiimoteAdapter implements Runnable
     {
         this.view = view;
         this.model = model;
+        model.createNewFieldPlayers(view.getInnerField());
 
         this.isRunning = false;
         this.isPaused = false;
         this.getMotes();
-
-        model.createNewFieldPlayers(view.getInnerField());
 
         if (motes == null)
             return;
@@ -48,7 +52,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         this.addMotes();
 
-//        this.players[0].controlPlayer(model.getFieldPlayers(SoccerConstants.WEST).get(1));
+        this.start();
     }
 
     /**
@@ -74,11 +78,26 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         // Wiimote bruikbaar maken en koppelen aan speler.
         for (int i = 0; i < connectedMotes; i++) {
+            // Sepeler begint met het besturen van de spits, index = 1.
             players[i] = new SoccerPlayer(motes[i], i % 2 == 0 ? SoccerConstants.WEST : SoccerConstants.EAST);
-            motes[i].setLeds(i == 0, i == 1, i == 2, i == 3);
-            motes[i].addWiiMoteEventListeners(this);
-            motes[i].activateMotionSensing();
+            players[i].controlPlayer(this.model.getFieldPlayers(players[i].getSide()).get(1));
+
+            final Wiimote mote = motes[i];
+            mote.setLeds(i == 0, i == 1, i == 2, i == 3);
+            mote.addWiiMoteEventListeners(this);
+            mote.activateMotionSensing();
         }
+    }
+
+    /**
+     * Verkrijg een speler door zijn Wiimote-ID.
+     */
+    private SoccerPlayer getPlayer(int id)
+    {
+        if (id < 1 || id > 4)
+            return null;
+
+        return this.players[id - 1];
     }
 
     public void start()
@@ -106,74 +125,6 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.isPaused = false;
     }
 
-    private Player getNearestFieldPlayer(SoccerPlayer p)
-    {
-        final Player player = p.getControlledPlayer();
-        final List<Player> fieldPlayers = model.getFieldPlayers(p.getSide());
-        final Set<WiimoteButton> pressedButtons = p.getPressedButtons();
-
-        int candidates = 0;
-
-        // Tel mogelijke keuzes.
-        for (Player temp : fieldPlayers) {
-            if (pressedButtons.contains(WiimoteButton.UP))
-                if (temp.getY() < player.getY())
-                    candidates++;
-            else if (pressedButtons.contains(WiimoteButton.DOWN))
-                if (temp.getY() > player.getY())
-                    candidates++;
-            else if (pressedButtons.contains(WiimoteButton.LEFT))
-                if (temp.getX() < player.getX())
-                    candidates++;
-            else if (pressedButtons.contains(WiimoteButton.RIGHT))
-                if (temp.getX() > player.getX())
-                    candidates++;
-        }
-
-        Player nearest = null;
-        int candidateXdiff, candidateYdiff;
-        int nearestXdiff, nearestYdiff;
-
-        for (Player candidate : fieldPlayers) {
-            // Indien geen kandidaten, zelfde terug.
-            if (candidates < 1)
-                return player;
-
-            if (candidate == player || candidate.isControlled())
-                continue;
-
-            if (nearest == null) {
-                // Een startwaarde aannemen.
-                nearest = candidate;
-            } else {
-                nearestXdiff = Math.abs(player.getX() - nearest.getX());
-                nearestYdiff = Math.abs(player.getY() - nearest.getY());
-                candidateXdiff = Math.abs(player.getX() - candidate.getX());
-                candidateYdiff = Math.abs(player.getY() - candidate.getY());
-
-                if (pressedButtons.contains(WiimoteButton.UP))
-                    if (candidate.getY() < player.getY() && candidateYdiff < nearestYdiff)
-                        nearest = candidate;
-                if (pressedButtons.contains(WiimoteButton.DOWN))
-                    if (candidate.getY() > player.getY() && candidateYdiff < nearestYdiff)
-                        nearest = candidate;
-                if (pressedButtons.contains(WiimoteButton.LEFT))
-                    if (candidate.getX() < player.getX() && candidateXdiff < nearestXdiff)
-                        nearest = candidate;
-                if (pressedButtons.contains(WiimoteButton.RIGHT))
-                    if (candidate.getX() > player.getX() && candidateXdiff < nearestXdiff)
-                        nearest = candidate;
-            }
-        }
-
-        return nearest;
-    }
-
-    private boolean isArrowKeyPressed(WiimoteButtonsEvent e)
-    {
-        return e.isButtonUpPressed() || e.isButtonDownPressed() || e.isButtonLeftPressed() || e.isButtonRightPressed();
-    }
-
     /**
      * Eenvoudige lus, waarbij enkel wordt voorkomen dat het spel te snel loopt.
      */
@@ -193,7 +144,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
     }
 
     /**
-     * Geavanceerde lus, waarbij een fps- en update speed grens wordt aangehouden.
+     * Geavanceerde lus, waarbij een fps- en een update speed grens wordt aangehouden.
      */
     private void advancedGameLoop()
     {
@@ -255,6 +206,87 @@ class SoccerController extends WiimoteAdapter implements Runnable
         }
     }
 
+    private Player getNearestFieldPlayer(SoccerPlayer p)
+    {
+        final Player current = p.getControlledPlayer();
+        final Set<WiimoteButton> pressed = p.getPressedButtons();
+        final List<Player> fieldPlayers = model.getFieldPlayers(p.getSide());
+        final List<Player> candidatePlayers = new ArrayList<>();
+
+        // Tel mogelijke keuzes.
+        for (Player temp : fieldPlayers) {
+            if (temp == current || temp.isControlled())
+                // Skip zelfde speler of bezette spelers.
+                continue;
+
+            if (pressed.contains(WiimoteButton.UP)) {
+                if (temp.getY() < current.getY())
+                    candidatePlayers.add(temp);
+            } else if (pressed.contains(WiimoteButton.DOWN)) {
+                if (temp.getY() > current.getY())
+                    candidatePlayers.add(temp);
+            } else if (pressed.contains(WiimoteButton.LEFT)) {
+                if (temp.getX() < current.getX())
+                    candidatePlayers.add(temp);
+            } else if (pressed.contains(WiimoteButton.RIGHT)) {
+                if (temp.getX() > current.getX())
+                    candidatePlayers.add(temp);
+            }
+        }
+
+        // Stoppen, indien geen keuzemogelijkheden.
+        if (candidatePlayers.size() < 1)
+            return current;
+
+        Player nearest = null;
+        int candidateXdiff, candidateYdiff;
+        int nearestXdiff, nearestYdiff;
+
+        for (Player candidate : candidatePlayers) {
+            if (nearest == null) {
+                // Een startwaarde aannemen.
+                nearest = candidate;
+            } else {
+                // Deltawaarden van de huidige dichstbijzijnde veldspeler.
+                nearestXdiff = Math.abs(current.getX() - nearest.getX());
+                nearestYdiff = Math.abs(current.getY() - nearest.getY());
+                // Deltawaarden van de huidige veldspeler in de loop.
+                candidateXdiff = Math.abs(current.getX() - candidate.getX());
+                candidateYdiff = Math.abs(current.getY() - candidate.getY());
+
+                if (pressed.contains(WiimoteButton.UP)) {
+                    if (candidate.getY() < current.getY() && candidateYdiff < nearestYdiff && candidateXdiff < nearestXdiff)
+                        nearest = candidate;
+                } else if (pressed.contains(WiimoteButton.DOWN)) {
+                    if (candidate.getY() > current.getY() && candidateYdiff < nearestYdiff && candidateXdiff < nearestXdiff)
+                        nearest = candidate;
+                } else if (pressed.contains(WiimoteButton.LEFT)) {
+                    if (candidate.getX() < current.getX() && candidateXdiff < nearestXdiff && candidateYdiff < nearestYdiff)
+                        nearest = candidate;
+                } else if (pressed.contains(WiimoteButton.RIGHT)) {
+                    if (candidate.getX() > current.getX() && candidateXdiff < nearestXdiff && candidateYdiff < nearestYdiff)
+                        nearest = candidate;
+                }
+            }
+        }
+
+        return nearest;
+    }
+
+    /**
+     * Verkrijg de x- en y-waarde van een joystick.
+     */
+    public static double[] toPoints(JoystickEvent e)
+    {
+        if (e == null)
+            return new double[] {0d, 0d};
+
+        return new double[] {
+            Math.sin(e.getAngle() * Math.PI/180d) * e.getMagnitude(), // x-waarde.
+            -Math.cos(e.getAngle() * Math.PI/180d) * e.getMagnitude() // y-waarde.
+        };
+    }
+
     private static void sleep(long millis)
     {
         try {
@@ -271,33 +303,52 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
     @Override public void onButtonsEvent(WiimoteButtonsEvent e)
     {
-        final SoccerPlayer player = players[e.getWiimoteId() - 1];
-        final Set<WiimoteButton> pressedButtons = player.getPressedButtons();
+        final SoccerPlayer player = this.getPlayer(e.getWiimoteId());
 
-        // Indien op een pijltjestoets is gedrukt.
-        if (this.isArrowKeyPressed(e)) {
-            if (e.isButtonUpPressed())
-                pressedButtons.add(WiimoteButton.UP);
-            else if (e.isButtonUpJustReleased())
-                pressedButtons.remove(WiimoteButton.UP);
+        if (player == null)
+            return;
 
-            if (e.isButtonDownPressed())
-                pressedButtons.add(WiimoteButton.DOWN);
-            else if (e.isButtonDownJustReleased())
-                pressedButtons.remove(WiimoteButton.DOWN);
+        if (e.isButtonUpJustPressed())
+            player.pressButton(WiimoteButton.UP);
+        else if (e.isButtonUpJustReleased())
+            player.releaseButton(WiimoteButton.UP);
 
-            if (e.isButtonLeftPressed())
-                pressedButtons.add(WiimoteButton.LEFT);
-            else if (e.isButtonLeftJustReleased())
-                pressedButtons.remove(WiimoteButton.LEFT);
+        if (e.isButtonDownJustPressed())
+            player.pressButton(WiimoteButton.DOWN);
+        else if (e.isButtonDownJustReleased())
+            player.releaseButton(WiimoteButton.DOWN);
 
-            if (e.isButtonRightPressed())
-                pressedButtons.add(WiimoteButton.RIGHT);
-            else if (e.isButtonRightJustReleased())
-                pressedButtons.remove(WiimoteButton.RIGHT);
+        if (e.isButtonLeftPressed())
+            player.pressButton(WiimoteButton.LEFT);
+        else if (e.isButtonLeftJustPressed())
+            player.releaseButton(WiimoteButton.LEFT);
 
-            final Player nearest = this.getNearestFieldPlayer(player);
-            player.controlPlayer(nearest);
+        if (e.isButtonRightPressed())
+            player.pressButton(WiimoteButton.RIGHT);
+        else if (e.isButtonRightJustPressed())
+            player.releaseButton(WiimoteButton.RIGHT);
+
+        // Dichstbijzijnde speler selecteren.
+        player.controlPlayer(this.getNearestFieldPlayer(player));
+    }
+
+    @Override public void onExpansionEvent(ExpansionEvent e)
+    {
+        if (!NunchukEvent.class.isInstance(e))
+            return;
+
+        final NunchukEvent ne = (NunchukEvent)e;
+        final JoystickEvent je = ((NunchukEvent)e).getNunchukJoystickEvent();
+        final SoccerPlayer player = this.getPlayer(e.getWiimoteId());
+
+        if (player == null)
+            return;
+
+        final Player fieldPlayer = player.getControlledPlayer();
+
+        if (ne.isThereNunchukJoystickEvent()) {
+            final double[] points = toPoints(je);
+            fieldPlayer.setMovement(points);
         }
     }
 }

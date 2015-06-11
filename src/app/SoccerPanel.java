@@ -67,6 +67,9 @@ class SoccerPanel extends JPanel
             for (Drawable fieldPlayer : fieldPlayers)
                 fieldPlayer.draw(sceneGraphics);
 
+        // Teken test.
+        this.drawJoystickTest(sceneGraphics);
+
         // Scale met het hoofdscherm.
         AffineTransform tx = new AffineTransform();
         final double parentWidth = this.getParent().getWidth();
@@ -75,6 +78,37 @@ class SoccerPanel extends JPanel
 
         sceneGraphics.dispose();
         g2d.drawImage(scene, tx, this);
+    }
+
+    private void drawJoystickTest(Graphics2D g2d)
+    {
+        final int boundRadius = 10;
+        final int cursorSize = 10;
+        final int xOffset = boundRadius*2;
+        final int yOffset = this.getHeight() - boundRadius*2;
+
+        final Player fieldPlayer = model.getFieldPlayers(SoccerConstants.EAST).get(1);
+
+        if (fieldPlayer == null)
+            return;
+
+        final double[] coords = fieldPlayer.getMovement();
+        final int x = (int)(coords[0]*boundRadius) + xOffset;
+        final int y = (int)(coords[1]*boundRadius) + yOffset;
+
+        g2d.setPaint(Color.black);
+        g2d.setStroke(new BasicStroke());
+
+        // Tekent titel.
+        g2d.drawString("P1: " + fieldPlayer.getX() + ", " + fieldPlayer.getY(), xOffset - 15, yOffset - 15);
+
+        // Tekent omheining.
+        g2d.drawOval(-boundRadius + xOffset, -boundRadius + yOffset, boundRadius*2, boundRadius*2);
+
+        // Tekent cursor.
+        g2d.setPaint(Color.red);
+        g2d.fillOval(x - cursorSize/2, y - cursorSize/2, cursorSize, cursorSize);
+        g2d.drawString("(" + (x - xOffset) + ", " + (y - yOffset) + ")", x + cursorSize + 5, y + cursorSize/2);
     }
 
     @Override public Dimension getMinimumSize()
