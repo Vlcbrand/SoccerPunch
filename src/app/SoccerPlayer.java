@@ -4,10 +4,6 @@ import app.entity.Player;
 import app.wii.WiimoteAdapter;
 import app.wii.WiimoteButton;
 import wiiusej.Wiimote;
-import wiiusej.wiiusejevents.physicalevents.JoystickEvent;
-import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
-import wiiusej.wiiusejevents.physicalevents.NunchukButtonsEvent;
-import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 
 import java.util.HashSet;
 import java.util.Set;

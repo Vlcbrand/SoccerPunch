@@ -6,7 +6,9 @@
     <comment>Configuratie</comment>
 
     <entry key="app.width">1200</entry>
-    <entry key="app.width.min">1024</entry>
     <entry key="app.height">640</entry>
-    <entry key="app.height.min">600</entry>
+    <entry key="app.width.min">1200</entry>
+    <entry key="app.height.min">640</entry>
+
+    <entry key="app.frame.wait">Een ogenblik geduld...</entry>
 </properties>

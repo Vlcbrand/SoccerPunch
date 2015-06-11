@@ -1,5 +1,7 @@
 package app;
 
+import util.Resource;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -19,18 +21,17 @@ class SoccerFrame extends JFrame
             ex.printStackTrace();
         }
 
-        EventQueue.invokeLater(() -> new SoccerFrame().setVisible(true));
+        EventQueue.invokeLater(SoccerFrame::new);
     }
 
     SoccerFrame()
     {
-        super("Soccer Punch!");
-
         device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+
+        this.setTitle(Resource.get().getString("app.frame.wait"));
 
         final SoccerModel model = new SoccerModel();
         final SoccerPanel panel = new SoccerPanel(model);
-        final SoccerController ctrl = new SoccerController(panel, model);
 
         JRootPane rootPane = this.getRootPane();
         rootPane.registerKeyboardAction(e -> this.leaveFullScreenMode(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -41,8 +42,11 @@ class SoccerFrame extends JFrame
         this.setMinimumSize(panel.getMinimumSize());
         this.setLocationRelativeTo(null);
         this.setContentPane(panel);
+        this.setVisible(true);
 
-        this.pack();
+        final SoccerController ctrl = new SoccerController(panel, model);
+
+        this.setTitle("Soccer Punch!");
     }
 
     private void enterFullScreenMode()

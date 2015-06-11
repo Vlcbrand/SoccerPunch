@@ -86,16 +86,16 @@ final public class Resource extends ResourceBundle
      */
     public static int getInteger(String fileName, String key)
     {
-        return Integer.valueOf((String)get(fileName).getObject(key));
+        return Integer.valueOf(get(fileName).getString(key));
     }
 
     /**
      * Deze methode is hetzelfde als het aanroepen van
-     * <code>Integer.valueOf((String)getObject(key))</code>
+     * <pre>Integer.valueOf(get().getString(String))</pre>
      */
     public static int getInteger(String key)
     {
-        return Integer.valueOf((String)get().getObject(key));
+        return Integer.valueOf(get().getString(key));
     }
 
     @Override protected Object handleGetObject(String key)

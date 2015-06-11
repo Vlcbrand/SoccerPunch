@@ -3,7 +3,6 @@ package app;
 import app.entity.Player;
 import app.wii.WiimoteAdapter;
 import app.wii.WiimoteButton;
-import com.sun.istack.internal.NotNull;
 import wiiusej.WiiUseApiManager;
 import wiiusej.Wiimote;
 import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
@@ -29,7 +28,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
     private Wiimote[] motes;
     private SoccerPlayer[] players;
 
-    private Thread runner;
+    private volatile Thread runner;
     private boolean isRunning, isPaused;
     private int frames, FPS;
 
@@ -51,8 +50,6 @@ class SoccerController extends WiimoteAdapter implements Runnable
             this.getMotes();
 
         this.addMotes();
-
-        this.start();
     }
 
     /**
@@ -112,6 +109,13 @@ class SoccerController extends WiimoteAdapter implements Runnable
     public void stop()
     {
         this.isRunning = false;
+
+        try {
+            this.runner.join();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+
         this.runner = null;
     }
 
@@ -309,6 +313,12 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (player == null)
             return;
 
+        if (e.isButtonAPressed() && !isRunning)
+            this.start();
+
+        if (e.isButtonAPressed() && e.isButtonBPressed() && isRunning)
+            this.stop();
+
         if (e.isButtonUpJustPressed())
             player.pressButton(WiimoteButton.UP);
         else if (e.isButtonUpJustReleased())
@@ -338,18 +348,18 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (!NunchukEvent.class.isInstance(e))
             return;
 
-        final NunchukEvent ne = (NunchukEvent)e;
-        final JoystickEvent je = ((NunchukEvent)e).getNunchukJoystickEvent();
         final SoccerPlayer player = this.getPlayer(e.getWiimoteId());
 
+        // Stoppen, indien speler niet bestaat.
         if (player == null)
             return;
 
+        final NunchukEvent ne = (NunchukEvent)e;
+        final JoystickEvent je = ((NunchukEvent)e).getNunchukJoystickEvent();
+
         final Player fieldPlayer = player.getControlledPlayer();
 
-        if (ne.isThereNunchukJoystickEvent()) {
-            final double[] points = toPoints(je);
-            fieldPlayer.setMovement(points);
-        }
+        if (ne.isThereNunchukJoystickEvent())
+            fieldPlayer.setMovement(toPoints(je));
     }
 }
