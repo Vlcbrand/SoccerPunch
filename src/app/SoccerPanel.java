@@ -84,10 +84,10 @@ class SoccerPanel extends JPanel
     {
         final int boundRadius = 10;
         final int cursorSize = 10;
-        final int xOffset = boundRadius*2;
-        final int yOffset = this.getHeight() - boundRadius*2;
+        final int xOffset = this.field.getX()/2 - boundRadius*2;
+        final int yOffset = this.field.getHeight() + this.field.getY() + boundRadius*2;
 
-        final Player fieldPlayer = model.getFieldPlayers(SoccerConstants.EAST).get(1);
+        final Player fieldPlayer = model.getFieldPlayers(SoccerConstants.WEST).get(1);
 
         if (fieldPlayer == null)
             return;
@@ -100,7 +100,7 @@ class SoccerPanel extends JPanel
         g2d.setStroke(new BasicStroke());
 
         // Tekent titel.
-        g2d.drawString("P1: " + fieldPlayer.getX() + ", " + fieldPlayer.getY(), xOffset - 15, yOffset - 15);
+        g2d.drawString("P1: " + fieldPlayer.getX() + ", " + fieldPlayer.getY(), xOffset - 20, yOffset - 15);
 
         // Tekent omheining.
         g2d.drawOval(-boundRadius + xOffset, -boundRadius + yOffset, boundRadius*2, boundRadius*2);

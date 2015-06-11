@@ -78,7 +78,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         // Wiimote bruikbaar maken en koppelen aan speler.
         for (int i = 0; i < connectedMotes; i++) {
-            // Sepeler begint met het besturen van de spits, index = 1.
+            // Speler begint met het besturen van de spits, index = 1.
             players[i] = new SoccerPlayer(motes[i], i % 2 == 0 ? SoccerConstants.WEST : SoccerConstants.EAST);
             players[i].controlPlayer(this.model.getFieldPlayers(players[i].getSide()).get(1));
 
@@ -139,7 +139,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
             view.repaint();
 
-            sleep(now + MILLIS_PER_LOOP - System.currentTimeMillis());
+            final long sleepTime = now + MILLIS_PER_LOOP - System.currentTimeMillis();
+            sleep(sleepTime < 0 ? 0 : sleepTime);
         }
     }
 

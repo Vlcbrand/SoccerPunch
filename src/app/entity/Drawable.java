@@ -9,6 +9,10 @@ public interface Drawable
 {
     void draw(Graphics2D g2d);
 
+    int getX();
+
+    int getY();
+
     int getWidth();
 
     int getHeight();

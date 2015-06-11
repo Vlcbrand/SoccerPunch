@@ -23,6 +23,7 @@ public class Field implements Drawable
     private AffineTransform leftGoalTransform, rightGoalTransform;
 
     private int width, height;
+    private int fieldX, fieldY;
     private int[][] defaultLeftPositions, defaultRightPositions;
     private Shape[] lines, spots;
 
@@ -46,8 +47,8 @@ public class Field implements Drawable
         // Beïnvloeden veldgrootte.
         final int horizontalScale = parentWidth/120; // Factor voor horizontale afmetingen.
         final int verticalScale = parentHeight/90; // Factor voor verticale afmetingen.
-        final int fieldX = parentWidth/10;
-        final int fieldY = parentHeight/10;
+        this.fieldX = parentWidth/10;
+        this.fieldY = parentHeight/10;
 
         // Veldgrootte.
         this.width = parentWidth - fieldX*2;
@@ -185,19 +186,25 @@ public class Field implements Drawable
         // Alles richting het noorden draaien.
         switch (goalImageOpenFrom) {
             case NORTH:
-                theta = 0; break;
+                theta = 0;
+                break;
             case EAST:
-                theta = 90; break;
-            default: case SOUTH:
-                theta = 180; break;
+                theta = 90;
+                break;
+            default:
+            case SOUTH:
+                theta = 180;
+                break;
             case WEST:
                 theta = 270;
         }
 
         // In de juiste richting draaien.
         switch (fieldSide) {
-            default: case WEST:
-                theta += 90; break;
+            default:
+            case WEST:
+                theta += 90;
+                break;
             case EAST:
                 theta -= 90;
         }
@@ -218,6 +225,16 @@ public class Field implements Drawable
         // Tekent doelen.
         g2d.drawImage(goalImage, leftGoalTransform, null);
         g2d.drawImage(goalImage, rightGoalTransform, null);
+    }
+
+    @Override public int getX()
+    {
+        return this.fieldX;
+    }
+
+    @Override public int getY()
+    {
+        return this.fieldY;
     }
 
     @Override public int getWidth()
