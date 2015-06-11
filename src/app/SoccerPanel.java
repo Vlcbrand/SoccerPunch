@@ -6,7 +6,6 @@ import util.Resource;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Point2D;
 
 class SoccerPanel extends JPanel
 {
@@ -17,7 +16,6 @@ class SoccerPanel extends JPanel
     private Ball ball;
     private Drawable[] drawables;
     private FieldPlayer[] players;
-    Point2D ballLoc = new Point2D.Double(10, 10);
 
     static
     {
@@ -35,14 +33,16 @@ class SoccerPanel extends JPanel
 
         this.drawables = new Drawable[] {
             field = new Field(width, height),
-                ball = new Ball(400, 400, 20)
+                ball = new Ball(200, 200, 20)
         };
+
         updateBall();
     }
 
     private void updateBackground()
     {
         field.update(this.getWidth(), this.getHeight());
+        ball.scale();
     }
 
     private void updateBall()
@@ -54,7 +54,7 @@ class SoccerPanel extends JPanel
                 while(true)
                 {
                     try {
-                        ball.ballMotion(field.getField());
+                        ball.ballMotion(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight());
                         repaint();
                         Thread.sleep(1000/60);
                     } catch (Exception e) {
@@ -65,7 +65,7 @@ class SoccerPanel extends JPanel
         });
 
         ballThread.start();
-        ball.kickBall(20, 45);
+        ball.kickBall(10, 33);
     }
 
     @Override public void paintComponent(Graphics g)

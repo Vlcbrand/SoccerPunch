@@ -14,7 +14,6 @@ public class Field implements Drawable
     AffineTransform txLeft;
     AffineTransform txRight;
     Rectangle2D fieldRect;
-    Rectangle2D[] fieldBorders;
 
     private int width, height;
 
@@ -150,6 +149,23 @@ public class Field implements Drawable
     public Rectangle2D getField()
     {
         return fieldRect;
+    }
+
+    public int getFieldTop()
+    {
+        return (int)fieldRect.getMinY();
+    }
+    public int getFieldBot()
+    {
+        return (int)fieldRect.getMaxY();
+    }
+    public int getFieldRight()
+    {
+        return (int)fieldRect.getMaxX();
+    }
+    public int getFieldLeft()
+    {
+        return (int)fieldRect.getMinX();
     }
 
     @Override public void draw(Graphics2D g2d)
