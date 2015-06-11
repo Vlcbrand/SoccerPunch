@@ -1,8 +1,12 @@
 package app;
 
+import app.entity.Player;
 import app.wii.WiimoteAdapter;
 import app.wii.WiimoteButton;
 import wiiusej.Wiimote;
+import wiiusej.wiiusejevents.physicalevents.JoystickEvent;
+import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
+import wiiusej.wiiusejevents.physicalevents.NunchukButtonsEvent;
 import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 
 import java.util.HashSet;
@@ -15,12 +19,49 @@ class SoccerPlayer extends WiimoteAdapter
 {
     public final Wiimote mote;
 
+    private final SoccerConstants side;
     private final Set<WiimoteButton> pressedButtons;
 
-    public SoccerPlayer(Wiimote mote)
+    private Player controlledPlayer;
+
+    public SoccerPlayer(Wiimote mote, SoccerConstants side)
     {
         this.mote = mote;
+        this.side = side;
         this.pressedButtons = new HashSet<>();
+    }
+
+    public void controlPlayer(Player player)
+    {
+        final Player old = this.controlledPlayer;
+
+        if (this.controlledPlayer == null)
+            this.controlledPlayer = player;
+
+        if (player != old || old == null) {
+            this.controlledPlayer = player;
+            this.controlledPlayer.setState(true);
+            this.controlledPlayer.setTitle("P" + mote.getId());
+            if (old != null) {
+                old.setState(false);
+                old.setTitle("CPU");
+            }
+        }
+    }
+
+    public Player getControlledPlayer()
+    {
+        return this.controlledPlayer;
+    }
+
+    public SoccerConstants getSide()
+    {
+        return this.side;
+    }
+
+    public void pressButton(WiimoteButton button)
+    {
+        this.pressedButtons.add(button);
     }
 
     public Set<WiimoteButton> getPressedButtons()
@@ -28,26 +69,8 @@ class SoccerPlayer extends WiimoteAdapter
         return this.pressedButtons;
     }
 
-    @Override public void onButtonsEvent(WiimoteButtonsEvent e)
+    public void releaseButton(WiimoteButton button)
     {
-        if (e.isButtonUpPressed())
-            pressedButtons.add(WiimoteButton.UP);
-        else if (e.isButtonUpJustReleased())
-            pressedButtons.remove(WiimoteButton.UP);
-
-        if (e.isButtonDownPressed())
-            pressedButtons.add(WiimoteButton.DOWN);
-        else if (e.isButtonDownJustReleased())
-            pressedButtons.remove(WiimoteButton.DOWN);
-
-        if (e.isButtonLeftPressed())
-            pressedButtons.add(WiimoteButton.LEFT);
-        else if (e.isButtonLeftJustReleased())
-            pressedButtons.remove(WiimoteButton.LEFT);
-
-        if (e.isButtonRightPressed())
-            pressedButtons.add(WiimoteButton.RIGHT);
-        else if (e.isButtonRightJustReleased())
-            pressedButtons.remove(WiimoteButton.RIGHT);
+        this.pressedButtons.remove(button);
     }
 }
