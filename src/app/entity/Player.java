@@ -10,6 +10,7 @@ import java.awt.*;
 public class Player implements Drawable
 {
     public static final int SIZE = 20;
+    public static final String TITLE_DEFAULT = "CPU";
 
     private String title;
     private final SoccerConstants side;
@@ -20,7 +21,7 @@ public class Player implements Drawable
     public Player(SoccerConstants side)
     {
         this.side = side;
-        this.title = "CPU";
+        this.title = TITLE_DEFAULT;
         this.isControlled = false;
         this.dxdy = new double[] {0, 0};
     }

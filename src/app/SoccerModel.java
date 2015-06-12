@@ -3,27 +3,26 @@ package app;
 import app.entity.Field;
 import app.entity.Player;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Bezit én verwerkt veldspelers, spellogica en punten.
  */
 class SoccerModel
 {
-    private Map<SoccerConstants, List<Player>> fieldPlayers;
+    private volatile Map<SoccerConstants, List<Player>> fieldPlayers;
 
     SoccerModel()
     {
         this.fieldPlayers = new TreeMap<>();
-        this.fieldPlayers.put(SoccerConstants.EAST, new LinkedList<>());
-        this.fieldPlayers.put(SoccerConstants.WEST, new LinkedList<>());
     }
 
-    public void createNewFieldPlayers(Field field)
+    public void createFieldPlayers(Field field)
     {
+        this.fieldPlayers.put(SoccerConstants.EAST, new LinkedList<>());
+        this.fieldPlayers.put(SoccerConstants.WEST, new LinkedList<>());
+
         fieldPlayers.forEach((side, players) -> {
             for (int i = 0; i < Field.FIELD_PLAYERS_SUPPORTED/2; i++) {
                 final int[] posXY = field.getDefaultPositions(side)[i];
@@ -33,6 +32,11 @@ class SoccerModel
                 players.add(player);
             }
         });
+    }
+
+    public void removeFieldPlayers()
+    {
+        fieldPlayers.clear();
     }
 
     public void updateFieldPlayers()
@@ -56,10 +60,10 @@ class SoccerModel
         if (fieldPlayers.size() == 0)
             return null;
 
-        List<Player> players = this.fieldPlayers.get(SoccerConstants.EAST);
-        players.addAll(this.fieldPlayers.get(SoccerConstants.WEST));
+        List<Player> allFieldPlayers = new ArrayList<>(8);
+        fieldPlayers.forEach((side, players) -> allFieldPlayers.addAll(players.stream().collect(Collectors.toList())));
 
-        return players;
+        return allFieldPlayers;
     }
 
     public List<Player> getFieldPlayers(SoccerConstants side)

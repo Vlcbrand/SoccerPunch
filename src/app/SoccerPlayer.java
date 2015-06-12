@@ -13,8 +13,7 @@ import java.util.Set;
  */
 class SoccerPlayer extends WiimoteAdapter
 {
-    public final Wiimote mote;
-
+    private final Wiimote mote;
     private final SoccerConstants side;
     private final Set<WiimoteButton> pressedButtons;
 
@@ -41,7 +40,7 @@ class SoccerPlayer extends WiimoteAdapter
 
             if (old != null) {
                 old.setControlled(false);
-                old.setTitle("CPU");
+                old.setTitle(Player.TITLE_DEFAULT);
             }
         }
     }

@@ -44,8 +44,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
     {
         this.view = view;
         this.model = model;
-        model.createNewFieldPlayers(view.getInnerField());
 
+        this.runner = null;
         this.isRunning = false;
         this.isPaused = false;
         this.getMotes();
@@ -83,11 +83,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         // Wiimote bruikbaar maken en koppelen aan speler.
         for (int i = 0; i < connectedMotes; i++) {
-            // Speler begint met het besturen van de spits, index = 1.
-            players[i] = new SoccerPlayer(motes[i], i % 2 == 0 ? SoccerConstants.WEST : SoccerConstants.EAST);
-            players[i].controlPlayer(this.model.getFieldPlayers(players[i].getSide()).get(1));
-
             final Wiimote mote = motes[i];
+            players[i] = new SoccerPlayer(mote, i % 2 == 0 ? SoccerConstants.WEST : SoccerConstants.EAST);
             mote.setLeds(i == 0, i == 1, i == 2, i == 3);
             mote.addWiiMoteEventListeners(this);
             mote.activateMotionSensing();
@@ -105,50 +102,70 @@ class SoccerController extends WiimoteAdapter implements Runnable
         return this.players[id - 1];
     }
 
+    /**
+     * Alle nodige operaties voor het starten van het spel.
+     */
+    private void prepareForStart()
+    {
+        // Alle veldspelers aanmaken.
+        this.model.createFieldPlayers(view.getInnerField());
+
+        // Elke controller één veldspeler laten besturen.
+        for (int i = 0; i < players.length; i++) {
+            final SoccerConstants side = this.players[i].getSide();
+            final List<Player> team = this.model.getFieldPlayers(side);
+            final Player ctrlPlayer = team.get(i < 1 ? 1 : 2);
+
+            this.players[i].controlPlayer(ctrlPlayer);
+        }
+    }
+
+    /**
+     * Clean-up operaties voor het stoppen van het spel.
+     */
+    private void prepareForStop()
+    {
+        this.model.removeFieldPlayers();
+    }
+
     public void start()
     {
-        if (runner == null && !isRunning) {
-            this.runner = new Thread(this);
-            this.runner.start();
-            this.view.update();
+        if (this.runner == null) {
             this.isRunning = true;
+            this.runner = new Thread(this);
+
+            this.prepareForStart();
+
+            this.view.update();
+            this.view.repaint();
+
+            this.runner.start();
         }
     }
 
     public void stop()
     {
-        this.isRunning = false;
+        if (this.runner != null) {
+            this.isRunning = false;
 
-        try {
-            this.runner.join();
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
+            this.prepareForStop();
+
+            try {
+                this.runner.join();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+
+            this.runner = null;
+
+            this.view.update();
+            this.view.repaint();
         }
-
-        this.runner = null;
     }
 
-    public void pause()
+    public void togglePause()
     {
-        this.isPaused = true;
-    }
-
-    public void unpause()
-    {
-        this.isPaused = false;
-    }
-
-    private void loopSimple()
-    {
-        final int MILLIS_PER_LOOP = 15;
-
-        while (isRunning) {
-            long now = System.currentTimeMillis();
-
-            view.repaint();
-
-            sleep(now + MILLIS_PER_LOOP - System.currentTimeMillis());
-        }
+        this.isPaused = !this.isPaused;
     }
 
     private void loop()
@@ -185,13 +202,27 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
                 if (System.currentTimeMillis() - timer > 1000l) {
                     if (SHOW_FPS)
-                        System.out.printf("UPDATES: %d, FRAMES: %d", ticks, frames);
+                        System.out.printf("\nUPDATES: %f, FRAMES: %f", ticks / updateTimeDelta, frames / renderTimeDelta);
 
                     ticks = 0;
                     frames = 0;
                     timer += 1000l;
                 }
             }
+        }
+    }
+
+    private void loopSimple()
+    {
+        final int MILLIS_PER_LOOP = 15;
+
+        while (isRunning) {
+            long now = System.currentTimeMillis();
+
+            model.update();
+            view.repaint();
+
+            sleep(now - System.currentTimeMillis() + MILLIS_PER_LOOP);
         }
     }
 
@@ -278,6 +309,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
     private static void sleep(long millis)
     {
+        // Kan niet terug in de tijd.
         if (millis < 1)
             return;
 
@@ -300,11 +332,21 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (player == null)
             return;
 
-        if (e.isButtonAPressed() && !isRunning)
-            this.start();
+        if (e.getWiimoteId() == 1) {
+            if (e.isButtonAPressed() && !e.isButtonBPressed())
+                this.start();
 
-        if (e.isButtonAPressed() && e.isButtonBPressed() && isRunning)
-            this.stop();
+            if (e.isButtonAPressed() && e.isButtonBPressed())
+                this.stop();
+        }
+
+        // Indien spel nog niet gestart is, stoppen.
+        if (!isRunning)
+            return;
+
+        if (e.isButtonHomePressed())
+            // Indien op HOME is gedrukt.
+            this.togglePause();
 
         if (e.isButtonUpJustPressed())
             player.pressButton(WiimoteButton.UP);
@@ -344,9 +386,13 @@ class SoccerController extends WiimoteAdapter implements Runnable
         final NunchukEvent ne = (NunchukEvent)e;
         final JoystickEvent je = ne.getNunchukJoystickEvent();
 
-        final Player fieldPlayer = player.getControlledPlayer();
+        final Player controlledFieldPlayer = player.getControlledPlayer();
+
+        // Stoppen, indien nog geen veldspelers zijn toegewezen.
+        if (controlledFieldPlayer == null)
+            return;
 
         if (ne.isThereNunchukJoystickEvent())
-            fieldPlayer.setMovement(toPoints(je));
+            controlledFieldPlayer.setMovement(toPoints(je));
     }
 }

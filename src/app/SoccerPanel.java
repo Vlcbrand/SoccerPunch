@@ -52,11 +52,6 @@ class SoccerPanel extends JPanel
         fieldPlayers = this.model.getFieldPlayers();
     }
 
-    @Override public void repaint()
-    {
-        this.paintImmediately(0, 0, this.getWidth(), this.getHeight());
-    }
-
     @Override public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
@@ -67,13 +62,12 @@ class SoccerPanel extends JPanel
         Graphics2D sceneGraphics = (Graphics2D)scene.getGraphics();
         sceneGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        System.out.println("\nX: " + this.getX() + " Y: " + this.getY() + "\nWIDTH: " + this.getWidth() + ", HEIGHT: " + this.getHeight());
-
-        // Teken onderdelen.
+        // Teken hoofdonderdelen.
         if (mainComponents != null)
             for (Drawable component : mainComponents)
                 component.draw(sceneGraphics);
 
+        // Teken spelers.
         if (fieldPlayers != null)
             for (Drawable fieldPlayer : fieldPlayers)
                 fieldPlayer.draw(sceneGraphics);
@@ -94,10 +88,10 @@ class SoccerPanel extends JPanel
 
     private void drawJoystickTest(Graphics2D g2d)
     {
-        final int boundRadius = 10;
+        final int boundRadius = 20;
         final int cursorSize = 10;
-        final int xOffset = this.field.getX()/2 - boundRadius*2;
-        final int yOffset = this.field.getHeight() + this.field.getY() + boundRadius*2;
+        final int xOffset = this.field.getX()/2 - boundRadius/2;
+        final int yOffset = this.field.getHeight() + this.field.getY() + boundRadius/2;
 
         final Player fieldPlayer = model.getFieldPlayers(SoccerConstants.WEST).get(1);
 
@@ -105,8 +99,8 @@ class SoccerPanel extends JPanel
             return;
 
         final double[] coords = fieldPlayer.getMovement();
-        final int x = (int)(coords[0]*boundRadius) + xOffset;
-        final int y = (int)(coords[1]*boundRadius) + yOffset;
+        final int x = (int)(coords[0]*boundRadius/2) + xOffset;
+        final int y = (int)(coords[1]*boundRadius/2) + yOffset;
 
         g2d.setPaint(Color.black);
         g2d.setStroke(new BasicStroke());
@@ -115,7 +109,7 @@ class SoccerPanel extends JPanel
         g2d.drawString("P1: " + fieldPlayer.getX() + ", " + fieldPlayer.getY(), xOffset - 20, yOffset - 15);
 
         // Tekent omheining.
-        g2d.drawOval(-boundRadius + xOffset, -boundRadius + yOffset, boundRadius*2, boundRadius*2);
+        g2d.drawOval(-boundRadius/2 + xOffset, -boundRadius/2 + yOffset, boundRadius, boundRadius);
 
         // Tekent cursor.
         g2d.setPaint(Color.red);
