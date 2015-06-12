@@ -80,22 +80,22 @@ final public class Resource extends ResourceBundle
     }
 
     /**
-     * Een nieuw bestand aanwijzen en daarvan een integer waarde opvragen.
-     *
-     * @see #getInteger(String)
-     */
-    public static int getInteger(String fileName, String key)
-    {
-        return Integer.valueOf(get(fileName).getString(key));
-    }
-
-    /**
      * Deze methode is hetzelfde als het aanroepen van
      * <pre>Integer.valueOf(get().getString(String))</pre>
      */
     public static int getInteger(String key)
     {
         return Integer.valueOf(get().getString(key));
+    }
+
+    /**
+     * Verkrijg de boolean waarde bij een bepaalde sleutel.
+     * De waarde (niet hoogdlettergevoelig) mag enkel: True, Yes of 1 zijn om True te retourneren.
+     */
+    public static boolean getBoolean(String key)
+    {
+        String temp = get().getString(key);
+        return temp.toLowerCase().matches("true|yes|1");
     }
 
     @Override protected Object handleGetObject(String key)

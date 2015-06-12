@@ -34,15 +34,31 @@ class SoccerPlayer extends WiimoteAdapter
         if (this.controlledPlayer == null)
             this.controlledPlayer = player;
 
-        if (player != old || old == null) {
+        if (player != old) {
             this.controlledPlayer = player;
-            this.controlledPlayer.setState(true);
+            this.controlledPlayer.setControlled(true);
             this.controlledPlayer.setTitle("P" + mote.getId());
+
             if (old != null) {
-                old.setState(false);
+                old.setControlled(false);
                 old.setTitle("CPU");
             }
         }
+    }
+
+    public void pressButton(WiimoteButton button)
+    {
+        this.pressedButtons.add(button);
+    }
+
+    public void releaseButton(WiimoteButton button)
+    {
+        this.pressedButtons.remove(button);
+    }
+
+    public Set<WiimoteButton> getPressedButtons()
+    {
+        return this.pressedButtons;
     }
 
     public Player getControlledPlayer()
@@ -53,20 +69,5 @@ class SoccerPlayer extends WiimoteAdapter
     public SoccerConstants getSide()
     {
         return this.side;
-    }
-
-    public void pressButton(WiimoteButton button)
-    {
-        this.pressedButtons.add(button);
-    }
-
-    public Set<WiimoteButton> getPressedButtons()
-    {
-        return this.pressedButtons;
-    }
-
-    public void releaseButton(WiimoteButton button)
-    {
-        this.pressedButtons.remove(button);
     }
 }

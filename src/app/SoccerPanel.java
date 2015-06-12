@@ -15,10 +15,12 @@ class SoccerPanel extends JPanel
 {
     private final static Dimension minimumSize, preferredSize;
 
-    private final int width, height;
+    private final int initialWidth, initialHeight;
     private final Field field;
     private final SoccerModel model;
     private final Drawable[] mainComponents;
+
+    private List<Player> fieldPlayers;
 
     static
     {
@@ -32,17 +34,27 @@ class SoccerPanel extends JPanel
 
         this.model = model;
 
-        this.width = (int)this.getPreferredSize().getWidth();
-        this.height = (int)this.getPreferredSize().getHeight();
+        this.initialWidth = (int)this.getPreferredSize().getWidth();
+        this.initialHeight = (int)this.getPreferredSize().getHeight();
 
         this.mainComponents = new Drawable[] {
-            field = new Field(this.width, this.height)
+            field = new Field(this.initialWidth, this.initialHeight)
         };
     }
 
     public Field getInnerField()
     {
         return this.field;
+    }
+
+    public void update()
+    {
+        fieldPlayers = this.model.getFieldPlayers();
+    }
+
+    @Override public void repaint()
+    {
+        this.paintImmediately(0, 0, this.getWidth(), this.getHeight());
     }
 
     @Override public void paintComponent(Graphics g)
@@ -55,8 +67,7 @@ class SoccerPanel extends JPanel
         Graphics2D sceneGraphics = (Graphics2D)scene.getGraphics();
         sceneGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Update onderdelen.
-        List<Player> fieldPlayers = this.model.getFieldPlayers();
+        System.out.println("\nX: " + this.getX() + " Y: " + this.getY() + "\nWIDTH: " + this.getWidth() + ", HEIGHT: " + this.getHeight());
 
         // Teken onderdelen.
         if (mainComponents != null)
@@ -67,14 +78,15 @@ class SoccerPanel extends JPanel
             for (Drawable fieldPlayer : fieldPlayers)
                 fieldPlayer.draw(sceneGraphics);
 
-        // Teken test.
-        this.drawJoystickTest(sceneGraphics);
+        // Teken test indien spelers aangemaakt zijn.
+        if (fieldPlayers != null && fieldPlayers.size() > 0)
+            this.drawJoystickTest(sceneGraphics);
 
         // Scale met het hoofdscherm.
         AffineTransform tx = new AffineTransform();
         final double parentWidth = this.getParent().getWidth();
         final double parentHeight = this.getParent().getHeight();
-        tx.scale(parentWidth/this.width, parentHeight/this.height);
+        tx.scale(parentWidth/this.initialWidth, parentHeight/this.initialHeight);
 
         sceneGraphics.dispose();
         g2d.drawImage(scene, tx, this);

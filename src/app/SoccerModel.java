@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Bezit én verwerkt spelers, spellogica en punten.
+ * Bezit én verwerkt veldspelers, spellogica en punten.
  */
 class SoccerModel
 {
@@ -35,12 +35,20 @@ class SoccerModel
         });
     }
 
-    public List<Player> getFieldPlayers(SoccerConstants side)
+    public void updateFieldPlayers()
     {
-        if (fieldPlayers.size() == 0)
-            return null;
+        for (Player player : this.getFieldPlayers()) {
+            final int x = player.getX();
+            final int y = player.getY();
+            final double[] dxdy = player.getMovement();
 
-        return this.fieldPlayers.get(side);
+            player.setPosition((int)(x + dxdy[0]), (int)(y + dxdy[1]));
+        }
+    }
+
+    public void update()
+    {
+        this.updateFieldPlayers();
     }
 
     public List<Player> getFieldPlayers()
@@ -52,5 +60,13 @@ class SoccerModel
         players.addAll(this.fieldPlayers.get(SoccerConstants.WEST));
 
         return players;
+    }
+
+    public List<Player> getFieldPlayers(SoccerConstants side)
+    {
+        if (fieldPlayers.size() == 0)
+            return null;
+
+        return this.fieldPlayers.get(side);
     }
 }

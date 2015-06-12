@@ -20,7 +20,7 @@ public class Player implements Drawable
     public Player(SoccerConstants side)
     {
         this.side = side;
-        this.title = "";
+        this.title = "CPU";
         this.isControlled = false;
         this.dxdy = new double[] {0, 0};
     }
@@ -56,7 +56,7 @@ public class Player implements Drawable
         this.title = title;
     }
 
-    public void setState(Boolean isControlled)
+    public void setControlled(Boolean isControlled)
     {
         this.isControlled = isControlled;
     }

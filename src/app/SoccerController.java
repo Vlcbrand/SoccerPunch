@@ -3,6 +3,7 @@ package app;
 import app.entity.Player;
 import app.wii.WiimoteAdapter;
 import app.wii.WiimoteButton;
+import util.Resource;
 import wiiusej.WiiUseApiManager;
 import wiiusej.Wiimote;
 import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
@@ -21,6 +22,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
 {
     static final int SECOND_IN_NANOS = 1000000000;
     static final int PLAYERS_SUPPORTED = 2;
+    static final int FPS, UPS;
+    static final boolean SHOW_FPS;
 
     private SoccerPanel view;
     private SoccerModel model;
@@ -30,7 +33,12 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
     private volatile Thread runner;
     private boolean isRunning, isPaused;
-    private int frames, FPS;
+
+    static {
+        FPS = Resource.getInteger("app.frames_per_second");
+        UPS = Resource.getInteger("app.updates_per_second");
+        SHOW_FPS = Resource.getBoolean("app.show_fps");
+    }
 
     SoccerController(SoccerPanel view, SoccerModel model)
     {
@@ -102,6 +110,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (runner == null && !isRunning) {
             this.runner = new Thread(this);
             this.runner.start();
+            this.view.update();
             this.isRunning = true;
         }
     }
@@ -129,83 +138,58 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.isPaused = false;
     }
 
-    /**
-     * Eenvoudige lus, waarbij enkel wordt voorkomen dat het spel te snel loopt.
-     */
-    private void simpleGameLoop()
+    private void loopSimple()
     {
         final int MILLIS_PER_LOOP = 15;
-
-        model.createNewFieldPlayers(view.getInnerField());
 
         while (isRunning) {
             long now = System.currentTimeMillis();
 
             view.repaint();
 
-            final long sleepTime = now + MILLIS_PER_LOOP - System.currentTimeMillis();
-            sleep(sleepTime < 0 ? 0 : sleepTime);
+            sleep(now + MILLIS_PER_LOOP - System.currentTimeMillis());
         }
     }
 
-    /**
-     * Geavanceerde lus, waarbij een fps- en een update speed grens wordt aangehouden.
-     */
-    private void advancedGameLoop()
+    private void loop()
     {
-        final double HERTZ = 30;
-        final double MAX_FPS = 30;
-        final double UPDATETIME_IN_NANOS = SECOND_IN_NANOS/HERTZ;
-        final double RENDERTIME_IN_NANOS = SECOND_IN_NANOS/MAX_FPS;
-        final int MAX_UPDATES = 1;
+        long initialTime = System.nanoTime();
+        final double updateTime = SECOND_IN_NANOS/UPS;
+        final double renderTime = SECOND_IN_NANOS/FPS;
+        double updateTimeDelta = 0, renderTimeDelta = 0;
+        int frames = 0, ticks = 0;
 
-        double lastRenderTime;
-        double lastUpdateTime = System.nanoTime();
-        int lastUpdateTimeInSeconds = (int)(lastUpdateTime/SECOND_IN_NANOS);
+        long timer = System.currentTimeMillis();
 
         while (isRunning) {
-            long now = System.nanoTime();
-            int updates = 0;
+            long currentLoopTime = System.nanoTime();
+            updateTimeDelta += (currentLoopTime - initialTime)/updateTime;
+            renderTimeDelta += (currentLoopTime - initialTime)/renderTime;
 
-            if (!isPaused) {
-                // Updaten zolang nodig is.
-                while (now - lastUpdateTime > UPDATETIME_IN_NANOS && updates < MAX_UPDATES) {
-                    // TODO: berekeningen zullen hier plaatsvinden.
-                    lastUpdateTime += UPDATETIME_IN_NANOS;
-                    updates++;
+            initialTime = currentLoopTime;
+
+            while (!isPaused) {
+                if (updateTimeDelta >= 1d) {
+                    model.update();
+
+                    ticks++;
+                    updateTimeDelta--;
                 }
 
-                // Indien een motionUpdate te lang heeft geduurd, deze niet volledig bijhouden.
-                if (now - lastUpdateTime > UPDATETIME_IN_NANOS)
-                    lastUpdateTime = now - UPDATETIME_IN_NANOS;
+                if (renderTimeDelta >= 1d) {
+                    view.repaint();
 
-                // Bereken interpolation.
-                final float interp = Math.min(1f, (float)((now - lastUpdateTime)/UPDATETIME_IN_NANOS));
+                    frames++;
+                    renderTimeDelta--;
+                }
 
-                // Teken de view.
-                view.repaint();
-                lastRenderTime = now;
+                if (System.currentTimeMillis() - timer > 1000l) {
+                    if (SHOW_FPS)
+                        System.out.printf("UPDATES: %d, FRAMES: %d", ticks, frames);
 
-                // Bereken de frames.
-                final int nowInSeconds = (int)(lastUpdateTime/SECOND_IN_NANOS);
-                if (nowInSeconds > lastUpdateTimeInSeconds) {
-                    System.out.printf("FRAMES %1$d, FPS %2$d\n", frames, FPS);
-
-                    FPS = frames;
+                    ticks = 0;
                     frames = 0;
-
-                    lastUpdateTimeInSeconds = nowInSeconds;
-                }
-
-                // Maximum motionUpdate- en rendertijden hanteren.
-                while (now - lastRenderTime < RENDERTIME_IN_NANOS && now - lastUpdateTime < UPDATETIME_IN_NANOS) {
-                    // Andere processen de kans geven om CPU tijd te nemen.
-                    Thread.yield();
-
-                    // Stopt de applicatie van het overnemen van de CPU.
-                    sleep(1);
-
-                    now = System.nanoTime();
+                    timer += 1000l;
                 }
             }
         }
@@ -294,6 +278,9 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
     private static void sleep(long millis)
     {
+        if (millis < 1)
+            return;
+
         try {
             Thread.sleep(millis);
         } catch (InterruptedException ex) {
@@ -303,7 +290,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
     @Override public void run()
     {
-        this.simpleGameLoop();
+        this.loopSimple();
     }
 
     @Override public void onButtonsEvent(WiimoteButtonsEvent e)
@@ -355,7 +342,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
             return;
 
         final NunchukEvent ne = (NunchukEvent)e;
-        final JoystickEvent je = ((NunchukEvent)e).getNunchukJoystickEvent();
+        final JoystickEvent je = ne.getNunchukJoystickEvent();
 
         final Player fieldPlayer = player.getControlledPlayer();
 
