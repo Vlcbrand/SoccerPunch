@@ -11,9 +11,11 @@ public class Field implements Drawable
 {
     static final SoccerConstants goalOpenFrom;
     static final BufferedImage goalImage;
-    AffineTransform txLeft;
-    AffineTransform txRight;
-    Rectangle2D fieldRect;
+    private Rectangle2D leftGoal;
+    private Rectangle2D rightGoal;
+    private AffineTransform txLeft;
+    private AffineTransform txRight;
+    private Rectangle2D fieldRect;
 
     private int width, height;
 
@@ -71,8 +73,8 @@ public class Field implements Drawable
         Rectangle2D leftGoalArea = new Rectangle.Double(fieldX, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
         Rectangle2D rightPenaltyArea = new Rectangle.Double(fieldX + this.width - penaltyAreaWidth, centerY - penaltyAreaHeight/2, penaltyAreaWidth, penaltyAreaHeight);
         Rectangle2D rightGoalArea = new Rectangle.Double(fieldX + this.width - goalAreaWidth, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
-        Rectangle2D leftGoal = new Rectangle.Double(fieldX - goalWidth, centerY - goalHeight/2, goalWidth, goalHeight);
-        Rectangle2D rightGoal = new Rectangle.Double(fieldX + this.width, centerY - goalHeight/2, goalWidth, goalHeight);
+        leftGoal = new Rectangle.Double(fieldX - goalWidth, centerY - goalHeight/2, goalWidth, goalHeight);
+        rightGoal = new Rectangle.Double(fieldX + this.width, centerY - goalHeight/2, goalWidth, goalHeight);
 
         //linkerdoel met afbeelding
         //transforms worden van beneden afgewerkt.
@@ -166,6 +168,14 @@ public class Field implements Drawable
     public int getFieldLeft()
     {
         return (int)fieldRect.getMinX();
+    }
+    public Rectangle2D getGoalL()
+    {
+        return leftGoal;
+    }
+    public Rectangle2D getGoalR()
+    {
+        return rightGoal;
     }
 
     @Override public void draw(Graphics2D g2d)

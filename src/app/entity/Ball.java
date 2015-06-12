@@ -3,6 +3,7 @@ package app.entity;
 import app.physics.BallPhysics;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 /**
@@ -54,5 +55,12 @@ public class Ball extends BallPhysics implements Drawable
     {
         g2d.fill(ball);
         g2d.drawImage(ballImages(), (int)getX(), (int)getY(), null);
+    }
+
+    public Rectangle2D getBall()
+    {
+        Rectangle2D ballRect = new Rectangle2D.Double();
+        ballRect.setRect(getX(), getY(), ballSize, ballSize);
+        return ballRect;
     }
 }

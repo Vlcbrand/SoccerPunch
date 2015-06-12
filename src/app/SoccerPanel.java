@@ -8,11 +8,12 @@ import util.Resource;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Random;
 
 class SoccerPanel extends JPanel
 {
     private static Dimension preferredSize;
-
+    private Random random = new Random();
     private Field field;
     private Ball ball;
     private Drawable[] drawables;
@@ -37,11 +38,20 @@ class SoccerPanel extends JPanel
         };
 
         updateBall();
+        randomKick();
     }
 
     private void updateBackground()
     {
         field.update(this.getWidth(), this.getHeight());
+    }
+
+    private void checkGoal()
+    {
+        if (field.getGoalL().intersects(ball.getBall()) || field.getGoalR().intersects(ball.getBall()))
+        {
+            System.out.println("derp");
+        }
     }
 
     private void updateBall()
@@ -63,6 +73,7 @@ class SoccerPanel extends JPanel
 
                 ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight());
                 this.repaint();
+                this.checkGoal();
 
                 try {
                     Thread.sleep(1000/60);
@@ -75,8 +86,25 @@ class SoccerPanel extends JPanel
                 oldHeight = this.getHeight();
             }
         }).start();
+    }
 
-        ball.accelerate(10, 33);
+    private void randomKick()
+    {
+        new Thread(() ->
+        {
+            while (true)
+            {
+                ball.accelerate(20 + random.nextInt(50), random.nextInt(360));
+
+                try
+                {
+                    Thread.sleep(5000);
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override public void paintComponent(Graphics g)

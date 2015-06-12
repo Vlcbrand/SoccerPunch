@@ -65,11 +65,11 @@ public class BallPhysics
         vSpeed = Math.sin(radians)*force;
     }
 
-    protected double getX()
+    public double getX()
     {
         return x;
     }
-    protected double getY()
+    public double getY()
     {
         return y;
     }
