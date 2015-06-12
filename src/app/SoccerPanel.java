@@ -33,7 +33,7 @@ class SoccerPanel extends JPanel
 
         this.drawables = new Drawable[] {
             field = new Field(width, height),
-            ball = new Ball(width/2, height/2, 20)
+            ball = new Ball(width/2, height/2)
         };
 
         updateBall();
@@ -42,7 +42,6 @@ class SoccerPanel extends JPanel
     private void updateBackground()
     {
         field.update(this.getWidth(), this.getHeight());
-        ball.scale();
     }
 
     private void updateBall()

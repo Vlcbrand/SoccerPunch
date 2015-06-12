@@ -1,5 +1,7 @@
 package app.physics;
 
+import java.awt.geom.AffineTransform;
+
 /**
  * Created by Tom Remeeus on 4-6-2015.
  */
@@ -8,33 +10,38 @@ public class BallPhysics
     protected int ballSize;
     protected double x, y;
 
-    private double hSpeed, vSpeed;
+    protected double hSpeed, vSpeed;
     private int top, bot, left, right;
+
+    protected AffineTransform ballTx = new AffineTransform();
 
     private void step()
     {
-        // Correctie vooraf.
+        //Correctie vooraf.
         if (y < top) {
-            this.y = top + ballSize;
+            this.y = top;
+            vSpeed *= 0.75;
+            hSpeed *= 0.75;
             vSpeed = -vSpeed;
-        } else if (y > bot) {
+        } else if (y + ballSize > bot) {
             this.y = bot - ballSize;
+            vSpeed *= 0.75;
+            hSpeed *= 0.75;
             vSpeed = -vSpeed;
-        } else if (x > right) {
+        } else if (x + ballSize > right) {
             this.x = right - ballSize;
+            vSpeed *= 0.75;
+            hSpeed *= 0.75;
             hSpeed = -hSpeed;
         } else if (x < left) {
-            this.x = left + ballSize;
+            this.x = left;
+            vSpeed *= 0.75;
+            hSpeed *= 0.75;
             hSpeed = -hSpeed;
         }
 
-        //horizontale botsing
-        if ((x <= left || x >= (right - ballSize)))
-            hSpeed = -hSpeed;
-
-        //verticale botsing
-        if ((y <= top || y >= (bot - ballSize)))
-            vSpeed = -vSpeed;
+        hSpeed *= 0.99;
+        vSpeed *= 0.99;
 
         this.x += hSpeed;
         this.y += vSpeed;
@@ -62,29 +69,8 @@ public class BallPhysics
     {
         return x;
     }
-
     protected double getY()
     {
         return y;
-    }
-
-    protected int getTop()
-    {
-        return top;
-    }
-
-    protected int getBottom()
-    {
-        return bot;
-    }
-
-    protected int getLeft()
-    {
-        return left;
-    }
-
-    protected int getRight()
-    {
-        return right;
     }
 }
