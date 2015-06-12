@@ -1,4 +1,4 @@
-package app;
+package app.menu;
 
 import wiiusej.WiiUseApiManager;
 import wiiusej.Wiimote;
@@ -11,7 +11,6 @@ import wiiusej.wiiusejevents.wiiuseapievents.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -26,7 +25,7 @@ public class OptionsPanel extends JPanel implements WiimoteListener
     Color color = new Color(1, 1, 1, alpha);
     private int min, pts, menuNumber1;
     private String time, points, choice, ch;
-    Rectangle2D o1,o2,o3;
+    Rectangle2D o1, o2, o3;
     TitleScreenFrame frame;
     Wiimote wiimote;
 
@@ -36,7 +35,7 @@ public class OptionsPanel extends JPanel implements WiimoteListener
         this.frame = frame;
         setPreferredSize(new Dimension(800, 800));
         setBackground(Color.GREEN);
-        background = util.Image.get("grass_texture3.jpg");
+        background = util.Image.get("grass_texture.jpg");
         menuNumber1 = 0;
         min = 6;
         pts = 6;
@@ -52,6 +51,11 @@ public class OptionsPanel extends JPanel implements WiimoteListener
             wiimote.setLeds(true, false, false, false);
         }
         wiimotes[0].addWiiMoteEventListeners(this);
+    }
+
+    public void stopMotionListening()
+    {
+        this.wiimote.removeWiiMoteEventListeners(this);
     }
 
     public void paintComponent(Graphics g)
@@ -70,11 +74,9 @@ public class OptionsPanel extends JPanel implements WiimoteListener
         g2.setPaint(color);
         g2.fill(rect);
 
-        o1 = new Rectangle2D.Double(setWidthString(time, getWidth(), g2)-120, getHeight()/2 - 100, 350, 70);
-        o2 = new Rectangle2D.Double(setWidthString(points, getWidth(), g2)-120, getHeight()/2 - 30, 350, 70);
-        o3 = new Rectangle2D.Double(setWidthString(time, getWidth(), g2)-120, getHeight()/2 - 100, 350, 70);
-
-
+        o1 = new Rectangle2D.Double(setWidthString(time, getWidth(), g2) - 120, getHeight()/2 - 100, 350, 70);
+        o2 = new Rectangle2D.Double(setWidthString(points, getWidth(), g2) - 120, getHeight()/2 - 30, 350, 70);
+        o3 = new Rectangle2D.Double(setWidthString(choice, getWidth(), g2) - 205, getHeight()/2 + 40, 595, 70);
 
         g2.setColor(Color.black);
 
@@ -95,18 +97,19 @@ public class OptionsPanel extends JPanel implements WiimoteListener
 
     }
 
-    public void draw(Graphics g){
+    public void draw(Graphics g)
+    {
         Graphics2D g2 = (Graphics2D)g;
         time = "Playtime: " + min + " min";
         points = "Points to win: " + pts;
         g2.drawString(time, setWidthString(time, getWidth(), g2), getHeight()/2 - 50);
         g2.drawString(points, setWidthString(points, getWidth(), g2), getHeight()/2 + 20);
 
-        if(menuNumber1 == 0)
+        if (menuNumber1 == 0)
             g2.draw(o1);
-        if(menuNumber1 ==1)
+        if (menuNumber1 == 1)
             g2.draw(o2);
-        if(menuNumber1 == 2)
+        if (menuNumber1 == 2)
             g2.draw(o3);
         repaint();
     }
@@ -122,7 +125,6 @@ public class OptionsPanel extends JPanel implements WiimoteListener
     {
         if (menuNumber1 < 2)
             menuNumber1++;
-        System.out.println(menuNumber1);
         return menuNumber1;
     }
 
@@ -130,7 +132,6 @@ public class OptionsPanel extends JPanel implements WiimoteListener
     {
         if (menuNumber1 <= 2 && menuNumber1 > 0)
             menuNumber1--;
-        System.out.println(menuNumber1);
         return menuNumber1;
     }
 
@@ -148,73 +149,64 @@ public class OptionsPanel extends JPanel implements WiimoteListener
 
         if (e.isButtonRightPressed()) {
             if (menuNumber1 == 0) {
-                min ++;
+                min++;
             }
             if (menuNumber1 == 1)
-                pts ++;
+                pts++;
+            if (menuNumber1 == 2)
+                return;
         }
 
-        if(e.isButtonLeftPressed()){
-            if(menuNumber1 == 0)
+        if (e.isButtonLeftPressed()) {
+            if (menuNumber1 == 0)
                 min--;
-            if(menuNumber1 == 1)
+            if (menuNumber1 == 1)
                 pts--;
         }
     }
 
     @Override public void onIrEvent(IREvent irEvent)
     {
-
     }
 
     @Override public void onMotionSensingEvent(MotionSensingEvent motionSensingEvent)
     {
-
     }
 
     @Override public void onExpansionEvent(ExpansionEvent expansionEvent)
     {
-
     }
 
     @Override public void onStatusEvent(StatusEvent statusEvent)
     {
-
     }
 
     @Override public void onDisconnectionEvent(DisconnectionEvent disconnectionEvent)
     {
-
     }
 
     @Override public void onNunchukInsertedEvent(NunchukInsertedEvent nunchukInsertedEvent)
     {
-
     }
 
     @Override public void onNunchukRemovedEvent(NunchukRemovedEvent nunchukRemovedEvent)
     {
-
     }
 
     @Override public void onGuitarHeroInsertedEvent(GuitarHeroInsertedEvent guitarHeroInsertedEvent)
     {
-
     }
 
     @Override public void onGuitarHeroRemovedEvent(GuitarHeroRemovedEvent guitarHeroRemovedEvent)
     {
-
     }
 
     @Override
     public void onClassicControllerInsertedEvent(ClassicControllerInsertedEvent classicControllerInsertedEvent)
     {
-
     }
 
     @Override public void onClassicControllerRemovedEvent(ClassicControllerRemovedEvent classicControllerRemovedEvent)
     {
-
     }
 }
