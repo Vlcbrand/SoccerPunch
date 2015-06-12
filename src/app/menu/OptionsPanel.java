@@ -23,7 +23,7 @@ public class OptionsPanel extends JPanel implements WiimoteListener
     Rectangle2D rect;
     float alpha = 0.5f;
     Color color = new Color(1, 1, 1, alpha);
-    private int min, pts, menuNumber1;
+    private int min, pts, menuNumber1, x;
     private String time, points, choice, ch;
     Rectangle2D o1, o2, o3;
     TitleScreenFrame frame;
@@ -32,6 +32,7 @@ public class OptionsPanel extends JPanel implements WiimoteListener
 
     public OptionsPanel(TitleScreenFrame frame)
     {
+        x = 0;
         this.frame = frame;
         setPreferredSize(new Dimension(800, 800));
         setBackground(Color.GREEN);
@@ -76,7 +77,7 @@ public class OptionsPanel extends JPanel implements WiimoteListener
 
         o1 = new Rectangle2D.Double(setWidthString(time, getWidth(), g2) - 120, getHeight()/2 - 100, 350, 70);
         o2 = new Rectangle2D.Double(setWidthString(points, getWidth(), g2) - 120, getHeight()/2 - 30, 350, 70);
-        o3 = new Rectangle2D.Double(setWidthString(choice, getWidth(), g2) - 205, getHeight()/2 + 40, 595, 70);
+        o3 = new Rectangle2D.Double(setWidthString("Gamemode: Points and Time", getWidth(), g2) - 205, getHeight()/2 + 40, 595, 70);
 
         g2.setColor(Color.black);
 
@@ -102,6 +103,7 @@ public class OptionsPanel extends JPanel implements WiimoteListener
         Graphics2D g2 = (Graphics2D)g;
         time = "Playtime: " + min + " min";
         points = "Points to win: " + pts;
+        choice = "Gamemode: " + ch;
         g2.drawString(time, setWidthString(time, getWidth(), g2), getHeight()/2 - 50);
         g2.drawString(points, setWidthString(points, getWidth(), g2), getHeight()/2 + 20);
 
@@ -154,14 +156,50 @@ public class OptionsPanel extends JPanel implements WiimoteListener
             if (menuNumber1 == 1)
                 pts++;
             if (menuNumber1 == 2)
-                return;
+                if (x < 2)
+                    x++;
+                else
+                    x = 0;
+            switch (x) {
+                case 0:
+                    ch = "Time and Points";
+                    break;
+                case 1:
+                    ch = "Time";
+                    break;
+                case 2:
+                    ch = "Points";
+                    break;
+                default:
+                    ch = "Swag";
+                    break;
+            }
         }
-
         if (e.isButtonLeftPressed()) {
             if (menuNumber1 == 0)
                 min--;
             if (menuNumber1 == 1)
                 pts--;
+            if (menuNumber1 == 2) {
+                if (x <= 2 && x > 0)
+                    x--;
+                else
+                    x = 0;
+                switch (x) {
+                    case 0:
+                        ch = "Time and Points";
+                        break;
+                    case 1:
+                        ch = "Time";
+                        break;
+                    case 2:
+                        ch = "Points";
+                        break;
+                    default:
+                        ch = "Swag";
+                        break;
+                }
+            }
         }
     }
 
