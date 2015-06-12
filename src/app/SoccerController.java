@@ -73,7 +73,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (connectedMotes <= 0)
             return;
 
-        // Voor elke veronden Wiimote een speler.
+        // Voor elke verbonden Wiimote een speler.
         players = new SoccerPlayer[connectedMotes];
 
         // Wiimote bruikbaar maken en koppelen aan speler.
@@ -320,12 +320,12 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         if (e.isButtonLeftPressed())
             player.pressButton(WiimoteButton.LEFT);
-        else if (e.isButtonLeftJustPressed())
+        else if (e.isButtonLeftJustReleased())
             player.releaseButton(WiimoteButton.LEFT);
 
         if (e.isButtonRightPressed())
             player.pressButton(WiimoteButton.RIGHT);
-        else if (e.isButtonRightJustPressed())
+        else if (e.isButtonRightJustReleased())
             player.releaseButton(WiimoteButton.RIGHT);
 
         // Dichstbijzijnde speler selecteren.

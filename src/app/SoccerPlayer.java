@@ -44,7 +44,7 @@ class SoccerPlayer extends WiimoteAdapter
             this.controlledPlayer.setTitle("P" + mote.getId());
             if (old != null) {
                 old.setState(false);
-                old.setTitle("CPU");
+                old.setTitle("");
             }
         }
     }

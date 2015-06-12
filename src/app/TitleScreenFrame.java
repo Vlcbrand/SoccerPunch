@@ -1,5 +1,16 @@
 package app;
 
+import app.wii.WiimoteAdapter;
+import app.wii.WiimoteButton;
+import wiiusej.WiiUseApiManager;
+import wiiusej.Wiimote;
+import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
+import wiiusej.wiiusejevents.physicalevents.IREvent;
+import wiiusej.wiiusejevents.physicalevents.MotionSensingEvent;
+import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
+import wiiusej.wiiusejevents.utils.WiimoteListener;
+import wiiusej.wiiusejevents.wiiuseapievents.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -12,7 +23,7 @@ import java.awt.image.BufferedImage;
 public class TitleScreenFrame extends JFrame
 {
     private final GraphicsDevice device;
-    public JPanel tp = new TitlePanel();
+    public JPanel tp = new TitlePanel(this);
 
     public static void main(String[] args)
     {
@@ -32,7 +43,7 @@ public class TitleScreenFrame extends JFrame
         rootPane.registerKeyboardAction(e -> this.back(), KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
 
-        this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(tp);
         this.pack();
 
@@ -72,33 +83,50 @@ public class TitleScreenFrame extends JFrame
 
     public void options()
     {
-        this.setContentPane(new OptionsPanel());
+        ((TitlePanel)(this.tp)).stopMotionListening();
+        this.setContentPane(new OptionsPanel(this));
         this.setVisible(true);
     }
 
-    public void back(){
-        this.setContentPane(new TitlePanel());
+    public void back()
+    {
+        this.remove(tp);
+        this.setContentPane(new TitlePanel(this));
         this.setVisible(true);
     }
+
 
 }
 
-class TitlePanel extends JPanel
+class TitlePanel extends JPanel implements WiimoteListener
 {
 
     BufferedImage background;
     Color fColor = Color.BLACK;
     float alpha = 0.5f;
     Color color = new Color(1, 1, 1, alpha);
+    TitleScreenFrame frame;
+
+    public int menuNumber = 0;
 
     Rectangle2D rect, pg, go, eg;
 
+    Wiimote wiimote;
 
-    public TitlePanel()
+
+    public TitlePanel(TitleScreenFrame frame)
     {
+        this.frame = frame;
         setPreferredSize(new Dimension(800, 800));
         setBackground(Color.GREEN);
         background = util.Image.get("grass_texture3.jpg");
+
+        Wiimote[] wiimotes = WiiUseApiManager.getWiimotes(1, true);
+        if (wiimotes != null) {
+            Wiimote wiimote = wiimotes[0];
+            this.wiimote = wiimote;
+            wiimote.setLeds(true, false, false, false);
+        }
 
         addMouseListener(new MouseAdapter()
         {
@@ -128,9 +156,29 @@ class TitlePanel extends JPanel
             }
         });
 
-
+        wiimotes[0].addWiiMoteEventListeners(this);
     }
 
+    public void stopMotionListening()
+    {
+        this.wiimote.removeWiiMoteEventListeners(this);
+    }
+
+    public int setMenuNumberUp()
+    {
+        if (menuNumber < 2)
+            menuNumber++;
+        System.out.println(menuNumber);
+        return menuNumber;
+    }
+
+    public int setMenuNumberDown()
+    {
+        if (menuNumber <= 2 && menuNumber >0)
+            menuNumber--;
+        System.out.println(menuNumber);
+        return menuNumber;
+    }
 
     public void paintComponent(Graphics g)
     {
@@ -157,9 +205,7 @@ class TitlePanel extends JPanel
 
         g2.setColor(fColor);
 
-        //        g2.draw(pg);
-        //        g2.draw(go);
-        //        g2.draw(eg);
+        draw(g2);
 
         g2.drawString("Play Game", setWidthString("Play Game", getWidth(), g2), getHeight()/2 - 00);
         g2.drawString("Game Options", setWidthString("Game Options", getWidth(), g2), getHeight()/2 + 100);
@@ -179,4 +225,101 @@ class TitlePanel extends JPanel
         int x = (width - fm.stringWidth(s))/2 + 2;
         return x;
     }
+
+    public void draw(Graphics g){
+        Graphics2D g2 = (Graphics2D)g;
+        if(menuNumber == 0)
+            g2.draw(pg);
+        if(menuNumber ==1)
+            g2.draw(go);
+        if(menuNumber == 2)
+            g2.draw(eg);
+        repaint();
+    }
+
+    @Override public void onButtonsEvent(WiimoteButtonsEvent e)
+    {
+        if (e.isButtonDownPressed()) {
+            setMenuNumberUp();
+        }
+
+        if (e.isButtonUpPressed())
+            setMenuNumberDown();
+
+        if(e.isButtonAPressed()){
+            if(menuNumber ==0){
+                TitleScreenFrame title = new TitleScreenFrame();
+                title.leaveFullScreenMode();
+
+                new GameMain();
+            }
+            if(menuNumber == 1)
+                frame.options();
+            if(menuNumber == 2){
+                int dialogButton = JOptionPane.YES_NO_OPTION;
+                    if (JOptionPane.showConfirmDialog(null, "Are you sure?", "Warning", dialogButton) == JOptionPane.YES_OPTION)
+                        System.exit(0);
+
+            }
+
+
+        }
+    }
+
+    @Override public void onIrEvent(IREvent irEvent)
+    {
+
+    }
+
+    @Override public void onMotionSensingEvent(MotionSensingEvent motionSensingEvent)
+    {
+
+    }
+
+    @Override public void onExpansionEvent(ExpansionEvent expansionEvent)
+    {
+
+    }
+
+    @Override public void onStatusEvent(StatusEvent statusEvent)
+    {
+
+    }
+
+    @Override public void onDisconnectionEvent(DisconnectionEvent disconnectionEvent)
+    {
+
+    }
+
+    @Override public void onNunchukInsertedEvent(NunchukInsertedEvent nunchukInsertedEvent)
+    {
+
+    }
+
+    @Override public void onNunchukRemovedEvent(NunchukRemovedEvent nunchukRemovedEvent)
+    {
+
+    }
+
+    @Override public void onGuitarHeroInsertedEvent(GuitarHeroInsertedEvent guitarHeroInsertedEvent)
+    {
+
+    }
+
+    @Override public void onGuitarHeroRemovedEvent(GuitarHeroRemovedEvent guitarHeroRemovedEvent)
+    {
+
+    }
+
+    @Override
+    public void onClassicControllerInsertedEvent(ClassicControllerInsertedEvent classicControllerInsertedEvent)
+    {
+
+    }
+
+    @Override public void onClassicControllerRemovedEvent(ClassicControllerRemovedEvent classicControllerRemovedEvent)
+    {
+
+    }
 }
+

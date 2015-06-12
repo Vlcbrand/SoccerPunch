@@ -87,6 +87,8 @@ class SoccerPanel extends JPanel
         final int xOffset = boundRadius*2;
         final int yOffset = this.getHeight() - boundRadius*2;
 
+
+
         final Player fieldPlayer = model.getFieldPlayers(SoccerConstants.EAST).get(1);
 
         if (fieldPlayer == null)
