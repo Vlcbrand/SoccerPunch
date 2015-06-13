@@ -88,33 +88,43 @@ class SoccerPanel extends JPanel
 
     private void drawJoystickTest(Graphics2D g2d)
     {
+        // Afstanden e.d.
         final int boundRadius = 20;
         final int cursorSize = 10;
         final int xOffset = this.field.getX()/2 - boundRadius/2;
         final int yOffset = this.field.getHeight() + this.field.getY() + boundRadius/2;
 
-        final Player fieldPlayer = model.getFieldPlayers(SoccerConstants.WEST).get(1);
+        // Bronnen.
+        final Player[] fieldPlayers = {
+            this.fieldPlayers.get(0), // Spits links.
+            this.fieldPlayers.get(4) // Spits rechts.
+        };
 
-        if (fieldPlayer == null)
-            return;
-
-        final double[] coords = fieldPlayer.getMovement();
-        final int x = (int)(coords[0]*boundRadius/2) + xOffset;
-        final int y = (int)(coords[1]*boundRadius/2) + yOffset;
-
-        g2d.setPaint(Color.black);
+        // Voorbereiding.
         g2d.setStroke(new BasicStroke());
 
-        // Tekent titel.
-        g2d.drawString("P1: " + fieldPlayer.getX() + ", " + fieldPlayer.getY(), xOffset - 20, yOffset - 15);
+        for (Player fieldPlayer : fieldPlayers) {
+            if (fieldPlayer == null)
+                continue;
 
-        // Tekent omheining.
-        g2d.drawOval(-boundRadius/2 + xOffset, -boundRadius/2 + yOffset, boundRadius, boundRadius);
+            final int trueXOffset = fieldPlayer.getSide() == SoccerConstants.WEST ? xOffset : xOffset + field.getX() + field.getWidth();
 
-        // Tekent cursor.
-        g2d.setPaint(Color.red);
-        g2d.fillOval(x - cursorSize/2, y - cursorSize/2, cursorSize, cursorSize);
-        g2d.drawString("(" + (x - xOffset) + ", " + (y - yOffset) + ")", x + cursorSize + 5, y + cursorSize/2);
+            final double[] coords = fieldPlayer.getMovement();
+            final int x = (int)(coords[0]*boundRadius/2) + trueXOffset;
+            final int y = (int)(coords[1]*boundRadius/2) + yOffset;
+
+            // Tekent titel.
+            g2d.setPaint(Color.black);
+            g2d.drawString(fieldPlayer.getX() + ", " + fieldPlayer.getY(), trueXOffset - 30, yOffset - 15);
+
+            // Tekent omheining.
+            g2d.drawOval(-boundRadius/2 + trueXOffset, -boundRadius/2 + yOffset, boundRadius, boundRadius);
+
+            // Tekent cursor.
+            g2d.setPaint(Color.red);
+            g2d.fillOval(x - cursorSize/2, y - cursorSize/2, cursorSize, cursorSize);
+            g2d.drawString("(" + (x - trueXOffset) + ", " + (y - yOffset) + ")", x + cursorSize + 5, y + cursorSize/2);
+        }
     }
 
     @Override public Dimension getMinimumSize()

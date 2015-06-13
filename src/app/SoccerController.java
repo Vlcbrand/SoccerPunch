@@ -332,44 +332,42 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (player == null)
             return;
 
-        if (e.getWiimoteId() == 1) {
-            if (e.isButtonAPressed() && !e.isButtonBPressed())
-                this.start();
-
-            if (e.isButtonAPressed() && e.isButtonBPressed())
+        if (isRunning) {
+            if (e.isButtonAJustPressed() && e.isButtonBHeld()) {
                 this.stop();
+                return;
+            }
+
+            if (e.isButtonHomePressed())
+                // Indien op HOME is gedrukt.
+                this.togglePause();
+
+            if (e.isButtonUpJustPressed())
+                player.pressButton(WiimoteButton.UP);
+            else if (e.isButtonUpJustReleased())
+                player.releaseButton(WiimoteButton.UP);
+
+            if (e.isButtonDownJustPressed())
+                player.pressButton(WiimoteButton.DOWN);
+            else if (e.isButtonDownJustReleased())
+                player.releaseButton(WiimoteButton.DOWN);
+
+            if (e.isButtonLeftPressed())
+                player.pressButton(WiimoteButton.LEFT);
+            else if (e.isButtonLeftJustReleased())
+                player.releaseButton(WiimoteButton.LEFT);
+
+            if (e.isButtonRightPressed())
+                player.pressButton(WiimoteButton.RIGHT);
+            else if (e.isButtonRightJustReleased())
+                player.releaseButton(WiimoteButton.RIGHT);
+
+            // Dichstbijzijnde speler selecteren.
+            player.controlPlayer(this.getNearestFieldPlayer(player));
+        } else {
+            if (e.isButtonAJustPressed() && !e.isButtonBPressed())
+                this.start();
         }
-
-        // Indien spel nog niet gestart is, stoppen.
-        if (!isRunning)
-            return;
-
-        if (e.isButtonHomePressed())
-            // Indien op HOME is gedrukt.
-            this.togglePause();
-
-        if (e.isButtonUpJustPressed())
-            player.pressButton(WiimoteButton.UP);
-        else if (e.isButtonUpJustReleased())
-            player.releaseButton(WiimoteButton.UP);
-
-        if (e.isButtonDownJustPressed())
-            player.pressButton(WiimoteButton.DOWN);
-        else if (e.isButtonDownJustReleased())
-            player.releaseButton(WiimoteButton.DOWN);
-
-        if (e.isButtonLeftPressed())
-            player.pressButton(WiimoteButton.LEFT);
-        else if (e.isButtonLeftJustReleased())
-            player.releaseButton(WiimoteButton.LEFT);
-
-        if (e.isButtonRightPressed())
-            player.pressButton(WiimoteButton.RIGHT);
-        else if (e.isButtonRightJustReleased())
-            player.releaseButton(WiimoteButton.RIGHT);
-
-        // Dichstbijzijnde speler selecteren.
-        player.controlPlayer(this.getNearestFieldPlayer(player));
     }
 
     @Override public void onExpansionEvent(ExpansionEvent e)
