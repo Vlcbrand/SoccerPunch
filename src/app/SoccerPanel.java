@@ -49,7 +49,7 @@ class SoccerPanel extends JPanel
 
     public void update()
     {
-        fieldPlayers = this.model.getFieldPlayers();
+        fieldPlayers = this.model.getPlayers();
     }
 
     @Override public void paintComponent(Graphics g)
@@ -94,16 +94,12 @@ class SoccerPanel extends JPanel
         final int xOffset = this.field.getX()/2 - boundRadius/2;
         final int yOffset = this.field.getHeight() + this.field.getY() + boundRadius/2;
 
-        // Bronnen.
-        final Player[] fieldPlayers = {
-            this.fieldPlayers.get(0), // Spits links.
-            this.fieldPlayers.get(4) // Spits rechts.
-        };
-
         // Voorbereiding.
         g2d.setStroke(new BasicStroke());
 
-        for (Player fieldPlayer : fieldPlayers) {
+        for (SoccerRemote remote : this.model.getRemotes()) {
+            final Player fieldPlayer = remote.getControlledPlayer();
+
             if (fieldPlayer == null)
                 continue;
 
@@ -115,7 +111,7 @@ class SoccerPanel extends JPanel
 
             // Tekent titel.
             g2d.setPaint(Color.black);
-            g2d.drawString(fieldPlayer.getX() + ", " + fieldPlayer.getY(), trueXOffset - 30, yOffset - 15);
+            g2d.drawString("P" + remote.getID() + " " + fieldPlayer.getX() + ", " + fieldPlayer.getY(), trueXOffset - 30, yOffset - 15);
 
             // Tekent omheining.
             g2d.drawOval(-boundRadius/2 + trueXOffset, -boundRadius/2 + yOffset, boundRadius, boundRadius);

@@ -1,7 +1,6 @@
 package app;
 
 import app.entity.Player;
-import app.wii.WiimoteAdapter;
 import app.wii.WiimoteButton;
 import wiiusej.Wiimote;
 
@@ -10,8 +9,9 @@ import java.util.Set;
 
 /**
  * Een fysieke speler met een remote.
+ * SoccerRemote is een soort wrapper voor {@link Wiimote}.
  */
-class SoccerPlayer extends WiimoteAdapter
+class SoccerRemote
 {
     private final Wiimote mote;
     private final SoccerConstants side;
@@ -19,7 +19,7 @@ class SoccerPlayer extends WiimoteAdapter
 
     private Player controlledPlayer;
 
-    public SoccerPlayer(Wiimote mote, SoccerConstants side)
+    public SoccerRemote(Wiimote mote, SoccerConstants side)
     {
         this.mote = mote;
         this.side = side;
@@ -63,6 +63,11 @@ class SoccerPlayer extends WiimoteAdapter
     public Player getControlledPlayer()
     {
         return this.controlledPlayer;
+    }
+
+    public int getID()
+    {
+        return this.mote.getId();
     }
 
     public SoccerConstants getSide()

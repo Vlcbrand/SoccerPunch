@@ -11,19 +11,24 @@ import java.util.stream.Collectors;
  */
 class SoccerModel
 {
-    private volatile Map<SoccerConstants, List<Player>> fieldPlayers;
+    private List<SoccerRemote> remotes;
+    private volatile Map<SoccerConstants, List<Player>> players;
 
     SoccerModel()
     {
-        this.fieldPlayers = new TreeMap<>();
+        this.remotes = new ArrayList<>(SoccerController.PLAYERS_SUPPORTED);
+        this.players = new TreeMap<>();
     }
 
-    public void createFieldPlayers(Field field)
+    /**
+     * Garandeert twee teams en maakt {@value Field#FIELD_PLAYERS_SUPPORTED} nieuwe spelers aan.
+     */
+    public void createPlayers(Field field)
     {
-        this.fieldPlayers.put(SoccerConstants.EAST, new LinkedList<>());
-        this.fieldPlayers.put(SoccerConstants.WEST, new LinkedList<>());
+        this.players.put(SoccerConstants.EAST, new LinkedList<>());
+        this.players.put(SoccerConstants.WEST, new LinkedList<>());
 
-        fieldPlayers.forEach((side, players) -> {
+        players.forEach((side, players) -> {
             for (int i = 0; i < Field.FIELD_PLAYERS_SUPPORTED/2; i++) {
                 final int[] posXY = field.getDefaultPositions(side)[i];
                 final Player player = new Player(side);
@@ -34,14 +39,22 @@ class SoccerModel
         });
     }
 
-    public void removeFieldPlayers()
+    /**
+     * Leegt de collectie bestemd voor {@link Player spelers}.
+     */
+    public void removePlayers()
     {
-        fieldPlayers.clear();
+        players.clear();
     }
 
-    public void updateFieldPlayers()
+    public void update()
     {
-        for (Player player : this.getFieldPlayers()) {
+        this.updatePlayers();
+    }
+
+    public void updatePlayers()
+    {
+        for (Player player : this.getPlayers()) {
             final int x = player.getX();
             final int y = player.getY();
             final double[] dxdy = player.getMovement();
@@ -50,27 +63,43 @@ class SoccerModel
         }
     }
 
-    public void update()
+    public List<Player> getPlayers()
     {
-        this.updateFieldPlayers();
-    }
-
-    public List<Player> getFieldPlayers()
-    {
-        if (fieldPlayers.size() == 0)
+        if (players.size() == 0)
             return null;
 
-        List<Player> allFieldPlayers = new ArrayList<>(8);
-        fieldPlayers.forEach((side, players) -> allFieldPlayers.addAll(players.stream().collect(Collectors.toList())));
+        List<Player> allFieldPlayers = new ArrayList<>(Field.FIELD_PLAYERS_SUPPORTED);
+        players.forEach((side, players) -> allFieldPlayers.addAll(players.stream().collect(Collectors.toList())));
 
         return allFieldPlayers;
     }
 
-    public List<Player> getFieldPlayers(SoccerConstants side)
+    public List<Player> getPlayers(SoccerConstants side)
     {
-        if (fieldPlayers.size() == 0)
+        if (players.size() == 0)
             return null;
 
-        return this.fieldPlayers.get(side);
+        return this.players.get(side);
+    }
+
+    /**
+     * Verkrijg een speler door zijn Wiimote-ID.
+     */
+    public SoccerRemote getRemote(int id)
+    {
+        if (id < 1 || id > 4)
+            return null;
+
+        return this.remotes.get(id -1);
+    }
+
+    public void addRemote(int index, SoccerRemote remote)
+    {
+        this.remotes.add(index, remote);
+    }
+
+    public List<SoccerRemote> getRemotes()
+    {
+        return this.remotes;
     }
 }

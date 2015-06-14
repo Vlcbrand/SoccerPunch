@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Resource laadt XML-bestanden op dezelfde manier als dat properties geladen worden.
  * Echter maakt Resource het mogelijk om meerdere properties tegelijkertijd op te vragen met {@link #getAllWith(String)}.
- * Ten slotte zal Resource na bijvoorbeeld {@link #getInteger(String, String)} het gebruikte bestand onthouden en hergebruiken.
+ * Ten slotte zal Resource na bijvoorbeeld {@link #get(String)} het gebruikte bestand onthouden en hergebruiken.
  *
  * @author Nikita
  * @since 04-01-2014
