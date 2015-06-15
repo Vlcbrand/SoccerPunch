@@ -48,9 +48,14 @@ class SoccerPanel extends JPanel
 
     private void checkGoal()
     {
-        if (field.getGoalL().intersects(ball.getBall()) || field.getGoalR().intersects(ball.getBall()))
+        if (field.getGoalL().intersects(ball.getBall()))
         {
-            System.out.println("derp");
+            System.out.println("Hops, doelpunt in linker doel");
+        }
+
+        if (field.getGoalR().intersects(ball.getBall()))
+        {
+            System.out.println("Hops, doelpunt in rechter doel");
         }
     }
 
