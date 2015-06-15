@@ -1,5 +1,6 @@
 package app.menu;
 
+import app.SoccerConstants;
 import app.SoccerFrame;
 import wiiusej.WiiUseApiManager;
 import wiiusej.Wiimote;
@@ -12,6 +13,7 @@ import wiiusej.wiiusejevents.wiiuseapievents.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -25,6 +27,15 @@ public class TitlePanel extends JPanel implements WiimoteListener
     public int menuNumber = 0;
     TitleScreenFrame frame;
     Wiimote wiimote;
+
+    static final BufferedImage redBanner;
+    static final BufferedImage blueBanner;
+
+
+    static {
+        redBanner = util.Image.get("img/teambanner_red.png");
+        blueBanner = util.Image.get("img/teambanner_blue.png");
+    }
 
     public TitlePanel(TitleScreenFrame frame)
     {
@@ -72,10 +83,12 @@ public class TitlePanel extends JPanel implements WiimoteListener
 
         g2.drawImage(background, -100, -100, getWidth() + 200, getHeight() + 200, null);
 
-        rect = new Rectangle2D.Double(getWidth()/2 - 330, 0, 680, getHeight());
+
+        rect = new Rectangle2D.Double(getWidth()/2 - 330, 0, 660, getHeight());
         pg = new Rectangle2D.Double(setWidthString("Play Game", getWidth(), g2), getHeight()/2 - 80, 380, 100);
         go = new Rectangle2D.Double(setWidthString("Game Options", getWidth(), g2), getHeight()/2 + 20, 500, 100);
         eg = new Rectangle2D.Double(setWidthString("Exit Game", getWidth(), g2), getHeight()/2 + 120, 380, 100);
+
 
         g2.draw(rect);
         g2.setPaint(color);
@@ -88,6 +101,16 @@ public class TitlePanel extends JPanel implements WiimoteListener
         g2.drawString("Play Game", setWidthString("Play Game", getWidth(), g2), getHeight()/2 - 00);
         g2.drawString("Game Options", setWidthString("Game Options", getWidth(), g2), getHeight()/2 + 100);
         g2.drawString("Exit Game", setWidthString("Exit Game", getWidth(), g2), getHeight()/2 + 200);
+
+        //  draw rechterbanner
+        AffineTransform tx = new AffineTransform();
+        tx.translate(getWidth()/2 + 350, getHeight()/-redBanner.getHeight());
+        g2.drawImage(redBanner, tx, this);
+
+        //  draw linkerbanner
+        AffineTransform txx = new AffineTransform();
+        txx.translate(getWidth()/2 -blueBanner.getWidth()-350, getHeight()/-blueBanner.getHeight());
+        g2.drawImage(blueBanner, txx, this);
 
         g2.setFont(font1);
         g2.drawString("SoccerPunch!", setWidthString("SoccerPunch!", getWidth(), g2), getHeight()/2 - 200);

@@ -11,6 +11,7 @@ import wiiusej.wiiusejevents.wiiuseapievents.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -29,6 +30,14 @@ public class OptionsPanel extends JPanel implements WiimoteListener
     TitleScreenFrame frame;
     Wiimote wiimote;
 
+    static final BufferedImage redBanner;
+    static final BufferedImage blueBanner;
+
+
+    static {
+        redBanner = util.Image.get("img/teambanner_red.png");
+        blueBanner = util.Image.get("img/teambanner_blue.png");
+    }
 
     public OptionsPanel(TitleScreenFrame frame)
     {
@@ -70,7 +79,7 @@ public class OptionsPanel extends JPanel implements WiimoteListener
 
         g2.drawImage(background, -100, -100, getWidth() + 200, getHeight() + 200, null);
 
-        rect = new Rectangle2D.Double(getWidth()/2 - 330, 0, 680, getHeight());
+        rect = new Rectangle2D.Double(getWidth()/2 - 330, 0, 660, getHeight());
         g2.draw(rect);
         g2.setPaint(color);
         g2.fill(rect);
@@ -78,6 +87,16 @@ public class OptionsPanel extends JPanel implements WiimoteListener
         o1 = new Rectangle2D.Double(setWidthString(time, getWidth(), g2) - 120, getHeight()/2 - 100, 350, 70);
         o2 = new Rectangle2D.Double(setWidthString(points, getWidth(), g2) - 120, getHeight()/2 - 30, 350, 70);
         o3 = new Rectangle2D.Double(setWidthString("Gamemode: Points and Time", getWidth(), g2) - 205, getHeight()/2 + 40, 595, 70);
+
+        //  draw rechterbanner
+        AffineTransform tx = new AffineTransform();
+        tx.translate(getWidth()/2 + 350, getHeight()/-redBanner.getHeight());
+        g2.drawImage(redBanner, tx, this);
+
+        //  draw linkerbanner
+        AffineTransform txx = new AffineTransform();
+        txx.translate(getWidth()/2 -blueBanner.getWidth()-350, getHeight()/-blueBanner.getHeight());
+        g2.drawImage(blueBanner, txx, this);
 
         g2.setColor(Color.black);
 
