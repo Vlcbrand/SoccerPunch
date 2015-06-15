@@ -1,9 +1,6 @@
 package app;
 
-import app.entity.Drawable;
-import app.entity.Field;
-import app.entity.HUD;
-import app.entity.Player;
+import app.entity.*;
 import util.Resource;
 
 import javax.swing.*;
@@ -19,6 +16,7 @@ class SoccerPanel extends JPanel
     private final int initialWidth, initialHeight;
     private final Field field;
     private final HUD hud;
+    private final SoccerStart startScreen;
     private final SoccerModel model;
     private final Drawable[] mainDrawables;
 
@@ -34,6 +32,7 @@ class SoccerPanel extends JPanel
     {
         super(null);
 
+        this.startScreen = new SoccerStart();
         this.model = model;
 
         this.initialWidth = (int)this.getPreferredSize().getWidth();
@@ -46,6 +45,8 @@ class SoccerPanel extends JPanel
 
         // Beginafmetingen voor het veld instellen.
         field.update(initialWidth, initialHeight);
+
+        startScreen.setDrawscreen(true);
     }
 
     public Field getInnerField()
@@ -99,6 +100,10 @@ class SoccerPanel extends JPanel
 
         sceneGraphics.dispose();
         g2d.drawImage(scene, tx, this);
+
+        startScreen.setText((int)parentWidth/2-480, (int)parentHeight/2+150, "Druk op 'A' om te beginnen");
+        startScreen.setBackground((int)parentWidth, (int) parentHeight);
+        startScreen.draw(g2d);
     }
 
     private void drawJoystickTest(Graphics2D g2d)
@@ -135,6 +140,7 @@ class SoccerPanel extends JPanel
             g2d.setPaint(Color.red);
             g2d.fillOval(x - cursorSize/2, y - cursorSize/2, cursorSize, cursorSize);
             g2d.drawString("(" + (x - trueXOffset) + ", " + (y - yOffset) + ")", x + cursorSize + 5, y + cursorSize/2);
+            startScreen.setDrawscreen(false);
         }
     }
 
