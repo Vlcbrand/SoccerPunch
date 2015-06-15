@@ -1,22 +1,19 @@
 package app;
 
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
-import sun.audio.ContinuousAudioDataStream;
 import util.Resource;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 class SoccerSound
 {
     public static final File MUSIC_MAIN;
     public static final File SOUND_COIN;
     public static final File SOUND_CHEER;
+
+    private static SoccerSound instance = null;
 
     static {
         MUSIC_MAIN = new File(Resource.get().getString("path.sound.music"));
@@ -28,38 +25,63 @@ class SoccerSound
     {
     }
 
-    public static void play(File file)
+    public static SoccerSound getInstance()
     {
-        if (!file.exists())
-            return;
+        if (instance == null)
+            instance = new SoccerSound();
 
-        AudioStream stream = null;
-
-        try {
-            FileInputStream inputStream = new FileInputStream(file);
-            stream = new AudioStream(inputStream);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        AudioPlayer.player.start(stream);
+        return instance;
     }
 
-    public static void loop(File file)
+    public Sound addFile(File file)
     {
         if (!file.exists())
-            return;
+            return null;
 
-        ContinuousAudioDataStream continuous = null;
+        return new Sound(file);
+    }
 
-        try {
-            AudioInputStream inputStream = AudioSystem.getAudioInputStream(new FileInputStream(file));
-            AudioStream audioStream = new AudioStream(inputStream);
-            continuous = new ContinuousAudioDataStream(audioStream.getData());
-        } catch (IOException | UnsupportedAudioFileException ex) {
-            ex.printStackTrace();
+    public class Sound
+    {
+        private File file;
+        private Clip clip;
+
+        Sound(File file)
+        {
+            try {
+                AudioInputStream inputStream = AudioSystem.getAudioInputStream(this.file = file);
+                DataLine.Info info = new DataLine.Info(Clip.class, inputStream.getFormat());
+                this.clip = (Clip)AudioSystem.getLine(info);
+                this.clip.open(inputStream);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
-        AudioPlayer.player.start(continuous);
+        Sound play()
+        {
+            this.clip.start();
+            return this;
+        }
+
+        Sound loop()
+        {
+            this.clip.loop(Clip.LOOP_CONTINUOUSLY);
+            return this;
+        }
+
+        Sound setVolume(float volume)
+        {
+            final FloatControl ctrl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+            float actualVolume = volume;
+
+            if (volume > ctrl.getMaximum())
+                actualVolume = ctrl.getMaximum();
+            else if (volume < ctrl.getMinimum())
+                actualVolume = ctrl.getMinimum();
+
+            ctrl.setValue(actualVolume);
+            return this;
+        }
     }
 }
