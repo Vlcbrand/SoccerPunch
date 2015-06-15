@@ -2,6 +2,7 @@ package app;
 
 import app.entity.Drawable;
 import app.entity.Field;
+import app.entity.HUD;
 import app.entity.Player;
 import util.Resource;
 
@@ -17,15 +18,16 @@ class SoccerPanel extends JPanel
 
     private final int initialWidth, initialHeight;
     private final Field field;
+    private final HUD hud;
     private final SoccerModel model;
-    private final Drawable[] mainComponents;
+    private final Drawable[] mainDrawables;
 
     private List<Player> fieldPlayers;
 
     static
     {
-        minimumSize = new Dimension(Resource.getInteger("app.width.min"), Resource.getInteger("app.height.min"));
-        preferredSize = new Dimension(Resource.getInteger("app.width"), Resource.getInteger("app.height"));
+        minimumSize = new Dimension(Resource.getInteger("int.width.min"), Resource.getInteger("int.height.min"));
+        preferredSize = new Dimension(Resource.getInteger("int.width"), Resource.getInteger("int.height"));
     }
 
     SoccerPanel(SoccerModel model)
@@ -37,9 +39,13 @@ class SoccerPanel extends JPanel
         this.initialWidth = (int)this.getPreferredSize().getWidth();
         this.initialHeight = (int)this.getPreferredSize().getHeight();
 
-        this.mainComponents = new Drawable[] {
-            field = new Field(this.initialWidth, this.initialHeight)
+        this.mainDrawables = new Drawable[] {
+            field = Field.getInstance(),
+            hud = HUD.getInstance()
         };
+
+        // Beginafmetingen voor het veld instellen.
+        field.update(initialWidth, initialHeight);
     }
 
     public Field getInnerField()
@@ -47,8 +53,17 @@ class SoccerPanel extends JPanel
         return this.field;
     }
 
+    public HUD getHeadsUpDisplay()
+    {
+        return this.hud;
+    }
+
     public void update()
     {
+        // HUD verversen.
+        hud.update(this.getWidth(), this.getHeight());
+
+        // Spelers verversen.
         fieldPlayers = this.model.getPlayers();
     }
 
@@ -63,8 +78,8 @@ class SoccerPanel extends JPanel
         sceneGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Teken hoofdonderdelen.
-        if (mainComponents != null)
-            for (Drawable component : mainComponents)
+        if (mainDrawables != null)
+            for (Drawable component : mainDrawables)
                 component.draw(sceneGraphics);
 
         // Teken spelers.

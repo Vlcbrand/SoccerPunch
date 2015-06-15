@@ -34,9 +34,9 @@ class SoccerController extends WiimoteAdapter implements Runnable
     private boolean isRunning, isPaused;
 
     static {
-        FPS = Resource.getInteger("app.frames_per_second");
-        UPS = Resource.getInteger("app.updates_per_second");
-        SHOW_FPS = Resource.getBoolean("app.show_fps");
+        FPS = Resource.getInteger("int.frames_per_second");
+        UPS = Resource.getInteger("int.updates_per_second");
+        SHOW_FPS = Resource.getBoolean("bool.show_fps");
     }
 
     SoccerController(SoccerPanel view, SoccerModel model)
@@ -192,8 +192,11 @@ class SoccerController extends WiimoteAdapter implements Runnable
                 }
 
                 if (System.currentTimeMillis() - timer > 1000l) {
-                    if (SHOW_FPS)
-                        System.out.printf("\nUPDATES: %f, FRAMES: %f", ticks / updateTimeDelta, frames / renderTimeDelta);
+                    if (SHOW_FPS) {
+                        //final double ups = ticks/updateTimeDelta;
+                        final double fps = frames/renderTimeDelta;
+                        this.view.getHeadsUpDisplay().update((int)fps);
+                    }
 
                     ticks = 0;
                     frames = 0;
@@ -301,7 +304,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
     private static void sleep(long millis)
     {
         // Kan niet terug in de tijd.
-        if (millis < 1)
+        if (millis < 0)
             return;
 
         try {

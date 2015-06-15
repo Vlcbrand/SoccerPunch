@@ -1,9 +1,9 @@
 package util;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import javax.imageio.ImageIO;
 
 /**
  * Image is voornamelijk verantwoordelijk voor het veilig inladen van afbeelding.

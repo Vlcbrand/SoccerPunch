@@ -14,6 +14,8 @@ class SoccerModel
     private List<SoccerRemote> remotes;
     private volatile Map<SoccerConstants, List<Player>> players;
 
+    private int fps;
+
     SoccerModel()
     {
         this.remotes = new ArrayList<>(SoccerController.PLAYERS_SUPPORTED);

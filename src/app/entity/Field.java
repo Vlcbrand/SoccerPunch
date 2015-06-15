@@ -20,6 +20,8 @@ public class Field implements Drawable
     static final SoccerConstants goalImageOpenFrom;
     static final BufferedImage goalImage;
 
+    private static Field instance = null;
+
     private AffineTransform leftGoalTransform, rightGoalTransform;
 
     private int width, height;
@@ -33,13 +35,19 @@ public class Field implements Drawable
         goalImage = util.Image.get("goal.gif");
     }
 
-    public Field(int parentWidth, int parentHeight)
+    private Field()
     {
         // Voor elke speler een x- en y-positie.
         this.defaultLeftPositions = new int[FIELD_PLAYERS_SUPPORTED/2][2];
         this.defaultRightPositions = new int[FIELD_PLAYERS_SUPPORTED/2][2];
+    }
 
-        this.update(parentWidth, parentHeight);
+    public static Field getInstance()
+    {
+        if (instance == null)
+            instance = new Field();
+
+        return instance;
     }
 
     public void update(int parentWidth, int parentHeight)

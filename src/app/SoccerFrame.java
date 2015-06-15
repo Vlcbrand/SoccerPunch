@@ -28,7 +28,7 @@ class SoccerFrame extends JFrame
     {
         device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
-        this.setTitle(Resource.get().getString("app.frame.wait"));
+        this.setTitle(Resource.get().getString("string.frame.wait"));
 
         final SoccerModel model = new SoccerModel();
         final SoccerPanel panel = new SoccerPanel(model);
@@ -44,7 +44,7 @@ class SoccerFrame extends JFrame
         this.setContentPane(panel);
         this.setVisible(true);
 
-        final SoccerController ctrl = new SoccerController(panel, model);
+        new SoccerController(panel, model);
 
         this.setTitle("Soccer Punch!");
     }
