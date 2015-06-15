@@ -4,8 +4,8 @@ import util.Resource;
 
 import javax.sound.sampled.*;
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 class SoccerSound
 {
@@ -15,6 +15,8 @@ class SoccerSound
 
     private static SoccerSound instance = null;
 
+    private Map<File, Sound> sounds;
+
     static {
         MUSIC_MAIN = new File(Resource.get().getString("path.sound.music"));
         SOUND_COIN = new File(Resource.get().getString("path.sound.coin"));
@@ -23,6 +25,7 @@ class SoccerSound
 
     private SoccerSound()
     {
+        this.sounds = new HashMap<>(3);
     }
 
     public static SoccerSound getInstance()
@@ -38,36 +41,46 @@ class SoccerSound
         if (!file.exists())
             return null;
 
-        return new Sound(file);
+        if (this.sounds.containsKey(file))
+            return this.sounds.get(file);
+
+        final Sound sound = new Sound(file);
+        this.sounds.put(file, sound);
+        return sound;
     }
 
     public class Sound
     {
-        private File file;
         private Clip clip;
 
         Sound(File file)
         {
             try {
-                AudioInputStream inputStream = AudioSystem.getAudioInputStream(this.file = file);
-                DataLine.Info info = new DataLine.Info(Clip.class, inputStream.getFormat());
-                this.clip = (Clip)AudioSystem.getLine(info);
+                AudioInputStream inputStream = AudioSystem.getAudioInputStream(file);
+                DataLine.Info lineInfo = new DataLine.Info(Clip.class, inputStream.getFormat());
+                this.clip = (Clip)AudioSystem.getLine(lineInfo);
                 this.clip.open(inputStream);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        Sound play()
+        void play()
         {
+            this.stop();
+
+            this.clip.setFramePosition(0);
             this.clip.start();
-            return this;
         }
 
-        Sound loop()
+        void stop()
+        {
+            this.clip.stop();
+        }
+
+        void loop()
         {
             this.clip.loop(Clip.LOOP_CONTINUOUSLY);
-            return this;
         }
 
         Sound setVolume(float volume)

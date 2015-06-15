@@ -109,6 +109,9 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
             remote.controlPlayer(ctrlPlayer);
         }
+
+        // Geluid.
+        SoccerSound.getInstance().addFile(SoccerSound.MUSIC_MAIN).setVolume(-10).loop();
     }
 
     /**
@@ -117,6 +120,9 @@ class SoccerController extends WiimoteAdapter implements Runnable
     private void prepareForStop()
     {
         this.model.removePlayers();
+
+        // Achtergrondmuziek stoppen.
+        SoccerSound.getInstance().addFile(SoccerSound.MUSIC_MAIN).stop();
     }
 
     public void start()
@@ -170,28 +176,28 @@ class SoccerController extends WiimoteAdapter implements Runnable
         long timer = System.currentTimeMillis();
 
         while (isRunning) {
-            long currentLoopTime = System.nanoTime();
+            final long currentLoopTime = System.nanoTime();
             updateTimeDelta += (currentLoopTime - initialTime)/updateTime;
             renderTimeDelta += (currentLoopTime - initialTime)/renderTime;
 
             initialTime = currentLoopTime;
 
             while (!isPaused) {
-                if (updateTimeDelta >= 1d) {
+                if (updateTimeDelta >= 1) {
                     model.update();
 
                     ticks++;
                     updateTimeDelta--;
                 }
 
-                if (renderTimeDelta >= 1d) {
+                if (renderTimeDelta >= 1) {
                     view.repaint();
 
                     frames++;
                     renderTimeDelta--;
                 }
 
-                if (System.currentTimeMillis() - timer > 1000l) {
+                if (System.currentTimeMillis() - timer > 1000) {
                     if (SHOW_FPS) {
                         //final double ups = ticks/updateTimeDelta;
                         final double fps = frames/renderTimeDelta;
@@ -283,6 +289,9 @@ class SoccerController extends WiimoteAdapter implements Runnable
                 }
             }
         }
+
+        // Geluid afspelen.
+        SoccerSound.getInstance().addFile(SoccerSound.SOUND_COIN).setVolume(-5).play();
 
         return nearest;
     }
