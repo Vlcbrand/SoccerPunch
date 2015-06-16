@@ -20,7 +20,7 @@ import java.awt.image.BufferedImage;
  */
 public class OptionsPanel extends JPanel implements WiimoteListener
 {
-    BufferedImage background;
+
     Rectangle2D rect;
     float alpha = 0.5f;
     Color color = new Color(1, 1, 1, alpha);
@@ -32,6 +32,7 @@ public class OptionsPanel extends JPanel implements WiimoteListener
 
     static final BufferedImage redBanner;
     static final BufferedImage blueBanner;
+    static BufferedImage background;
 
 
     static {
@@ -106,7 +107,6 @@ public class OptionsPanel extends JPanel implements WiimoteListener
         g2.drawString(points, setWidthString(points, getWidth(), g2), getHeight()/2 + 20);
         g2.drawString(choice, setWidthString(choice, getWidth(), g2), getHeight()/2 + 90);
         draw(g2);
-
 
         g2.setFont(font2);
 
