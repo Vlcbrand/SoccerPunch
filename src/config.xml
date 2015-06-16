@@ -17,5 +17,6 @@
     <entry key="path.sound.coin">snd/coin.wav</entry>
     <entry key="path.sound.music">snd/music.wav</entry>
 
-    <entry key="string.frame.wait">Een ogenblik geduld...</entry>
+    <entry key="string.wait">Een ogenblik geduld...</entry>
+    <entry key="string.press_a">Druk op A om te beginnen...</entry>
 </properties>

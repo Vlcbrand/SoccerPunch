@@ -14,11 +14,12 @@ class SoccerPanel extends JPanel
     private final static Dimension minimumSize, preferredSize;
 
     private final int initialWidth, initialHeight;
-    private final Field field;
-    private final HUD hud;
-    private final SoccerStart startScreen;
     private final SoccerModel model;
     private final Drawable[] mainDrawables;
+
+    private final StartSequence startSequence;
+    private final Field field;
+    private final HUD hud;
 
     private List<Player> fieldPlayers;
 
@@ -32,21 +33,21 @@ class SoccerPanel extends JPanel
     {
         super(null);
 
-        this.startScreen = new SoccerStart();
         this.model = model;
 
-        this.initialWidth = (int)this.getPreferredSize().getWidth();
-        this.initialHeight = (int)this.getPreferredSize().getHeight();
+        this.initialWidth = (int)this.getPreferredSize().getWidth() - 2;
+        this.initialHeight = (int)this.getPreferredSize().getHeight() -25;
 
         this.mainDrawables = new Drawable[] {
             field = Field.getInstance(),
             hud = HUD.getInstance()
         };
 
-        // Beginafmetingen voor het veld instellen.
-        field.update(initialWidth, initialHeight);
+        startSequence = StartSequence.getInstance();
 
-        startScreen.setDrawscreen(true);
+        // Beginafmetingen voor het veld instellen.
+        startSequence.update(initialWidth, initialHeight);
+        field.update(initialWidth, initialHeight);
     }
 
     public Field getInnerField()
@@ -59,6 +60,11 @@ class SoccerPanel extends JPanel
         return this.hud;
     }
 
+    public StartSequence getStartSequence()
+    {
+        return this.startSequence;
+    }
+
     public void update()
     {
         // HUD verversen.
@@ -66,6 +72,9 @@ class SoccerPanel extends JPanel
 
         // Spelers verversen.
         fieldPlayers = this.model.getPlayers();
+
+        // Startsequence verversen.
+        startSequence.update(this.getWidth(), this.getHeight());
     }
 
     @Override public void paintComponent(Graphics g)
@@ -92,6 +101,9 @@ class SoccerPanel extends JPanel
         if (fieldPlayers != null && fieldPlayers.size() > 0)
             this.drawJoystickTest(sceneGraphics);
 
+        // Teken startanimatie.
+        this.startSequence.draw(sceneGraphics);
+
         // Scale met het hoofdscherm.
         AffineTransform tx = new AffineTransform();
         final double parentWidth = this.getParent().getWidth();
@@ -100,10 +112,6 @@ class SoccerPanel extends JPanel
 
         sceneGraphics.dispose();
         g2d.drawImage(scene, tx, this);
-
-        startScreen.setText((int)parentWidth/2-480, (int)parentHeight/2+150, "Druk op 'A' om te beginnen");
-        startScreen.setBackground((int)parentWidth, (int) parentHeight);
-        startScreen.draw(g2d);
     }
 
     private void drawJoystickTest(Graphics2D g2d)
@@ -140,7 +148,6 @@ class SoccerPanel extends JPanel
             g2d.setPaint(Color.red);
             g2d.fillOval(x - cursorSize/2, y - cursorSize/2, cursorSize, cursorSize);
             g2d.drawString("(" + (x - trueXOffset) + ", " + (y - yOffset) + ")", x + cursorSize + 5, y + cursorSize/2);
-            startScreen.setDrawscreen(false);
         }
     }
 

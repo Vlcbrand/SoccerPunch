@@ -28,7 +28,7 @@ class SoccerFrame extends JFrame
     {
         device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
-        this.setTitle(Resource.get().getString("string.frame.wait"));
+        this.setTitle(Resource.get().getString("string.wait"));
 
         final SoccerModel model = new SoccerModel();
         final SoccerPanel panel = new SoccerPanel(model);
