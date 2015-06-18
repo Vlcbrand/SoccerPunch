@@ -47,7 +47,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.runner = null;
         this.isRunning = false;
         this.isPaused = false;
-        //this.getWiimotes();
+        this.getWiimotes();
 
         if (wiimotes == null)
             return;

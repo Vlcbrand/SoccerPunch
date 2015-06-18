@@ -44,7 +44,7 @@ class SoccerPanel extends JPanel
         this.mainDrawables = new Drawable[] {
             field = Field.getInstance(),
             hud = HUD.getInstance(),
-                ball = new Ball(field.getWidth() / 2, field.getHeight() / 2)
+                ball = new Ball(200, 200)
         };
 
         startSequence = StartSequence.getInstance();
@@ -54,6 +54,7 @@ class SoccerPanel extends JPanel
         field.update(initialWidth, initialHeight);
     }
 
+    //checkt of er een doelpunt is gemaakt
     private void checkGoal()
     {
         if (field.getLeftGoal().intersects(ball.getBall()))
@@ -92,6 +93,10 @@ class SoccerPanel extends JPanel
 
         // Startsequence verversen.
         startSequence.update(this.getWidth(), this.getHeight());
+
+        //tijdelijke code
+        updateBall();
+        randomKick();
     }
 
     private void updateBall()
@@ -111,7 +116,7 @@ class SoccerPanel extends JPanel
                 if (oldWidth != newWidth || oldHeight != newHeight)
                     ball.offset(newWidth - oldWidth, newHeight - oldHeight);
 
-                //ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight());
+                ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight());
                 this.repaint();
                 this.checkGoal();
 
