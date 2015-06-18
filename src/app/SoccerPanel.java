@@ -55,11 +55,19 @@ class SoccerPanel extends JPanel
     {
         if (field.getLeftGoal().intersects(ball.getBall())) {
             blueScore++;
+            ball.setX(field.getWidth()/2 + field.getX()-10);
+            ball.setY(field.getHeight()/2 + field.getY()-10);
+            ball.accelerate(0,0);
+            SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
             return blueScore;
         }
 
         if (field.getRightGoal().intersects(ball.getBall())) {
             redScore++;
+            ball.setX(field.getWidth()/2 + field.getX()-10);
+            ball.setY(field.getHeight()/2 + field.getY()-10);
+            ball.accelerate(0,0);
+            SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
             return redScore;
         }
         return 0;
@@ -158,7 +166,7 @@ class SoccerPanel extends JPanel
         final Font font = new Font("Arial", Font.BOLD, 40);
         g2d.setFont(font);
         g2d.drawString(redScore + "", this.getWidth()/20, this.getHeight()/12);
-        g2d.drawString(blueScore + "", (int)(this.getWidth()*0.95),this.getHeight()/12);
+        g2d.drawString(blueScore + "", (int)(this.getWidth()*0.95), this.getHeight()/12);
 
 
         // Teken hoofdonderdelen.

@@ -282,7 +282,7 @@ class SoccerController extends WiimoteAdapter implements Runnable {
         }
 
         // Geluid afspelen.
-        SoccerSound.getInstance().addFile(SoccerSound.SOUND_COIN).setVolume(-5).play();
+        SoccerSound.getInstance().addFile(SoccerSound.SOUND_COIN).play();
 
         return nearest;
     }

@@ -1,6 +1,7 @@
 package app.entity;
 
 import app.physics.BallPhysics;
+
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
@@ -40,14 +41,11 @@ public class Ball extends BallPhysics implements Drawable
         ballImage[5] = util.Image.get("ball6.6.png");
         ballImage[6] = util.Image.get("ball7.7.png");
 
-        if (imgCount >= (ballImage.length - 1))
-        {
+        if (imgCount >= (ballImage.length - 1)) {
             imgCount = 0;
             return ballImage[imgCount];
-        }
-
-        else
-            imgCount ++;
+        } else
+            imgCount++;
         return ballImage[imgCount];
     }
 
@@ -67,6 +65,16 @@ public class Ball extends BallPhysics implements Drawable
     @Override public int getX()
     {
         return 0;
+    }
+
+    public void setX(int x)
+    {
+        this.x = x;
+    }
+
+    public void setY(int y)
+    {
+        this.y = y;
     }
 
     @Override public int getY()
