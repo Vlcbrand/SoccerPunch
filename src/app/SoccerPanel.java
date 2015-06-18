@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Random;
 
 class SoccerPanel extends JPanel
 {
@@ -21,6 +22,7 @@ class SoccerPanel extends JPanel
     private final Field field;
     private final Ball ball;
     private final HUD hud;
+    private Random random = new Random();
 
     private List<Player> fieldPlayers;
 
@@ -90,6 +92,59 @@ class SoccerPanel extends JPanel
 
         // Startsequence verversen.
         startSequence.update(this.getWidth(), this.getHeight());
+    }
+
+    private void updateBall()
+    {
+        new Thread(() -> {
+            // Verantwoordelijk voor offsetberekening.
+            int newWidth = this.getWidth();
+            int newHeight = this.getHeight();
+            int oldWidth = newWidth;
+            int oldHeight = newHeight;
+
+            while (true) {
+                // Niewe afmetingen opvragen.
+                newWidth = this.getWidth();
+                newHeight = this.getHeight();
+
+                if (oldWidth != newWidth || oldHeight != newHeight)
+                    ball.offset(newWidth - oldWidth, newHeight - oldHeight);
+
+                //ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight());
+                this.repaint();
+                this.checkGoal();
+
+                try {
+                    Thread.sleep(1000/60);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                // Oude afmetingen onthouden.
+                oldWidth = this.getWidth();
+                oldHeight = this.getHeight();
+            }
+        }).start();
+    }
+
+    private void randomKick()
+    {
+        new Thread(() ->
+        {
+            while (true)
+            {
+                ball.accelerate(20 + random.nextInt(50), random.nextInt(360));
+
+                try
+                {
+                    Thread.sleep(5000);
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override public void paintComponent(Graphics g)
