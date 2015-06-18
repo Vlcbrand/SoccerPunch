@@ -94,15 +94,15 @@ public class Field implements Drawable
         rightGoalTransform.scale(goalWidthScale, goalHeightScale);
         rightGoalTransform.rotate(getGoalRotation(SoccerConstants.EAST));
 
-        //Transformatie blauwe banner.
-        blueBannerTransform = new AffineTransform();
-        blueBannerTransform.translate(getWidth()/1.625 + blueBanner.getWidth(), fieldY*1.5);
-        blueBannerTransform.scale(0.2, 0.2);
-
         //Transformatie rode banner.
         redBannerTransform = new AffineTransform();
-        redBannerTransform.translate(getWidth()/1.95 - redBanner.getWidth(), fieldY*1.5);
+        redBannerTransform.translate(getWidth()/1.625 + blueBanner.getWidth(), fieldY*1.5);
         redBannerTransform.scale(0.2, 0.2);
+
+        //Transformatie blauwe banner.
+        blueBannerTransform = new AffineTransform();
+        blueBannerTransform.translate(getWidth()/1.95 - redBanner.getWidth(), fieldY*1.5);
+        blueBannerTransform.scale(0.2, 0.2);
 
 
         // Tekent veldgrenzen.
