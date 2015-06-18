@@ -15,6 +15,7 @@ class SoccerPanel extends JPanel
     private final static Dimension minimumSize, preferredSize;
 
     private final int initialWidth, initialHeight;
+    private int redScore, blueScore;
     private final SoccerModel model;
     private final Drawable[] mainDrawables;
 
@@ -26,8 +27,7 @@ class SoccerPanel extends JPanel
 
     private List<Player> fieldPlayers;
 
-    static
-    {
+    static {
         minimumSize = new Dimension(Resource.getInteger("int.width.min"), Resource.getInteger("int.height.min"));
         preferredSize = new Dimension(Resource.getInteger("int.width"), Resource.getInteger("int.height"));
     }
@@ -39,13 +39,9 @@ class SoccerPanel extends JPanel
         this.model = model;
 
         this.initialWidth = (int)this.getPreferredSize().getWidth() - 2;
-        this.initialHeight = (int)this.getPreferredSize().getHeight() -25;
+        this.initialHeight = (int)this.getPreferredSize().getHeight() - 25;
 
-        this.mainDrawables = new Drawable[] {
-            field = Field.getInstance(),
-            hud = HUD.getInstance(),
-                ball = new Ball(200, 200)
-        };
+        this.mainDrawables = new Drawable[] {field = Field.getInstance(), hud = HUD.getInstance(), ball = new Ball(200, 200)};
 
         startSequence = StartSequence.getInstance();
 
@@ -55,17 +51,18 @@ class SoccerPanel extends JPanel
     }
 
     //checkt of er een doelpunt is gemaakt
-    private void checkGoal()
+    private int checkGoal()
     {
-        if (field.getLeftGoal().intersects(ball.getBall()))
-        {
-            System.out.println("Hops, doelpunt in linker doel");
+        if (field.getLeftGoal().intersects(ball.getBall())) {
+            blueScore++;
+            return blueScore;
         }
 
-        if (field.getRightGoal().intersects(ball.getBall()))
-        {
-            System.out.println("Hops, doelpunt in rechter doel");
+        if (field.getRightGoal().intersects(ball.getBall())) {
+            redScore++;
+            return redScore;
         }
+        return 0;
     }
 
     public Field getInnerField()
@@ -135,17 +132,13 @@ class SoccerPanel extends JPanel
 
     private void randomKick()
     {
-        new Thread(() ->
-        {
-            while (true)
-            {
+        new Thread(() -> {
+            while (true) {
                 ball.accelerate(20 + random.nextInt(50), random.nextInt(360));
 
-                try
-                {
+                try {
                     Thread.sleep(5000);
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -161,6 +154,12 @@ class SoccerPanel extends JPanel
         BufferedImage scene = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D sceneGraphics = (Graphics2D)scene.getGraphics();
         sceneGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        final Font font = new Font("Arial", Font.BOLD, 40);
+        g2d.setFont(font);
+        g2d.drawString(redScore + "", this.getWidth()/20, this.getHeight()/12);
+        g2d.drawString(blueScore + "", (int)(this.getWidth()*0.95),this.getHeight()/12);
+
 
         // Teken hoofdonderdelen.
         if (mainDrawables != null)
