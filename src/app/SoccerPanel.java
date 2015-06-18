@@ -19,6 +19,7 @@ class SoccerPanel extends JPanel
 
     private final StartSequence startSequence;
     private final Field field;
+    private final Ball ball;
     private final HUD hud;
 
     private List<Player> fieldPlayers;
@@ -40,7 +41,8 @@ class SoccerPanel extends JPanel
 
         this.mainDrawables = new Drawable[] {
             field = Field.getInstance(),
-            hud = HUD.getInstance()
+            hud = HUD.getInstance(),
+                ball = new Ball(field.getWidth() / 2, field.getHeight() / 2)
         };
 
         startSequence = StartSequence.getInstance();
