@@ -240,6 +240,22 @@ public class Field implements Drawable
         g2d.drawImage(goalImage, rightGoalTransform, null);
     }
 
+    /*public int getFieldTop()
+    {
+        return (int)fieldRect.getMinY();
+    }
+    public int getFieldBot()
+    {
+        return (int)fieldRect.getMaxY();
+    }
+    public int getFieldRight()
+    {
+        return (int)fieldRect.getMaxX();
+    }
+    public int getFieldLeft()
+    {
+        return (int)fieldRect.getMinX();
+    }
     public Rectangle2D getLeftGoal()
     {
         return leftGoal;
@@ -247,7 +263,7 @@ public class Field implements Drawable
     public Rectangle2D getRightGoal()
     {
         return rightGoal;
-    }
+    }*/
 
     @Override public int getX()
     {
