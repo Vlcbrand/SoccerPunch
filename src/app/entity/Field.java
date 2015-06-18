@@ -19,6 +19,9 @@ public class Field implements Drawable
 
     static final SoccerConstants goalImageOpenFrom;
     static final BufferedImage goalImage;
+    private Rectangle2D leftGoal;
+    private Rectangle2D rightGoal;
+    Rectangle2D fieldRect;
 
     private static Field instance = null;
 
@@ -91,7 +94,7 @@ public class Field implements Drawable
         rightGoalTransform.rotate(getGoalRotation(SoccerConstants.EAST));
 
         // Tekent veldgrenzen.
-        Rectangle2D fieldRect = new Rectangle2D.Double(fieldX, fieldY, this.width, this.height);
+        fieldRect = new Rectangle2D.Double(fieldX, fieldY, this.width, this.height);
 
         // Midden veldonderdelen.
         Line2D centerLine = new Line2D.Double(centerX, fieldY, centerX, fieldY + this.height);
@@ -103,6 +106,8 @@ public class Field implements Drawable
         Rectangle2D leftGoalArea = new Rectangle.Double(fieldX, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
         Rectangle2D rightPenaltyArea = new Rectangle.Double(fieldX + this.width - penaltyAreaWidth, centerY - penaltyAreaHeight/2, penaltyAreaWidth, penaltyAreaHeight);
         Rectangle2D rightGoalArea = new Rectangle.Double(fieldX + this.width - goalAreaWidth, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
+        leftGoal = new Rectangle.Double(fieldX - goalWidth, centerY - goalHeight/2, goalWidth, goalHeight);
+        rightGoal = new Rectangle.Double(fieldX + this.width, centerY - goalHeight/2, goalWidth, goalHeight);
 
         // Bereken hulpwaarden voor standaardposities.
         final int positionsPerSide = FIELD_PLAYERS_SUPPORTED/2;
@@ -233,6 +238,31 @@ public class Field implements Drawable
         // Tekent doelen.
         g2d.drawImage(goalImage, leftGoalTransform, null);
         g2d.drawImage(goalImage, rightGoalTransform, null);
+    }
+
+    public int getFieldTop()
+    {
+        return (int)fieldRect.getMinY();
+    }
+    public int getFieldBot()
+    {
+        return (int)fieldRect.getMaxY();
+    }
+    public int getFieldRight()
+    {
+        return (int)fieldRect.getMaxX();
+    }
+    public int getFieldLeft()
+    {
+        return (int)fieldRect.getMinX();
+    }
+    public Rectangle2D getLeftGoal()
+    {
+        return leftGoal;
+    }
+    public Rectangle2D getRightGoal()
+    {
+        return rightGoal;
     }
 
     @Override public int getX()
