@@ -14,22 +14,27 @@ public class Player implements Drawable
 
     private String title;
     private final SoccerConstants side;
-    private int x, y;
+    private int x=0, y=0;
     private double[] dxdy;
     private boolean isControlled;
+
+    Field field = Field.getInstance();
 
     public Player(SoccerConstants side)
     {
         this.side = side;
         this.title = TITLE_DEFAULT;
         this.isControlled = false;
-        this.dxdy = new double[] {0, 0};
+        this.dxdy = new double[] {0,0};
     }
 
     public void setPosition(int x, int y)
     {
-        this.x = x;
-        this.y = y;
+        if(x!=0 && y!=0 && field.getX() < x && field.getY() < y && field.getWidth() + field.getX()-20 > x  && field.getHeight()+field.getY()-20 > y) {
+            this.x = x;
+            this.y = y;
+        }
+
     }
 
     public void setMovement(double[] dxdy)

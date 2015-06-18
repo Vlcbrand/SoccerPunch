@@ -304,13 +304,13 @@ class SoccerController extends WiimoteAdapter implements Runnable
     public static double[] toPoints(JoystickEvent e)
     {
         if (e == null)
-            return new double[] {0d, 0d};
-
+            return new double[] {10d, 10d};
 
         return new double[] {
             Math.sin(e.getAngle() * Math.PI/180d) * e.getMagnitude()*1.3, // x-waarde.
             -Math.cos(e.getAngle() * Math.PI/180d) * e.getMagnitude()*1.3 // y-waarde.
         };
+
     }
 
     private static void sleep(long millis)
