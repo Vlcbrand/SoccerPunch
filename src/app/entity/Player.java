@@ -34,11 +34,12 @@ public class Player implements Drawable
 
     public void setMovement(double[] dxdy)
     {
-        this.dxdy = dxdy;
+        double[] doubleArray = {0, 0};
+        if (!dxdy.equals(doubleArray))
+             this.dxdy = dxdy;
     }
 
-    public double[] getMovement()
-    {
+    public double[] getMovement() {
         return this.dxdy;
     }
 

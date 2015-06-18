@@ -47,7 +47,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.runner = null;
         this.isRunning = false;
         this.isPaused = false;
-        //this.getWiimotes();
+        this.getWiimotes();
 
         if (wiimotes == null)
             return;
@@ -127,7 +127,6 @@ class SoccerController extends WiimoteAdapter implements Runnable
         // Achtergrondmuziek stoppen.
         SoccerSound.getInstance().addFile(SoccerSound.MUSIC_MAIN).stop();
     }
-
     public void start()
     {
         if (this.runner == null) {
@@ -307,9 +306,10 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (e == null)
             return new double[] {0d, 0d};
 
+
         return new double[] {
-            Math.sin(e.getAngle() * Math.PI/180d) * e.getMagnitude(), // x-waarde.
-            -Math.cos(e.getAngle() * Math.PI/180d) * e.getMagnitude() // y-waarde.
+            Math.sin(e.getAngle() * Math.PI/180d) * e.getMagnitude()*1.3, // x-waarde.
+            -Math.cos(e.getAngle() * Math.PI/180d) * e.getMagnitude()*1.3 // y-waarde.
         };
     }
 
