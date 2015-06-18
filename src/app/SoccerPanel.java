@@ -184,6 +184,7 @@ class SoccerPanel extends JPanel
 //            }
         //}
 
+
             // Teken hoofdonderdelen.
             if (mainDrawables != null)
                 for (Drawable component : mainDrawables)
