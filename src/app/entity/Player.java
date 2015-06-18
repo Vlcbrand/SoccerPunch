@@ -7,91 +7,81 @@ import java.awt.*;
 /**
  * Een tekenbare speler voor op het voetbalveld.
  */
-public class Player implements Drawable
-{
+public class Player implements Drawable {
     public static final int SIZE = 20;
     public static final String TITLE_DEFAULT = "CPU";
 
     private String title;
     private final SoccerConstants side;
-    private int x=0, y=0;
+    private int x = 0, y = 0;
     private double[] dxdy;
     private boolean isControlled;
 
     Field field = Field.getInstance();
 
-    public Player(SoccerConstants side)
-    {
+    public Player(SoccerConstants side) {
         this.side = side;
         this.title = TITLE_DEFAULT;
         this.isControlled = false;
-        this.dxdy = new double[] {0,0};
+        this.dxdy = new double[]{0, 0};
     }
 
-    public void setPosition(int x, int y)
-    {
-        if(x!=0 && y!=0 && field.getX() < x && field.getY() < y && field.getWidth() + field.getX()-20 > x  && field.getHeight()+field.getY()-20 > y) {
+    public void setPosition(int x, int y) {
+        if (x != 0 && y != 0 && field.getX() < x && field.getY() < y && field.getWidth() + field.getX() - 20 > x && field.getHeight() + field.getY() - 20 > y) {
             this.x = x;
             this.y = y;
         }
 
     }
 
-    public void setMovement(double[] dxdy)
-    {
+    public void setMovement(double[] dxdy) {
         double[] doubleArray = {0, 0};
         if (!dxdy.equals(doubleArray))
-             this.dxdy = dxdy;
+            this.dxdy = dxdy;
     }
 
     public double[] getMovement() {
         return this.dxdy;
     }
 
-    public int getX()
-    {
+    public int getX() {
         return this.x;
     }
 
-    public int getY()
-    {
+    public int getY() {
         return this.y;
     }
 
-    public void setTitle(String title)
-    {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    public void setControlled(Boolean isControlled)
-    {
+    public void setControlled(Boolean isControlled) {
         this.isControlled = isControlled;
     }
 
-    public boolean isControlled()
-    {
+    public boolean isControlled() {
         return this.isControlled;
     }
 
-    public SoccerConstants getSide()
-    {
+    public SoccerConstants getSide() {
         return this.side;
     }
 
-    @Override public void draw(Graphics2D g2d)
-    {
+    @Override
+    public void draw(Graphics2D g2d) {
         g2d.setPaint(side.equals(SoccerConstants.EAST) ? Color.red : Color.blue);
         g2d.fillOval(this.x, this.y, 20, 20);
         g2d.drawString(title.trim(), this.x + 10, this.y - 2);
     }
 
-    @Override public int getWidth()
-    {
+    @Override
+    public int getWidth() {
         return SIZE;
     }
 
-    @Override public int getHeight()
-    {
+    @Override
+    public int getHeight() {
         return SIZE;
     }
 }
