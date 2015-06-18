@@ -18,24 +18,25 @@ public class Field implements Drawable
     public static final int FIELD_PLAYERS_SUPPORTED = 8;
 
     static final SoccerConstants goalImageOpenFrom;
-    static final BufferedImage goalImage;
+    static final BufferedImage goalImage, redBanner, blueBanner;
     private Rectangle2D leftGoal;
     private Rectangle2D rightGoal;
     Rectangle2D fieldRect;
 
     private static Field instance = null;
 
-    private AffineTransform leftGoalTransform, rightGoalTransform;
+    private AffineTransform leftGoalTransform, rightGoalTransform, redBannerTransform, blueBannerTransform;
 
     private int width, height;
     private int fieldX, fieldY;
     private int[][] defaultLeftPositions, defaultRightPositions;
     private Shape[] lines, spots;
 
-    static
-    {
+    static {
         goalImageOpenFrom = SoccerConstants.SOUTH;
         goalImage = util.Image.get("goal.gif");
+        redBanner = util.Image.get("teambanner_red.png");
+        blueBanner = util.Image.get("teambanner_blue.png");
     }
 
     private Field()
@@ -78,8 +79,8 @@ public class Field implements Drawable
         // Maten van goals.
         final int goalWidth = (int)(goalAreaWidth*.85);
         final int goalHeight = (int)(goalAreaHeight*.95);
-        final float goalWidthScale = goalWidth / getGoalImageWidth();
-        final float goalHeightScale = goalHeight / getGoalImageHeight();
+        final float goalWidthScale = goalWidth/getGoalImageWidth();
+        final float goalHeightScale = goalHeight/getGoalImageHeight();
 
         // Transformatie linker doel.
         leftGoalTransform = new AffineTransform();
@@ -92,6 +93,17 @@ public class Field implements Drawable
         rightGoalTransform.translate(fieldX + this.width + goalWidth, centerY - goalHeight/2);
         rightGoalTransform.scale(goalWidthScale, goalHeightScale);
         rightGoalTransform.rotate(getGoalRotation(SoccerConstants.EAST));
+
+        //Transformatie blauwe banner.
+        blueBannerTransform = new AffineTransform();
+        blueBannerTransform.translate(getWidth()/1.625 + blueBanner.getWidth(), fieldY*1.5);
+        blueBannerTransform.scale(0.2, 0.2);
+
+        //Transformatie rode banner.
+        redBannerTransform = new AffineTransform();
+        redBannerTransform.translate(getWidth()/1.95 - redBanner.getWidth(), fieldY*1.5);
+        redBannerTransform.scale(0.2, 0.2);
+
 
         // Tekent veldgrenzen.
         fieldRect = new Rectangle2D.Double(fieldX, fieldY, this.width, this.height);
@@ -112,8 +124,8 @@ public class Field implements Drawable
         // Bereken hulpwaarden voor standaardposities.
         final int positionsPerSide = FIELD_PLAYERS_SUPPORTED/2;
         final int playerOffset = Player.SIZE/2;
-        final int posXSpacing = (this.width/2) / (positionsPerSide + 1);
-        final int posYSpacing = (this.height/2) / 2;
+        final int posXSpacing = (this.width/2)/(positionsPerSide + 1);
+        final int posYSpacing = (this.height/2)/2;
         final int posXLeftFirst = fieldX + posXSpacing*2;
         final int posXRightFirst = fieldX + this.width - posXSpacing*2;
         final int posYUpperHalf = centerY - posYSpacing - playerOffset;
@@ -221,7 +233,6 @@ public class Field implements Drawable
             case EAST:
                 theta -= 90;
         }
-
         return Math.toRadians(theta);
     }
 
@@ -238,28 +249,35 @@ public class Field implements Drawable
         // Tekent doelen.
         g2d.drawImage(goalImage, leftGoalTransform, null);
         g2d.drawImage(goalImage, rightGoalTransform, null);
+        g2d.drawImage(redBanner, redBannerTransform, null);
+        g2d.drawImage(blueBanner, blueBannerTransform, null);
     }
 
     public int getFieldTop()
     {
         return (int)fieldRect.getMinY();
     }
+
     public int getFieldBot()
     {
         return (int)fieldRect.getMaxY();
     }
+
     public int getFieldRight()
     {
         return (int)fieldRect.getMaxX();
     }
+
     public int getFieldLeft()
     {
         return (int)fieldRect.getMinX();
     }
+
     public Rectangle2D getLeftGoal()
     {
         return leftGoal;
     }
+
     public Rectangle2D getRightGoal()
     {
         return rightGoal;

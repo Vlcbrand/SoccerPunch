@@ -47,6 +47,8 @@ class SoccerFrame extends JFrame
         new SoccerController(panel, model);
 
         this.setTitle("Soccer Punch!");
+
+        this.enterFullScreenMode();
     }
 
     private void enterFullScreenMode()
