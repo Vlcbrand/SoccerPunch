@@ -52,6 +52,19 @@ class SoccerPanel extends JPanel
         field.update(initialWidth, initialHeight);
     }
 
+    private void checkGoal()
+    {
+        if (field.getLeftGoal().intersects(ball.getBall()))
+        {
+            System.out.println("Hops, doelpunt in linker doel");
+        }
+
+        if (field.getRightGoal().intersects(ball.getBall()))
+        {
+            System.out.println("Hops, doelpunt in rechter doel");
+        }
+    }
+
     public Field getInnerField()
     {
         return this.field;

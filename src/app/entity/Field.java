@@ -20,6 +20,9 @@ public class Field implements Drawable
     static final SoccerConstants goalImageOpenFrom;
     static final BufferedImage goalImage;
 
+    private Rectangle2D leftGoal;
+    private Rectangle2D rightGoal;
+
     private static Field instance = null;
 
     private AffineTransform leftGoalTransform, rightGoalTransform;
@@ -103,6 +106,8 @@ public class Field implements Drawable
         Rectangle2D leftGoalArea = new Rectangle.Double(fieldX, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
         Rectangle2D rightPenaltyArea = new Rectangle.Double(fieldX + this.width - penaltyAreaWidth, centerY - penaltyAreaHeight/2, penaltyAreaWidth, penaltyAreaHeight);
         Rectangle2D rightGoalArea = new Rectangle.Double(fieldX + this.width - goalAreaWidth, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
+        leftGoal = new Rectangle.Double(fieldX - goalWidth, centerY - goalHeight/2, goalWidth, goalHeight);
+        rightGoal = new Rectangle.Double(fieldX + this.width, centerY - goalHeight/2, goalWidth, goalHeight);
 
         // Bereken hulpwaarden voor standaardposities.
         final int positionsPerSide = FIELD_PLAYERS_SUPPORTED/2;
@@ -233,6 +238,15 @@ public class Field implements Drawable
         // Tekent doelen.
         g2d.drawImage(goalImage, leftGoalTransform, null);
         g2d.drawImage(goalImage, rightGoalTransform, null);
+    }
+
+    public Rectangle2D getLeftGoal()
+    {
+        return leftGoal;
+    }
+    public Rectangle2D getRightGoal()
+    {
+        return rightGoal;
     }
 
     @Override public int getX()
