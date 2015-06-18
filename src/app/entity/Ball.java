@@ -32,13 +32,13 @@ public class Ball extends BallPhysics implements Drawable
     private BufferedImage ballImages()
     {
         BufferedImage ballImage[] = new BufferedImage[7];
-        ballImage[0] = util.Image.get("ball1.png");
-        ballImage[1] = util.Image.get("ball2.png");
-        ballImage[2] = util.Image.get("ball3.png");
-        ballImage[3] = util.Image.get("ball4.png");
-        ballImage[4] = util.Image.get("ball5.png");
-        ballImage[5] = util.Image.get("ball6.png");
-        ballImage[6] = util.Image.get("ball7.png");
+        ballImage[0] = util.Image.get("ball1.1.png");
+        ballImage[1] = util.Image.get("ball2.2.png");
+        ballImage[2] = util.Image.get("ball3.3.png");
+        ballImage[3] = util.Image.get("ball4.4.png");
+        ballImage[4] = util.Image.get("ball5.5.png");
+        ballImage[5] = util.Image.get("ball6.6.png");
+        ballImage[6] = util.Image.get("ball7.7.png");
 
         if (imgCount >= (ballImage.length - 1))
         {
