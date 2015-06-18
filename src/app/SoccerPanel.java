@@ -6,7 +6,9 @@ import util.Resource;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -55,18 +57,18 @@ class SoccerPanel extends JPanel
     {
         if (field.getLeftGoal().intersects(ball.getBall())) {
             blueScore++;
-            ball.setX(field.getWidth()/2 + field.getX()-10);
-            ball.setY(field.getHeight()/2 + field.getY()-10);
-            ball.accelerate(0,0);
+            ball.setX(field.getWidth()/2 + field.getX() - 10);
+            ball.setY(field.getHeight()/2 + field.getY() - 10);
+            ball.accelerate(0, 0);
             SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
             return blueScore;
         }
 
         if (field.getRightGoal().intersects(ball.getBall())) {
             redScore++;
-            ball.setX(field.getWidth()/2 + field.getX()-10);
-            ball.setY(field.getHeight()/2 + field.getY()-10);
-            ball.accelerate(0,0);
+            ball.setX(field.getWidth()/2 + field.getX() - 10);
+            ball.setY(field.getHeight()/2 + field.getY() - 10);
+            ball.accelerate(0, 0);
             SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
             return redScore;
         }
@@ -168,33 +170,47 @@ class SoccerPanel extends JPanel
         g2d.drawString(redScore + "", this.getWidth()/20, this.getHeight()/12);
         g2d.drawString(blueScore + "", (int)(this.getWidth()*0.95), this.getHeight()/12);
 
+//        if (redScore == 1 || blueScore == 1) {
+//            Rectangle2D rect = new Rectangle2D.Double(this.getWidth()/4, this.getHeight()/4, 50, 50);
+//            g2d.fill(rect);
+//
+//            Iterator<Player> iterator = fieldPlayers.iterator();
+//            while (iterator.hasNext()) {
+//                Player p = iterator.next();
+//                if (p.ellipsePlayer.intersects(rect)) {
+//                    iterator.remove();
+//                    // System.out.println("removed");
+//                }
+//            }
+        //}
 
-        // Teken hoofdonderdelen.
-        if (mainDrawables != null)
-            for (Drawable component : mainDrawables)
-                component.draw(sceneGraphics);
+            // Teken hoofdonderdelen.
+            if (mainDrawables != null)
+                for (Drawable component : mainDrawables)
+                    component.draw(sceneGraphics);
 
-        // Teken spelers.
-        if (fieldPlayers != null)
-            for (Drawable fieldPlayer : fieldPlayers)
-                fieldPlayer.draw(sceneGraphics);
+            // Teken spelers.
+            if (fieldPlayers != null)
+                for (Drawable fieldPlayer : fieldPlayers)
+                    fieldPlayer.draw(sceneGraphics);
 
-        // Teken test indien spelers aangemaakt zijn.
-        if (fieldPlayers != null && fieldPlayers.size() > 0)
-            this.drawJoystickTest(sceneGraphics);
+            // Teken test indien spelers aangemaakt zijn.
+            if (fieldPlayers != null && fieldPlayers.size() > 0)
+                this.drawJoystickTest(sceneGraphics);
 
-        // Teken startanimatie.
-        this.startSequence.draw(sceneGraphics);
+            // Teken startanimatie.
+            this.startSequence.draw(sceneGraphics);
 
-        // Scale met het hoofdscherm.
-        AffineTransform tx = new AffineTransform();
-        final double parentWidth = this.getParent().getWidth();
-        final double parentHeight = this.getParent().getHeight();
-        tx.scale(parentWidth/this.initialWidth, parentHeight/this.initialHeight);
+            // Scale met het hoofdscherm.
+            AffineTransform tx = new AffineTransform();
+            final double parentWidth = this.getParent().getWidth();
+            final double parentHeight = this.getParent().getHeight();
+            tx.scale(parentWidth/this.initialWidth, parentHeight/this.initialHeight);
 
-        sceneGraphics.dispose();
-        g2d.drawImage(scene, tx, this);
-    }
+            sceneGraphics.dispose();
+            g2d.drawImage(scene, tx, this);
+        }
+
 
     private void drawJoystickTest(Graphics2D g2d)
     {
