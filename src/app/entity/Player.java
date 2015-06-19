@@ -5,7 +5,6 @@ import app.SoccerConstants;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 
 /**
  * Een tekenbare speler voor op het voetbalveld.
@@ -16,7 +15,7 @@ public class Player implements Drawable
     public static final String TITLE_DEFAULT = "CPU";
     private static final BufferedImage playerImage;
 
-    Field field = Field.getInstance();
+    private Field field = Field.getInstance();
     private String title;
     private final SoccerConstants side;
     private int x = 0, y = 0;
@@ -57,7 +56,6 @@ public class Player implements Drawable
         if (!moving) {
             imgCount = 1;
         } else {
-
             if (imgCount >= (3 - 1)) {
                 imgCount = 0;
                 return sprites[imgCount];
@@ -79,7 +77,6 @@ public class Player implements Drawable
                 imgCount++;
         }
 
-
         return sprites[imgCount];
     }
 
@@ -90,7 +87,6 @@ public class Player implements Drawable
             this.y = y;
             playerEllipse = new Ellipse2D.Double(this.x, this.y, 20, 20);
         }
-
     }
 
     public void setMovement(double[] dxdy)
@@ -147,22 +143,23 @@ public class Player implements Drawable
     @Override public void draw(Graphics2D g2d)
     {
         g2d.setPaint(side.equals(SoccerConstants.EAST) ? Color.red : Color.blue);
+
         if (moving)
             moving1 = true;
 
-        if (!moving1 && side.equals(SoccerConstants.WEST)) {
+        if (!moving1 && side.equals(SoccerConstants.WEST))
             g2d.drawImage(sprites[1], this.x - 70, this.y - 75, null);
-        } else if (!moving1 && side.equals(SoccerConstants.EAST))
+        else if (!moving1 && side.equals(SoccerConstants.EAST))
             g2d.drawImage(sprites[4], this.x, this.y - 75, null);
 
-        else if (moved && !moving && !movingLeft && side.equals(SoccerConstants.EAST)) {
+        else if (moved && !moving && !movingLeft && side.equals(SoccerConstants.EAST))
             g2d.drawImage(sprites[1], this.x - 20, this.y - 75, null);
-        } else if (!moved && !moving && !movingLeft && side.equals(SoccerConstants.EAST))
+        else if (!moved && !moving && !movingLeft && side.equals(SoccerConstants.EAST))
             g2d.drawImage(sprites[4], this.x, this.y - 75, null);
 
-        else if (moved && !moving && !movingLeft && side.equals(SoccerConstants.WEST)) {
+        else if (moved && !moving && !movingLeft && side.equals(SoccerConstants.WEST))
             g2d.drawImage(sprites[1], this.x - 70, this.y - 75, null);
-        } else if (!moved && !moving && !movingLeft && side.equals(SoccerConstants.WEST))
+        else if (!moved && !moving && !movingLeft && side.equals(SoccerConstants.WEST))
             g2d.drawImage(sprites[4], this.x - 70, this.y - 75, null);
 
         else if (side.equals(SoccerConstants.WEST))
@@ -196,6 +193,7 @@ public class Player implements Drawable
             playerEllipse = new Ellipse2D.Double(this.x - 40, this.y + 10, 20, 20);
         }
     }
+
     @Override public int getWidth()
     {
         return SIZE;
