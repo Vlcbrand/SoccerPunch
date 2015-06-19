@@ -10,33 +10,32 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 /**
- * Een tekenbaar veld voor op een paneel.
+ * Een tekenbaar veld voor op een SoccerPanel.
  * Field bezit twee doelen en overige veldonderdelen.
+ * Field is een singleton, dus gebruik {@link #getInstance()}.
  */
 public class Field implements Drawable
 {
     public static final int FIELD_PLAYERS_SUPPORTED = 8;
 
     static final SoccerConstants goalImageOpenFrom;
-    static final BufferedImage goalImage, redBanner, blueBanner;
-    private Rectangle2D leftGoal;
-    private Rectangle2D rightGoal;
-    Rectangle2D fieldRect;
+    static final BufferedImage goalImage;
 
     private static Field instance = null;
 
-    private AffineTransform leftGoalTransform, rightGoalTransform, redBannerTransform, blueBannerTransform;
-
     private int width, height;
     private int fieldX, fieldY;
+    private AffineTransform leftGoalTransform, rightGoalTransform;
     private int[][] defaultLeftPositions, defaultRightPositions;
     private Shape[] lines, spots;
+
+    private Rectangle2D leftGoal;
+    private Rectangle2D rightGoal;
+    private Rectangle2D fieldRect;
 
     static {
         goalImageOpenFrom = SoccerConstants.SOUTH;
         goalImage = util.Image.get("goal.gif");
-        redBanner = util.Image.get("teambanner_red.png");
-        blueBanner = util.Image.get("teambanner_blue.png");
     }
 
     private Field()
@@ -94,17 +93,6 @@ public class Field implements Drawable
         rightGoalTransform.scale(goalWidthScale, goalHeightScale);
         rightGoalTransform.rotate(getGoalRotation(SoccerConstants.EAST));
 
-        //Transformatie rode banner.
-        redBannerTransform = new AffineTransform();
-        redBannerTransform.translate(getWidth()/1.625 + blueBanner.getWidth(), fieldY*1.5);
-        redBannerTransform.scale(0.2, 0.2);
-
-        //Transformatie blauwe banner.
-        blueBannerTransform = new AffineTransform();
-        blueBannerTransform.translate(getWidth()/1.95 - redBanner.getWidth(), fieldY*1.5);
-        blueBannerTransform.scale(0.2, 0.2);
-
-
         // Tekent veldgrenzen.
         fieldRect = new Rectangle2D.Double(fieldX, fieldY, this.width, this.height);
 
@@ -144,7 +132,7 @@ public class Field implements Drawable
         defaultRightPositions[3] = new int[] {posXRightFirst - posXSpacing, posYLowerHalf};
 
         // Lines worden getekend en spots worden gevuld.
-        lines = new Shape[] {fieldRect, centerCircle, centerLine, leftPenaltyArea, rightPenaltyArea, leftGoalArea, rightGoalArea};
+        lines = new Shape[] {this.fieldRect, centerCircle, centerLine, leftPenaltyArea, rightPenaltyArea, leftGoalArea, rightGoalArea};
         spots = new Shape[] {centerSpot};
     }
 
@@ -233,6 +221,7 @@ public class Field implements Drawable
             case EAST:
                 theta -= 90;
         }
+
         return Math.toRadians(theta);
     }
 
@@ -249,8 +238,6 @@ public class Field implements Drawable
         // Tekent doelen.
         g2d.drawImage(goalImage, leftGoalTransform, null);
         g2d.drawImage(goalImage, rightGoalTransform, null);
-        g2d.drawImage(redBanner, redBannerTransform, null);
-        g2d.drawImage(blueBanner, blueBannerTransform, null);
     }
 
     public int getFieldTop()

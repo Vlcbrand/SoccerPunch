@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 /**
- * Hoofdscherm van het spel.
+ * Hoofdscherm voor het voorzien van een {@link SoccerPanel}.
  */
 class SoccerFrame extends JFrame
 {
@@ -47,8 +47,6 @@ class SoccerFrame extends JFrame
         new SoccerController(panel, model);
 
         this.setTitle("Soccer Punch!");
-
-        this.enterFullScreenMode();
     }
 
     private void enterFullScreenMode()

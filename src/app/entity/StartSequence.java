@@ -22,7 +22,7 @@ public class StartSequence implements Drawable
 
     private StartSequence()
     {
-        this.isActive = true;
+        this.activate();
     }
 
     public static StartSequence getInstance()

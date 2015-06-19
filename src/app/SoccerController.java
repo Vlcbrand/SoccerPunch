@@ -6,10 +6,7 @@ import app.wii.WiimoteButton;
 import util.Resource;
 import wiiusej.WiiUseApiManager;
 import wiiusej.Wiimote;
-import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
-import wiiusej.wiiusejevents.physicalevents.JoystickEvent;
-import wiiusej.wiiusejevents.physicalevents.NunchukEvent;
-import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
+import wiiusej.wiiusejevents.physicalevents.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +44,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.runner = null;
         this.isRunning = false;
         this.isPaused = false;
-        this.getWiimotes();
+        //this.getWiimotes();
 
         if (wiimotes == null)
             return;
@@ -56,7 +53,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (wiimotes.length == 0)
             this.getWiimotes();
 
-        this.addMotes();
+        this.addAvailableWiimotes();
     }
 
     /**
@@ -70,7 +67,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
     /**
      * Voeg de gevonden Wiimotes toe voor gebruik.
      */
-    private void addMotes()
+    private void addAvailableWiimotes()
     {
         final int connectedWiimotes = this.wiimotes.length;
 
@@ -204,7 +201,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
                     if (SHOW_FPS) {
                         //final double ups = ticks/updateTimeDelta;
                         final double fps = frames/renderTimeDelta;
-                        this.view.getHeadsUpDisplay().update((int)fps);
+                        this.view.getHeadsUpDisplay().updateFPS((int)fps);
                     }
 
                     ticks = 0;
@@ -305,18 +302,12 @@ class SoccerController extends WiimoteAdapter implements Runnable
     public static double[] toPoints(JoystickEvent e)
     {
         if (e == null)
-            return new double[] {10d, 10d};
+            return new double[] {0, 0};
 
         double x = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
         double y = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
 
-        x = x > 0 ? x*2.5 : x*2;
-        y = y > 0 ? y*2.5 : y*2;
-
-
-        return new double[] {x, y // x-waarde.// y-waarde.
-        };
-
+        return new double[] {x, y};
     }
 
     private static void sleep(long millis)

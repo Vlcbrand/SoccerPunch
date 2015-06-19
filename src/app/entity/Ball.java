@@ -7,9 +7,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-/**
- * Created by Tom Remeeus on 5-6-2015.
- */
 public class Ball extends BallPhysics implements Drawable
 {
     private Ellipse2D ball;
@@ -33,13 +30,13 @@ public class Ball extends BallPhysics implements Drawable
     private BufferedImage ballImages()
     {
         BufferedImage ballImage[] = new BufferedImage[7];
-        ballImage[0] = util.Image.get("ball1.1.png");
-        ballImage[1] = util.Image.get("ball2.2.png");
-        ballImage[2] = util.Image.get("ball3.3.png");
-        ballImage[3] = util.Image.get("ball4.4.png");
-        ballImage[4] = util.Image.get("ball5.5.png");
-        ballImage[5] = util.Image.get("ball6.6.png");
-        ballImage[6] = util.Image.get("ball7.7.png");
+        ballImage[0] = util.Image.get("ball/ball1.1.png");
+        ballImage[1] = util.Image.get("ball/ball2.2.png");
+        ballImage[2] = util.Image.get("ball/ball3.3.png");
+        ballImage[3] = util.Image.get("ball/ball4.4.png");
+        ballImage[4] = util.Image.get("ball/ball5.5.png");
+        ballImage[5] = util.Image.get("ball/ball6.6.png");
+        ballImage[6] = util.Image.get("ball/ball7.7.png");
 
         if (imgCount >= (ballImage.length - 1)) {
             imgCount = 0;

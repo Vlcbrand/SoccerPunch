@@ -13,6 +13,7 @@ class SoccerModel
 {
     private List<SoccerRemote> remotes;
     private volatile Map<SoccerConstants, List<Player>> players;
+    private volatile Map<SoccerConstants, Integer> score;
 
     private int fps;
 
@@ -84,6 +85,11 @@ class SoccerModel
         return this.players.get(side);
     }
 
+    public void addRemote(int index, SoccerRemote remote)
+    {
+        this.remotes.add(index, remote);
+    }
+
     /**
      * Verkrijg een speler door zijn Wiimote-ID.
      */
@@ -95,10 +101,6 @@ class SoccerModel
         return this.remotes.get(id -1);
     }
 
-    public void addRemote(int index, SoccerRemote remote)
-    {
-        this.remotes.add(index, remote);
-    }
 
     public List<SoccerRemote> getRemotes()
     {
