@@ -6,11 +6,16 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
+/**
+ * Created by Tom Remeeus on 5-6-2015.
+ */
 public class Ball extends BallPhysics implements Drawable
 {
     private Ellipse2D ball;
     private int imgCount;
+    private  Random random;
 
     public Ball(double locX, double locY)
     {
@@ -19,6 +24,7 @@ public class Ball extends BallPhysics implements Drawable
 
         super.ballSize = ballImages().getHeight();
         ball = new Ellipse2D.Double();
+        random = new Random();
     }
 
     public void offset(int dx, int dy)
@@ -72,6 +78,26 @@ public class Ball extends BallPhysics implements Drawable
     public void setY(int y)
     {
         this.y = y;
+    }
+
+    //schopt bal in meerdere richtingen
+    public void randomKick()
+    {
+        new Thread(() ->
+        {
+            while (true)
+            {
+                accelerate(20 + random.nextInt(50), random.nextInt(360));
+
+                try
+                {
+                    Thread.sleep(5000);
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override public int getY()

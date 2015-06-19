@@ -22,7 +22,7 @@ public class Player implements Drawable
     private double x1 = 0;
     private double[] dxdy;
     private boolean isControlled;
-    public Ellipse2D playerEllipse;
+    public Ellipse2D.Double playerEllipse;
 
     private int count;
     private int imgCount;
@@ -60,7 +60,7 @@ public class Player implements Drawable
                 imgCount = 0;
                 return sprites[imgCount];
             } else {
-                if (count%4 == 0)
+                if (count%6 == 0)
                     imgCount++;
             }
         }
@@ -73,7 +73,7 @@ public class Player implements Drawable
         if (imgCount >= 5) {
             imgCount = 3;
         } else {
-            if (count%4 == 0)
+            if (count%6 == 0)
                 imgCount++;
         }
 

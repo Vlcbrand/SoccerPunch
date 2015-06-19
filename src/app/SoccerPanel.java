@@ -6,7 +6,9 @@ import util.Resource;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -26,6 +28,7 @@ class SoccerPanel extends JPanel
     private Random random = new Random();
 
     private List<Player> fieldPlayers;
+    ArrayList<Ellipse2D.Double> playerArray;
 
     static {
         minimumSize = new Dimension(Resource.getInteger("int.width.min"), Resource.getInteger("int.height.min"));
@@ -40,6 +43,8 @@ class SoccerPanel extends JPanel
 
         this.initialWidth = (int)this.getPreferredSize().getWidth() - 2;
         this.initialHeight = (int)this.getPreferredSize().getHeight() - 25;
+
+        playerArray = new ArrayList<Ellipse2D.Double>();
 
         this.mainDrawables = new Drawable[] {
             field = Field.getInstance(),
@@ -127,7 +132,7 @@ class SoccerPanel extends JPanel
                 if (oldWidth != newWidth || oldHeight != newHeight)
                     ball.offset(newWidth - oldWidth, newHeight - oldHeight);
 
-                ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight());
+                ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight(), players());
                 this.repaint();
 
                 try {
@@ -156,6 +161,20 @@ class SoccerPanel extends JPanel
                 }
             }
         }).start();
+    }
+
+    private ArrayList<Ellipse2D.Double> players()
+    {
+        playerArray.clear();
+
+        {
+            for (int i = 0; fieldPlayers.size() > i; i ++)
+            {
+                playerArray.add(fieldPlayers.get(i).playerEllipse);
+            }
+        }
+
+        return playerArray;
     }
 
     @Override public void paintComponent(Graphics g)
