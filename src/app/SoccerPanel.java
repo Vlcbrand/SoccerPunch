@@ -91,7 +91,6 @@ class SoccerPanel extends JPanel
 
         //tijdelijke code
         updateBall();
-        randomKick();
     }
 
     private SoccerConstants checkForGoal()
@@ -257,6 +256,11 @@ class SoccerPanel extends JPanel
             g2d.fillOval(x - cursorSize/2, y - cursorSize/2, cursorSize, cursorSize);
             g2d.drawString("(" + (x - trueXOffset) + ", " + (y - yOffset) + ")", x + cursorSize + 5, y + cursorSize/2);
         }
+    }
+
+    public Ball getBall()
+    {
+        return this.ball;
     }
 
     @Override public Dimension getMinimumSize()

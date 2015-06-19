@@ -346,6 +346,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
     @Override public void onButtonsEvent(WiimoteButtonsEvent e)
     {
         final SoccerRemote remote = this.model.getRemote(e.getWiimoteId());
+        Player controlledFieldPlayer = remote.getControlledPlayer();
 
         if (remote == null)
             return;
@@ -380,6 +381,11 @@ class SoccerController extends WiimoteAdapter implements Runnable
             else if (e.isButtonRightJustReleased())
                 remote.releaseButton(WiimoteButton.RIGHT);
 
+            else if(e.isButtonOneJustPressed()){
+                view.getBall().accelerate(40, controlledFieldPlayer.getAngle());
+                System.out.println(controlledFieldPlayer.getAngle());
+            }
+
             // Dichstbijzijnde speler selecteren.
             remote.controlPlayer(this.getNearestFieldPlayer(remote));
         } else {
@@ -396,7 +402,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
         xm = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
         ym = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
 
-        return Math.atan(ym/xm);
+        return Math.toDegrees(Math.atan(ym/xm));
     }
 
     @Override public void onExpansionEvent(ExpansionEvent e)

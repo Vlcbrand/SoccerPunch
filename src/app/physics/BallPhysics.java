@@ -92,10 +92,9 @@ public class BallPhysics
 
         this.step();
 
-        System.out.println(players.size());
     }
 
-    public void accelerate(int force, int degrees)
+    public void accelerate(int force, double degrees)
     {
         double radians = Math.toRadians(degrees);
 
