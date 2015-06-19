@@ -381,7 +381,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
             else if (e.isButtonRightJustReleased())
                 remote.releaseButton(WiimoteButton.RIGHT);
 
-            else if(e.isButtonOneJustPressed()){
+            else if (e.isButtonOneJustPressed()) {
                 view.getBall().accelerate(40, controlledFieldPlayer.getAngle());
                 System.out.println(controlledFieldPlayer.getAngle());
             }
