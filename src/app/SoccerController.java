@@ -21,6 +21,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
     static final int PLAYERS_SUPPORTED = 2;
     static final int FPS, UPS;
     static final boolean SHOW_FPS;
+    private static double xm, ym;
 
     private SoccerPanel view;
     private SoccerModel model;
@@ -44,7 +45,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.runner = null;
         this.isRunning = false;
         this.isPaused = false;
-        //this.getWiimotes();
+        this.getWiimotes();
 
         if (wiimotes == null)
             return;
@@ -302,12 +303,26 @@ class SoccerController extends WiimoteAdapter implements Runnable
     public static double[] toPoints(JoystickEvent e)
     {
         if (e == null)
-            return new double[] {0, 0};
+            return new double[] {10d, 10d};
 
-        double x = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
-        double y = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
+        xm = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
+        ym = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
 
-        return new double[] {x, y};
+
+        xm = xm > 0 ? xm*2.5 : xm*2;
+        ym = ym > 0 ? ym*2.5 : ym*2;
+
+
+        return new double[] {xm, ym // x-waarde.// y-waarde.
+        };
+    }
+
+    public boolean isMoving()
+    {
+        if (xm > 0)
+            return true;
+        else
+            return false;
     }
 
     private static void sleep(long millis)
