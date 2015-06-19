@@ -15,6 +15,8 @@ public class Player implements Drawable
     public static final String TITLE_DEFAULT = "CPU";
     private static final BufferedImage playerImage;
 
+    private double angle;
+
     private Field field = Field.getInstance();
     private String title;
     private final SoccerConstants side;
@@ -202,5 +204,15 @@ public class Player implements Drawable
     @Override public int getHeight()
     {
         return SIZE;
+    }
+
+    public double getAngle()
+    {
+        return angle;
+    }
+
+    public void setAngle(double angle)
+    {
+        this.angle = angle;
     }
 }

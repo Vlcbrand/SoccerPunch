@@ -109,7 +109,7 @@ class SoccerPanel extends JPanel
             ball.setY(field.getHeight()/2 + field.getY() - 10);
             ball.accelerate(0, 0);
             SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
-            return SoccerConstants.WEST;
+            return SoccerConstants.EAST;
         }
 
         return null;
@@ -182,6 +182,8 @@ class SoccerPanel extends JPanel
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+        checkForGoal();
 
         BufferedImage scene = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D sceneGraphics = (Graphics2D)scene.getGraphics();

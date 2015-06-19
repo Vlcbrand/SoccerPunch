@@ -388,6 +388,17 @@ class SoccerController extends WiimoteAdapter implements Runnable
         }
     }
 
+    public double getJoystickAngle(JoystickEvent e)
+    {
+        if (e == null)
+            return 0;
+
+        xm = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
+        ym = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
+
+        return Math.atan(ym/xm);
+    }
+
     @Override public void onExpansionEvent(ExpansionEvent e)
     {
         if (!NunchukEvent.class.isInstance(e))
@@ -408,7 +419,9 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (controlledFieldPlayer == null)
             return;
 
-        if (ne.isThereNunchukJoystickEvent())
+        if (ne.isThereNunchukJoystickEvent()) {
             controlledFieldPlayer.setMovement(toPoints(je));
+            controlledFieldPlayer.setAngle(getJoystickAngle(je));
+        }
     }
 }
