@@ -22,6 +22,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
     static final int FPS, UPS;
     static final boolean SHOW_FPS;
     private static double xm, ym;
+    private double joystickAngle;
 
     private SoccerPanel view;
     private SoccerModel model;
@@ -382,8 +383,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
                 remote.releaseButton(WiimoteButton.RIGHT);
 
             else if (e.isButtonOneJustPressed() && controlledFieldPlayer.playerEllipse.contains(view.getBall().getBall())) {
-                view.getBall().accelerate(40, controlledFieldPlayer.getAngle());
-                System.out.println(controlledFieldPlayer.getAngle());
+                view.getBall().accelerate(40, joystickAngle);
+                System.out.println(joystickAngle);
             }
 
             // Dichstbijzijnde speler selecteren.
@@ -402,6 +403,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
         xm = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
         ym = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
 
+        //hoek in graden
+        joystickAngle = e.getAngle();
         return Math.toDegrees(Math.atan(ym/xm));
     }
 

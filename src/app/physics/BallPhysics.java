@@ -108,8 +108,8 @@ public class BallPhysics
     {
         double radians = Math.toRadians(degrees);
 
-        hSpeed = Math.sin(radians)*force;
-        vSpeed = -Math.cos(radians)*force;
+        hSpeed = -Math.sin(radians)*force;
+        vSpeed = Math.cos(radians)*force;
     }
 
     public double getBallX()
