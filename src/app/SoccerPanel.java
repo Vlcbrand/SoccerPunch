@@ -6,7 +6,9 @@ import util.Resource;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -26,6 +28,7 @@ public class SoccerPanel extends JPanel
     private Random random = new Random();
 
     private List<Player> fieldPlayers;
+    ArrayList<Ellipse2D.Double> playerEllipses;
 
     static {
         minimumSize = new Dimension(Resource.getInteger("int.width.min"), Resource.getInteger("int.height.min"));
@@ -45,6 +48,8 @@ public class SoccerPanel extends JPanel
 
         this.mainUpdatables = new Updatable[] {hud, startSequence};
         this.mainDrawables = new Drawable[] {field, hud, startSequence};
+
+        playerEllipses = new ArrayList<>();
 
         // Bal aanmaken - tijdelijk.
         this.ball = new Ball(this.getWidth()/2 - 10, this.getHeight()/2 - 10);
@@ -79,6 +84,10 @@ public class SoccerPanel extends JPanel
         // Hoofdonderdelen verversen.
         for (Updatable updatable : mainUpdatables)
             updatable.update(this);
+
+        // Update bal - tijdelijk.
+        updateBall();
+        checkForGoal();
     }
 
     private SoccerConstants checkForGoal()
@@ -119,7 +128,7 @@ public class SoccerPanel extends JPanel
                 if (oldWidth != newWidth || oldHeight != newHeight)
                     ball.offset(newWidth - oldWidth, newHeight - oldHeight);
 
-                ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight());
+                ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight(), getPlayerEllipses());
                 this.repaint();
 
                 try {
@@ -153,6 +162,16 @@ public class SoccerPanel extends JPanel
     public SoccerModel getActiveModel()
     {
         return this.model;
+    }
+
+    private ArrayList<Ellipse2D.Double> getPlayerEllipses()
+    {
+        playerEllipses.clear();
+
+        for (int i = 0; fieldPlayers.size() > i; i ++)
+            playerEllipses.add(fieldPlayers.get(i).playerEllipse);
+
+        return playerEllipses;
     }
 
     @Override public void paintComponent(Graphics g)
@@ -232,6 +251,11 @@ public class SoccerPanel extends JPanel
             g2d.fillOval(x - cursorSize/2, y - cursorSize/2, cursorSize, cursorSize);
             g2d.drawString("(" + (x - trueXOffset) + ", " + (y - yOffset) + ")", x + cursorSize + 5, y + cursorSize/2);
         }
+    }
+
+    public Ball getBall()
+    {
+        return this.ball;
     }
 
     @Override public Dimension getMinimumSize()

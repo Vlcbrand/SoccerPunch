@@ -7,6 +7,7 @@ import util.Resource;
 import wiiusej.WiiUseApiManager;
 import wiiusej.Wiimote;
 import wiiusej.wiiusejevents.physicalevents.*;
+import wiiusej.wiiusejevents.wiiuseapievents.WiimoteEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
     static final int PLAYERS_SUPPORTED = 2;
     static final int FPS, UPS;
     static final boolean SHOW_FPS;
+    private static double xm, ym;
+    private double joystickAngle;
 
     private SoccerPanel view;
     private SoccerModel model;
@@ -305,12 +308,26 @@ class SoccerController extends WiimoteAdapter implements Runnable
     public static double[] toPoints(JoystickEvent e)
     {
         if (e == null)
-            return new double[] {0, 0};
+            return new double[] {10d, 10d};
 
-        double x = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
-        double y = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
+        xm = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
+        ym = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
 
-        return new double[] {x, y};
+
+        xm = xm > 0 ? xm*2.5 : xm*2;
+        ym = ym > 0 ? ym*2.5 : ym*2;
+
+
+        return new double[] {xm, ym // x-waarde.// y-waarde.
+        };
+    }
+
+    public boolean isMoving()
+    {
+        if (xm > 0)
+            return true;
+        else
+            return false;
     }
 
     private static void sleep(long millis)
@@ -334,6 +351,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
     @Override public void onButtonsEvent(WiimoteButtonsEvent e)
     {
         final SoccerRemote remote = this.model.getRemote(e.getWiimoteId());
+        Player controlledFieldPlayer = remote.getControlledPlayer();
 
         if (remote == null)
             return;
@@ -371,9 +389,22 @@ class SoccerController extends WiimoteAdapter implements Runnable
             // Dichstbijzijnde speler selecteren.
             remote.controlPlayer(this.getNearestFieldPlayer(remote));
         } else {
-            if (e.isButtonAJustPressed() && !e.isButtonBPressed())
-                this.start();
+                if (e.isButtonAJustPressed() && !e.isButtonBPressed())
+                    this.start();
         }
+    }
+
+    public double getJoystickAngle(JoystickEvent e)
+    {
+        if (e == null)
+            return 0;
+
+        xm = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
+        ym = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
+
+        //hoek in graden
+        joystickAngle = e.getAngle();
+        return Math.toDegrees(Math.atan(ym/xm));
     }
 
     @Override public void onExpansionEvent(ExpansionEvent e)
@@ -396,7 +427,19 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (controlledFieldPlayer == null)
             return;
 
-        if (ne.isThereNunchukJoystickEvent())
+        if (ne.isThereNunchukJoystickEvent()) {
             controlledFieldPlayer.setMovement(toPoints(je));
+            controlledFieldPlayer.setAngle(getJoystickAngle(je));
+
+            //ball passen
+            if (ne.getButtonsEvent().isButtonCJustPressed() && controlledFieldPlayer.playerEllipse.contains(view.getBall().getBall()))
+            {
+                view.getBall().accelerate(45, joystickAngle);
+            }
+            if (ne.getNunchukMotionSensingEvent().getGforce().getY() * 100 > 20 && controlledFieldPlayer.playerEllipse.contains(view.getBall().getBall()))
+            {
+                view.getBall().accelerate((int)(ne.getNunchukMotionSensingEvent().getGforce().getY() * 100), joystickAngle);
+            }
+        }
     }
 }
