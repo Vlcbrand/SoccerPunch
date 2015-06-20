@@ -22,7 +22,7 @@ public class Ball extends BallPhysics implements Drawable
         super.x = locX;
         super.y = locY;
 
-        super.ballSize = ballImages().getHeight();
+        super.ballSize = ballImages().getHeight() - 5;
         ball = new Ellipse2D.Double();
         random = new Random();
     }

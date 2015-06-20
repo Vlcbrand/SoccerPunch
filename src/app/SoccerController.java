@@ -7,6 +7,7 @@ import util.Resource;
 import wiiusej.WiiUseApiManager;
 import wiiusej.Wiimote;
 import wiiusej.wiiusejevents.physicalevents.*;
+import wiiusej.wiiusejevents.wiiuseapievents.WiimoteEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -382,16 +383,11 @@ class SoccerController extends WiimoteAdapter implements Runnable
             else if (e.isButtonRightJustReleased())
                 remote.releaseButton(WiimoteButton.RIGHT);
 
-            else if (e.isButtonOneJustPressed() && controlledFieldPlayer.playerEllipse.contains(view.getBall().getBall())) {
-                view.getBall().accelerate(40, joystickAngle);
-                System.out.println(joystickAngle);
-            }
-
             // Dichstbijzijnde speler selecteren.
             remote.controlPlayer(this.getNearestFieldPlayer(remote));
         } else {
-            if (e.isButtonAJustPressed() && !e.isButtonBPressed())
-                this.start();
+                if (e.isButtonAJustPressed() && !e.isButtonBPressed())
+                    this.start();
         }
     }
 
@@ -431,6 +427,16 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (ne.isThereNunchukJoystickEvent()) {
             controlledFieldPlayer.setMovement(toPoints(je));
             controlledFieldPlayer.setAngle(getJoystickAngle(je));
+
+            //ball passen
+            if (ne.getButtonsEvent().isButtonCJustPressed() && controlledFieldPlayer.playerEllipse.contains(view.getBall().getBall()))
+            {
+                view.getBall().accelerate(45, joystickAngle);
+            }
+            if (ne.getNunchukMotionSensingEvent().getGforce().getY() * 100 > 20 && controlledFieldPlayer.playerEllipse.contains(view.getBall().getBall()))
+            {
+                view.getBall().accelerate((int)(ne.getNunchukMotionSensingEvent().getGforce().getY() * 100), joystickAngle);
+            }
         }
     }
 }

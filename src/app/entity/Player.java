@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
  */
 public class Player implements Drawable
 {
-    public static final int SIZE = 40;
+    public static final int SIZE = 30;
     public static final String TITLE_DEFAULT = "CPU";
     private static final BufferedImage playerImage;
 

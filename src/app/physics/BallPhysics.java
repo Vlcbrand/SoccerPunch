@@ -28,34 +28,48 @@ public class BallPhysics
             //speler collision
             if (players.get(i).intersects(x, y, ballSize, ballSize))
             {
-                if (vSpeed > 6 || hSpeed > 6)
+                if (vSpeed > 8 || hSpeed > 8)
                 {
+                    vSpeed *= 0.75;
+                    hSpeed *= 0.75;
+
                     vSpeed = -vSpeed;
                     hSpeed = -hSpeed;
                     break;
                 }
-                if (vSpeed < -6 || hSpeed < -6)
+                if (vSpeed < -8 || hSpeed < -8)
                 {
+                    vSpeed *= 0.75;
+                    hSpeed *= 0.75;
+
                     vSpeed = -vSpeed;
                     hSpeed = -hSpeed;
                     break;
                 }
-                if (vSpeed > 6 && hSpeed > 6)
+                if (vSpeed > 8 && hSpeed > 8)
                 {
+                    vSpeed *= 0.75;
+                    hSpeed *= 0.75;
+
                     vSpeed = -vSpeed;
                     hSpeed = -hSpeed;
                     break;
                 }
-                if (vSpeed < -6 && hSpeed < -6)
+                if (vSpeed < -8 && hSpeed < -8)
                 {
+                    vSpeed *= 0.75;
+                    hSpeed *= 0.75;
+
                     vSpeed = -vSpeed;
                     hSpeed = -hSpeed;
                     break;
                 }
+                //speler snapping
                 else
                 {
                     x = players.get(i).getX() + (ballSize / 2);
                     y = players.get(i).getY() + (ballSize / 2);
+                    break;
                 }
             }
         }
@@ -84,8 +98,8 @@ public class BallPhysics
         }
 
         //rolweerstand
-        hSpeed *= 0.99;
-        vSpeed *= 0.99;
+        hSpeed *= 0.9899;
+        vSpeed *= 0.9899;
 
         //snelheidsupdate
         this.x += hSpeed;
