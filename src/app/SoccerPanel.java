@@ -183,7 +183,6 @@ class SoccerPanel extends JPanel
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
         this.hud.addGoalPoint(checkForGoal());
-        //this.model.collision();
 
         BufferedImage scene = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D sceneGraphics = (Graphics2D)scene.getGraphics();

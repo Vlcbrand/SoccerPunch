@@ -62,8 +62,14 @@ class SoccerModel
             final int x = player.getX();
             final int y = player.getY();
             final double[] dxdy = player.getMovement();
+            for(Player p : this.getPlayers())
+            {
+                if(player.playerEllipse.intersects(new Rectangle2D.Double(p.getX(),p.getY(),p.spriteWidth, p.spriteHeight)))
+                    player.setMovement(new double[]{0d, 0d});
+                else
+                     player.setPosition((int)(x + dxdy[0]), (int)(y + dxdy[1]));
 
-            player.setPosition((int)(x + dxdy[0]), (int)(y + dxdy[1]));
+            }
         }
     }
 
@@ -78,18 +84,18 @@ class SoccerModel
         return allFieldPlayers;
     }
 
-    public void collision()
-    {
-        List players = getPlayers();
-        for(int i =0; i< players.size(); i++)
-        {
-           Player player = (Player) players.get(i);
-            for(Player p :getPlayers()){
-                if(player.playerEllipse.intersects(new Rectangle2D.Double(p.getX(),p.getY(),p.spriteWidth, p.spriteHeight)))
-                    player.setMovement(new double[] {0d, 0d});
-            }
-        }
-    }
+    //    public void collision()
+    //    {
+    //        List players = getPlayers();
+    //        for(int i =0; i< players.size(); i++)
+    //        {
+    //           Player player = (Player) players.get(i);
+    //            for(Player p :getPlayers()){
+    //                if(player.playerEllipse.intersects(new Rectangle2D.Double(p.getX(),p.getY(),p.spriteWidth, p.spriteHeight)))
+    //                    player.setMovement(new double[] {0d, 0d});
+    //            }
+    //        }
+    //    }
 
     public List<Player> getPlayers(SoccerConstants side)
     {
