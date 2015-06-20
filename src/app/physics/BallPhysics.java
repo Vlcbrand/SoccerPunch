@@ -1,6 +1,7 @@
 package app.physics;
 
 import app.wii.WiimoteButton;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
@@ -27,13 +28,25 @@ public class BallPhysics
             //speler collision
             if (players.get(i).intersects(x, y, ballSize, ballSize))
             {
-                if (vSpeed > 4 || hSpeed > 4)
+                if (vSpeed > 6 || hSpeed > 6)
                 {
                     vSpeed = -vSpeed;
                     hSpeed = -hSpeed;
                     break;
                 }
-                if (vSpeed > 4 && hSpeed > 4)
+                if (vSpeed < -6 || hSpeed < -6)
+                {
+                    vSpeed = -vSpeed;
+                    hSpeed = -hSpeed;
+                    break;
+                }
+                if (vSpeed > 6 && hSpeed > 6)
+                {
+                    vSpeed = -vSpeed;
+                    hSpeed = -hSpeed;
+                    break;
+                }
+                if (vSpeed < -6 && hSpeed < -6)
                 {
                     vSpeed = -vSpeed;
                     hSpeed = -hSpeed;
@@ -41,11 +54,8 @@ public class BallPhysics
                 }
                 else
                 {
-                    hSpeed = 0;
-                    vSpeed = 0;
-
-                    x = players.get(i).getX();
-                    y = players.get(i).getY();
+                    x = players.get(i).getX() + (ballSize / 2);
+                    y = players.get(i).getY() + (ballSize / 2);
                 }
             }
         }

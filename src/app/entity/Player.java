@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
  */
 public class Player implements Drawable
 {
-    public static final int SIZE = 20;
+    public static final int SIZE = 40;
     public static final String TITLE_DEFAULT = "CPU";
     private static final BufferedImage playerImage;
 
@@ -84,10 +84,10 @@ public class Player implements Drawable
 
     public void setPosition(int x, int y)
     {
-        if (x != 0 && y != 0 && field.getX() < x && field.getY() < y && field.getWidth() + field.getX() - 20 > x && field.getHeight() + field.getY() - 20 > y) {
+        if (x != 0 && y != 0 && field.getX() < x && field.getY() < y && field.getWidth() + field.getX() - SIZE > x && field.getHeight() + field.getY() - SIZE > y) {
             this.x = x;
             this.y = y;
-            playerEllipse = new Ellipse2D.Double(this.x, this.y, 20, 20);
+            playerEllipse = new Ellipse2D.Double(this.x - (SIZE / 2), this.y, SIZE, SIZE);
         }
     }
 
@@ -188,12 +188,6 @@ public class Player implements Drawable
             g2d.drawString(title.trim(), this.x + 55, this.y - 2);
 
         count++;
-
-        if (side.equals(SoccerConstants.EAST)) {
-            playerEllipse = new Ellipse2D.Double(this.x + 20, this.y + 10, 20, 20);
-        } else {
-            playerEllipse = new Ellipse2D.Double(this.x - 40, this.y + 10, 20, 20);
-        }
     }
 
     @Override public int getWidth()
