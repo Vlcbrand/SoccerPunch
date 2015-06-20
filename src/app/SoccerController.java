@@ -226,6 +226,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
             long now = System.currentTimeMillis();
 
             model.update();
+            view.update();
             view.repaint();
 
             sleep(now - System.currentTimeMillis() + MILLIS_PER_LOOP);

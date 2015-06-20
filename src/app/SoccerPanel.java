@@ -1,6 +1,8 @@
 package app;
 
 import app.entity.*;
+import app.entity.HUD;
+import app.entity.StartSequence;
 import util.Resource;
 
 import javax.swing.*;
@@ -53,6 +55,9 @@ public class SoccerPanel extends JPanel
         // Bal aanmaken - tijdelijk.
         this.ball = new Ball(this.getWidth()/2 - 10, this.getHeight()/2 - 10);
 
+        // Update bal - tijdelijk.
+        this.updateBall();
+
         // Update overige onderdelen.
         this.update();
     }
@@ -77,9 +82,6 @@ public class SoccerPanel extends JPanel
         // Hoofdonderdelen verversen.
         for (Updatable updatable : mainUpdatables)
             updatable.update(this);
-
-        // Update bal - tijdelijk.
-        updateBall();
     }
 
     private SoccerConstants checkForGoal()
@@ -121,6 +123,7 @@ public class SoccerPanel extends JPanel
                     ball.offset(newWidth - oldWidth, newHeight - oldHeight);
 
                 this.ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight(), this.getPlayerEllipses());
+                this.checkForGoal();
                 this.repaint();
 
                 try {
@@ -141,8 +144,16 @@ public class SoccerPanel extends JPanel
         return this.model;
     }
 
+    public Ball getBall()
+    {
+        return this.ball;
+    }
+
     private synchronized ArrayList<Ellipse2D> getPlayerEllipses()
     {
+        if (this.model.getPlayerCount() == 0)
+            return new ArrayList<>(0);
+
         this.playerEllipses.clear();
         this.playerEllipses.addAll(this.model.getPlayers().stream().map(Player::getEllipse).collect(Collectors.toList()));
         return this.playerEllipses;
@@ -153,8 +164,6 @@ public class SoccerPanel extends JPanel
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
-        checkForGoal(); // Tijdelijk: deze controle moet in een update staan.
 
         final int initialWidth = (int)this.getPreferredSize().getWidth(), initialHeight = (int)this.getPreferredSize().getHeight();
         final double currentWidth = this.getWidth(), currentHeight = this.getHeight();
@@ -223,11 +232,6 @@ public class SoccerPanel extends JPanel
             g2d.fillOval(x - cursorSize/2, y - cursorSize/2, cursorSize, cursorSize);
             g2d.drawString("(" + (x - trueXOffset) + ", " + (y - yOffset) + ")", x + cursorSize + 5, y + cursorSize/2);
         }
-    }
-
-    public Ball getBall()
-    {
-        return this.ball;
     }
 
     @Override public Dimension getMinimumSize()

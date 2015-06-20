@@ -1,12 +1,14 @@
 package app.entity;
 
 import app.SoccerPanel;
-import util.Resource;
+import util.*;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class StartSequence implements Drawable, Updatable
 {
+    private static final BufferedImage IMAGE_LOGO;
     private static final String text;
     private static final Color backgroundColor, foregroundColor;
 
@@ -17,8 +19,9 @@ public class StartSequence implements Drawable, Updatable
     private boolean hasSize;
 
     static {
+        IMAGE_LOGO = util.Image.get("logo.png");
         text = Resource.get().getString("string.press_a");
-        backgroundColor = new Color(0, 0, 0, .6f);
+        backgroundColor = new Color(.2f, .2f, .2f, .95f);
         foregroundColor = new Color(1, 1, 1, .5f);
     }
 
@@ -74,11 +77,14 @@ public class StartSequence implements Drawable, Updatable
 
         final FontMetrics fm = g2d.getFontMetrics();
         final int textX = this.width/2 - fm.stringWidth(text)/2;
-        final int textY = this.height - (this.height/3 - fm.getHeight()/2);
+        final int textY = this.height - (this.height/8 - fm.getHeight()/2);
 
         // Achtergrond tekenen.
         g2d.setPaint(backgroundColor);
         g2d.fillRect(0, 0, this.width, this.height);
+
+        // Logo tekenen.
+        g2d.drawImage(IMAGE_LOGO, this.width/2 - IMAGE_LOGO.getWidth()/2, this.height/2 - IMAGE_LOGO.getHeight()/2, null);
 
         // Voorgrond tekenen.
         g2d.setPaint(foregroundColor);
