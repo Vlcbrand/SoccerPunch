@@ -9,18 +9,30 @@ import java.util.stream.Collectors;
 /**
  * Bezit én verwerkt veldspelers, spellogica en punten.
  */
-class SoccerModel
+public class SoccerModel
 {
     private List<SoccerRemote> remotes;
-    private volatile Map<SoccerConstants, List<Player>> players;
-    private volatile Map<SoccerConstants, Integer> score;
 
-    private int fps;
+    private double fps;
+
+    private volatile Map<SoccerConstants, List<Player>> players;
+    private volatile Map<SoccerConstants, Integer> scores;
 
     SoccerModel()
     {
         this.remotes = new ArrayList<>(SoccerController.PLAYERS_SUPPORTED);
         this.players = new TreeMap<>();
+        this.scores = new TreeMap<>();
+
+        this.init();
+    }
+
+    /**
+     * Initialisatie van de model.
+     */
+    private void init()
+    {
+        this.resetScores();
     }
 
     /**
@@ -85,6 +97,33 @@ class SoccerModel
         return this.players.get(side);
     }
 
+    public void resetScores()
+    {
+        this.scores.clear();
+        this.scores.put(SoccerConstants.WEST, 0);
+        this.scores.put(SoccerConstants.EAST, 0);
+    }
+
+    public void appendScore(SoccerConstants side, int score)
+    {
+        this.scores.put(side, this.getScore(side) + score);
+    }
+
+    public int getScore(SoccerConstants side)
+    {
+        return this.scores.get(side);
+    }
+
+    public void updateFramesPerSecond(double fps)
+    {
+        this.fps = fps;
+    }
+
+    public int getFramesPerSecond()
+    {
+        return (int)this.fps;
+    }
+
     public void addRemote(int index, SoccerRemote remote)
     {
         this.remotes.add(index, remote);
@@ -100,7 +139,6 @@ class SoccerModel
 
         return this.remotes.get(id -1);
     }
-
 
     public List<SoccerRemote> getRemotes()
     {

@@ -7,8 +7,8 @@
 
     <entry key="int.width">1200</entry>
     <entry key="int.height">640</entry>
-    <entry key="int.width.min">1200</entry>
-    <entry key="int.height.min">640</entry>
+    <entry key="int.width.min">1024</entry>
+    <entry key="int.height.min">600</entry>
     <entry key="int.frames_per_second">60</entry>
     <entry key="int.updates_per_second">30</entry>
     <entry key="bool.show_fps">yes</entry>

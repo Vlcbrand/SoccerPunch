@@ -1,10 +1,11 @@
 package app.entity;
 
+import app.SoccerPanel;
 import util.Resource;
 
 import java.awt.*;
 
-public class StartSequence implements Drawable
+public class StartSequence implements Drawable, Updatable
 {
     private static final String text;
     private static final Color backgroundColor, foregroundColor;
@@ -13,15 +14,17 @@ public class StartSequence implements Drawable
 
     private int width, height;
     private boolean isActive;
+    private boolean hasSize;
 
     static {
         text = Resource.get().getString("string.press_a");
-        backgroundColor = new Color(0, 0, 0, .5f);
-        foregroundColor = new Color(1, 1, 1, .8f);
+        backgroundColor = new Color(0, 0, 0, .6f);
+        foregroundColor = new Color(1, 1, 1, .5f);
     }
 
     private StartSequence()
     {
+        this.hasSize = false;
         this.activate();
     }
 
@@ -31,15 +34,6 @@ public class StartSequence implements Drawable
             instance = new StartSequence();
 
         return instance;
-    }
-
-    public void update(int parentWidth, int parentHeight)
-    {
-        if (!isActive)
-            return;
-
-        this.width = parentWidth;
-        this.height = parentHeight;
     }
 
     public void deactivate()
@@ -55,6 +49,16 @@ public class StartSequence implements Drawable
     public boolean isActive()
     {
         return this.isActive;
+    }
+
+    @Override public void update(final SoccerPanel parent)
+    {
+        if (!isActive || hasSize)
+            return;
+
+        this.width = parent.getWidth();
+        this.height = parent.getHeight();
+        this.hasSize = true;
     }
 
     @Override public void draw(Graphics2D g2d)

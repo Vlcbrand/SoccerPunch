@@ -2,9 +2,6 @@ package app.physics;
 
 import java.awt.geom.AffineTransform;
 
-/**
- * Created by Tom Remeeus on 4-6-2015.
- */
 public class BallPhysics
 {
     protected int ballSize;

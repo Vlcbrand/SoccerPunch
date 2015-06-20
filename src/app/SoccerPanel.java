@@ -10,13 +10,13 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Random;
 
-class SoccerPanel extends JPanel
+public class SoccerPanel extends JPanel
 {
     private final static Dimension minimumSize, preferredSize;
 
-    private final int initialWidth, initialHeight;
     private final SoccerModel model;
     private final Drawable[] mainDrawables;
+    private final Updatable[] mainUpdatables;
 
     private final StartSequence startSequence;
     private final Field field;
@@ -36,26 +36,24 @@ class SoccerPanel extends JPanel
     {
         super(null);
 
+        this.setSize((int)this.getPreferredSize().getWidth(), (int)this.getPreferredSize().getHeight());
+
         this.model = model;
-
-        this.initialWidth = (int)this.getPreferredSize().getWidth() - 2;
-        this.initialHeight = (int)this.getPreferredSize().getHeight() - 25;
-
-        this.mainDrawables = new Drawable[] {
-            field = Field.getInstance(),
-            hud = HUD.getInstance()
-        };
-
-        // Bal aanmaken - tijdelijk.
-        this.ball = new Ball(initialWidth/2 - 10, initialHeight/2 - 10);
-
-        // Startscherm opvragen.
+        this.field = Field.getInstance();
+        this.hud = HUD.getInstance();
         this.startSequence = StartSequence.getInstance();
 
-        // Beginafmetingen voor het veld instellen.
-        this.startSequence.update(initialWidth, initialHeight);
-        this.field.update(initialWidth, initialHeight);
-        this.hud.updateParentDimensions(initialWidth, initialHeight);
+        this.mainUpdatables = new Updatable[] {hud, startSequence};
+        this.mainDrawables = new Drawable[] {field, hud, startSequence};
+
+        // Bal aanmaken - tijdelijk.
+        this.ball = new Ball(this.getWidth()/2 - 10, this.getHeight()/2 - 10);
+
+        // Veld eenmalig updaten.
+        this.field.update(this);
+
+        // Update overige onderdelen.
+        this.update();
     }
 
     public Field getInnerField()
@@ -75,18 +73,12 @@ class SoccerPanel extends JPanel
 
     public void update()
     {
-        // HUD verversen.
-        this.hud.updateParentDimensions(this.getWidth(), this.getHeight());
-
         // Spelers verversen.
         this.fieldPlayers = this.model.getPlayers();
 
-        // Startsequence verversen.
-        this.startSequence.update(this.getWidth(), this.getHeight());
-
-        //tijdelijke code
-        updateBall();
-        randomKick();
+        // Hoofdonderdelen verversen.
+        for (Updatable updatable : mainUpdatables)
+            updatable.update(this);
     }
 
     private SoccerConstants checkForGoal()
@@ -104,7 +96,7 @@ class SoccerPanel extends JPanel
             ball.setY(field.getHeight()/2 + field.getY() - 10);
             ball.accelerate(0, 0);
             SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
-            return SoccerConstants.WEST;
+            return SoccerConstants.EAST;
         }
 
         return null;
@@ -158,13 +150,25 @@ class SoccerPanel extends JPanel
         }).start();
     }
 
+    public SoccerModel getActiveModel()
+    {
+        return this.model;
+    }
+
     @Override public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        BufferedImage scene = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        final double parentWidth = this.getWidth();
+        final double parentHeight = this.getHeight();
+        final int currentWidth = (int)this.getPreferredSize().getWidth();
+        final int currentHeight = (int)this.getPreferredSize().getHeight();
+        final double widthScale = parentWidth/currentWidth;
+        final double heightScale = parentHeight/currentHeight;
+
+        BufferedImage scene = new BufferedImage(currentWidth, currentHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D sceneGraphics = (Graphics2D)scene.getGraphics();
         sceneGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -186,19 +190,11 @@ class SoccerPanel extends JPanel
             this.drawJoystickTest(sceneGraphics);
 
         // Tekent bal - tijdelijk.
-        this.ball.draw(sceneGraphics);
-
-        // Tekent startanimatie - indien nodig.
-        this.startSequence.draw(sceneGraphics);
-
-        // Scalet met het hoofdscherm.
-        final double parentWidth = this.getParent().getWidth();
-        final double parentHeight = this.getParent().getHeight();
-        AffineTransform tx = new AffineTransform();
-        tx.scale(parentWidth/this.initialWidth, parentHeight/this.initialHeight);
+        if (fieldPlayers != null && fieldPlayers.size() > 0)
+            this.ball.draw(sceneGraphics);
 
         sceneGraphics.dispose();
-        g2d.drawImage(scene, tx, this);
+        g2d.drawImage(scene, AffineTransform.getScaleInstance(widthScale, heightScale), this);
     }
 
     private void drawJoystickTest(Graphics2D g2d)

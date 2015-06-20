@@ -44,7 +44,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.runner = null;
         this.isRunning = false;
         this.isPaused = false;
-        //this.getWiimotes();
+        this.getWiimotes();
 
         if (wiimotes == null)
             return;
@@ -120,6 +120,9 @@ class SoccerController extends WiimoteAdapter implements Runnable
     private void prepareForStop()
     {
         this.model.removePlayers();
+
+        // Startanimatie hervatten.
+        this.view.getStartSequence().activate();
 
         // Achtergrondmuziek stoppen.
         SoccerSound.getInstance().addFile(SoccerSound.MUSIC_MAIN).stop();
@@ -201,7 +204,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
                     if (SHOW_FPS) {
                         //final double ups = ticks/updateTimeDelta;
                         final double fps = frames/renderTimeDelta;
-                        this.view.getHeadsUpDisplay().updateFPS((int)fps);
+                        this.model.updateFramesPerSecond(fps);
                     }
 
                     ticks = 0;

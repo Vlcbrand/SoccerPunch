@@ -1,33 +1,45 @@
 package app.entity;
 
+import app.SoccerConstants;
+import app.SoccerModel;
+import app.SoccerPanel;
+import util.*;
+import util.Image;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
- * Heads-up display voor op een SoccerPanel.
+ * Heads-up display voor op een {@link SoccerPanel}.
  * HUD is een singleton, dus gerbruik {@link #getInstance()}.
  */
-public class HUD implements Drawable
+public class HUD implements Drawable, Updatable
 {
-    private final static int xOffset, yOffest;
-    private final static BufferedImage bannerImageLeft, bannerImageRight;
-    private final static double bannerImageScale = .2;
+    private final static int OFFSET_x, OFFSET_Y;
+    private final static int SCORE_MARGIN_HORIZONTAL;
+    private final static int BANNER_MARGIN_TOP;
+    private final static BufferedImage BANNER_IMAGE_WEST, BANNER_IMAGE_EAST;
+    private final static double BANNER_IMAGE_SCALE = .2;
 
     private static HUD instance = null;
 
     private int parentWidth, parentHeight;
-    private int scoreLeft, scoreRight;
+    private boolean hasSuze;
+    private String leftTeamScore, rightTeamScore;
     private int fps;
 
     static {
-        xOffset = yOffest = 10;
+        OFFSET_x = OFFSET_Y = 10;
+        SCORE_MARGIN_HORIZONTAL = 15;
+        BANNER_MARGIN_TOP = 20;
 
-        bannerImageLeft = util.Image.get("teambanner_blue.png");
-        bannerImageRight = util.Image.get("teambanner_red.png");
+        BANNER_IMAGE_WEST = Image.get("teambanner_blue.png");
+        BANNER_IMAGE_EAST = Image.get("teambanner_red.png");
     }
 
     private HUD()
     {
+        this.hasSuze = false;
     }
 
     public static HUD getInstance()
@@ -38,59 +50,74 @@ public class HUD implements Drawable
         return instance;
     }
 
-    public void updateFPS(int fps)
+    @Override public void update(final SoccerPanel parent)
     {
-        this.fps = fps;
-    }
+        if (!hasSuze) {
+            this.parentWidth = parent.getWidth();
+            this.parentHeight = parent.getHeight();
+            this.hasSuze = true;
+        }
 
-    public void updateParentDimensions(int parentWidth, int parentHeight)
-    {
-        this.parentWidth = parentWidth;
-        this.parentHeight = parentHeight;
+        final SoccerModel activeModel = parent.getActiveModel();
+
+        this.fps = activeModel.getFramesPerSecond();
+        this.leftTeamScore = Integer.toString(activeModel.getScore(SoccerConstants.WEST));
+        this.rightTeamScore = Integer.toString(activeModel.getScore(SoccerConstants.EAST));
     }
 
     @Override public void draw(Graphics2D g2d)
     {
         final Font originalFont = g2d.getFont();
-        final Font font = new Font("Arial", Font.BOLD, 14);
+        final Stroke originalStroke = g2d.getStroke();
 
-        // Voorbereiden.
-        g2d.setFont(font);
-        FontMetrics fm = g2d.getFontMetrics();
+        // Hulpafmetingen.
+        final int centerY = this.parentHeight/2;
+        final int centerX = this.parentWidth/2;
 
         // Tekent FPS-meter.
-        g2d.drawString("FPS " + this.fps, 5, fm.getHeight());
+        g2d.setFont(new Font("Arial", Font.BOLD, 14));
+        final String fps = "FPS " + this.fps;
+        g2d.drawString(fps, OFFSET_x, Text.Integer.getHeight(g2d, fps) + OFFSET_Y);
+
+        // Tekent scores.
+        g2d.setFont(new Font("Arial Black", Font.BOLD + Font.ITALIC, 32));
+        g2d.setStroke(new BasicStroke(7));
+        final int leftTeamScoreWidth = Text.Integer.getWidth(g2d, leftTeamScore);
+        final int scoreHeight = Text.Integer.getHeight(g2d, rightTeamScore);
+        g2d.drawString(this.leftTeamScore, centerX - leftTeamScoreWidth - SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
+        g2d.drawString(this.rightTeamScore, centerX + SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
+        g2d.drawLine(centerX - SCORE_MARGIN_HORIZONTAL/2, OFFSET_Y + scoreHeight/2, centerX + SCORE_MARGIN_HORIZONTAL/2, OFFSET_Y + scoreHeight/2);
 
         // Banners voorbereiden.
-        final int bannerWidth = (int)(bannerImageLeft.getWidth()*bannerImageScale);
-        final int bannerHeight = (int)(bannerImageLeft.getHeight()*bannerImageScale);
-        final int marginTop = 10;
+        final int bannerWidth = (int)(BANNER_IMAGE_WEST.getWidth()*BANNER_IMAGE_SCALE);
+        final int bannerHeight = (int)(BANNER_IMAGE_WEST.getHeight()*BANNER_IMAGE_SCALE);
 
         // Banners tekenen.
-        g2d.drawImage(bannerImageLeft, xOffset, yOffest + marginTop, bannerWidth, bannerHeight, null);
-        g2d.drawImage(bannerImageRight, this.parentWidth - xOffset - bannerWidth, yOffest + marginTop, bannerWidth, bannerHeight, null);
+        g2d.drawImage(BANNER_IMAGE_WEST, OFFSET_x, OFFSET_Y + BANNER_MARGIN_TOP, bannerWidth, bannerHeight, null);
+        g2d.drawImage(BANNER_IMAGE_EAST, this.parentWidth - OFFSET_x - bannerWidth, OFFSET_Y + BANNER_MARGIN_TOP, bannerWidth, bannerHeight, null);
 
         // Herstellen.
         g2d.setFont(originalFont);
+        g2d.setStroke(originalStroke);
     }
 
     @Override public int getX()
     {
-        return xOffset;
+        return OFFSET_x;
     }
 
     @Override public int getY()
     {
-        return yOffest;
+        return OFFSET_Y;
     }
 
     @Override public int getWidth()
     {
-        return this.parentWidth - xOffset*2;
+        return this.parentWidth - OFFSET_x*2;
     }
 
     @Override public int getHeight()
     {
-        return this.parentHeight - yOffest*2;
+        return this.parentHeight - OFFSET_Y*2;
     }
 }
