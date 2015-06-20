@@ -3,6 +3,7 @@ package app;
 import app.entity.Field;
 import app.entity.Player;
 
+import java.awt.geom.Rectangle2D;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,6 +76,19 @@ class SoccerModel
         players.forEach((side, players) -> allFieldPlayers.addAll(players.stream().collect(Collectors.toList())));
 
         return allFieldPlayers;
+    }
+
+    public void collision()
+    {
+        List players = getPlayers();
+        for(int i =0; i< players.size(); i++)
+        {
+           Player player = (Player) players.get(i);
+            for(Player p :getPlayers()){
+                if(player.playerEllipse.intersects(new Rectangle2D.Double(p.getX(),p.getY(),p.spriteWidth, p.spriteHeight)))
+                    player.setMovement(new double[] {0d, 0d});
+            }
+        }
     }
 
     public List<Player> getPlayers(SoccerConstants side)

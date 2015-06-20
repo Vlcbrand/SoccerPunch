@@ -30,6 +30,9 @@ public class Player implements Drawable
     private int imgCount;
     private BufferedImage[] sprites = new BufferedImage[6];
 
+    public int spriteWidth = 70;
+    public int spriteHeight= 140;
+
     boolean moving = false;
     boolean moving1 = false;
     boolean movingLeft = false;

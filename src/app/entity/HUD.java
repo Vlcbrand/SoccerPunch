@@ -1,5 +1,7 @@
 package app.entity;
 
+import app.SoccerConstants;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -28,6 +30,14 @@ public class HUD implements Drawable
 
     private HUD()
     {
+    }
+
+    public void addGoalPoint(SoccerConstants soccerConstants)
+    {
+        if(soccerConstants.equals(SoccerConstants.EAST))
+            scoreLeft++;
+        else if(soccerConstants.equals(SoccerConstants.WEST))
+            scoreRight++;
     }
 
     public static HUD getInstance()
@@ -61,6 +71,9 @@ public class HUD implements Drawable
         // Tekent FPS-meter.
         g2d.drawString("FPS " + this.fps, 5, fm.getHeight());
 
+        Font fontScore = new Font("Arial", font.BOLD, 40);
+        g2d.setFont(fontScore);
+
         // Banners voorbereiden.
         final int bannerWidth = (int)(bannerImageLeft.getWidth()*bannerImageScale);
         final int bannerHeight = (int)(bannerImageLeft.getHeight()*bannerImageScale);
@@ -70,8 +83,16 @@ public class HUD implements Drawable
         g2d.drawImage(bannerImageLeft, xOffset, yOffest + marginTop, bannerWidth, bannerHeight, null);
         g2d.drawImage(bannerImageRight, this.parentWidth - xOffset - bannerWidth, yOffest + marginTop, bannerWidth, bannerHeight, null);
 
+
+        // Scores tekenen.
+        g2d.setColor(Color.blue);
+        g2d.drawString(""+ scoreLeft, xOffset + bannerWidth/4, yOffest + 300);
+        g2d.setColor(Color.red);
+        g2d.drawString(""+ scoreRight, this.parentWidth-xOffset -bannerWidth/2, yOffest + 300);
+
         // Herstellen.
         g2d.setFont(originalFont);
+        g2d.setColor(Color.white);
     }
 
     @Override public int getX()

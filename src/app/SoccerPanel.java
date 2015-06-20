@@ -111,7 +111,7 @@ class SoccerPanel extends JPanel
             return SoccerConstants.EAST;
         }
 
-        return null;
+        return SoccerConstants.NORTH;
     }
 
     private void updateBall()
@@ -182,7 +182,8 @@ class SoccerPanel extends JPanel
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        checkForGoal();
+        this.hud.addGoalPoint(checkForGoal());
+        //this.model.collision();
 
         BufferedImage scene = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D sceneGraphics = (Graphics2D)scene.getGraphics();
