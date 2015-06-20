@@ -24,7 +24,7 @@ public class Player implements Drawable
     private double x1 = 0;
     private double[] dxdy;
     private boolean isControlled;
-    public Ellipse2D.Double playerEllipse;
+    private Ellipse2D.Double playerEllipse;
 
     private int count;
     private int imgCount;
@@ -36,7 +36,7 @@ public class Player implements Drawable
     boolean moved = false;
 
     static {
-        playerImage = util.Image.get("brazilian_soccer_player.png");
+        playerImage = util.Image.get("sprite_player_brazil.png");
     }
 
     public Player(SoccerConstants side)
@@ -208,5 +208,10 @@ public class Player implements Drawable
     public void setAngle(double angle)
     {
         this.angle = angle;
+    }
+
+    public Ellipse2D getEllipse()
+    {
+        return this.playerEllipse;
     }
 }

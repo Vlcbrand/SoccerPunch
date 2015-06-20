@@ -9,8 +9,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.stream.Collectors;
 
 public class SoccerPanel extends JPanel
 {
@@ -25,10 +24,7 @@ public class SoccerPanel extends JPanel
     private final Ball ball;
     private final HUD hud;
 
-    private Random random = new Random();
-
-    private List<Player> fieldPlayers;
-    ArrayList<Ellipse2D.Double> playerEllipses;
+    private volatile ArrayList<Ellipse2D> playerEllipses;
 
     static {
         minimumSize = new Dimension(Resource.getInteger("int.width.min"), Resource.getInteger("int.height.min"));
@@ -51,11 +47,11 @@ public class SoccerPanel extends JPanel
 
         playerEllipses = new ArrayList<>();
 
-        // Bal aanmaken - tijdelijk.
-        this.ball = new Ball(this.getWidth()/2 - 10, this.getHeight()/2 - 10);
-
         // Veld eenmalig updaten.
         this.field.update(this);
+
+        // Bal aanmaken - tijdelijk.
+        this.ball = new Ball(this.getWidth()/2 - 10, this.getHeight()/2 - 10);
 
         // Update overige onderdelen.
         this.update();
@@ -78,16 +74,12 @@ public class SoccerPanel extends JPanel
 
     public void update()
     {
-        // Spelers verversen.
-        this.fieldPlayers = this.model.getPlayers();
-
         // Hoofdonderdelen verversen.
         for (Updatable updatable : mainUpdatables)
             updatable.update(this);
 
         // Update bal - tijdelijk.
         updateBall();
-        checkForGoal();
     }
 
     private SoccerConstants checkForGoal()
@@ -97,14 +89,14 @@ public class SoccerPanel extends JPanel
             ball.setY(field.getHeight()/2 + field.getY() - 10);
             ball.accelerate(0, 0);
             SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
+            this.model.appendScore(SoccerConstants.WEST, 1);
             return SoccerConstants.WEST;
-        }
-
-        if (field.getRightGoal().intersects(ball.getBall())) {
+        } else if (field.getRightGoal().intersects(ball.getBall())) {
             ball.setX(field.getWidth()/2 + field.getX() - 10);
             ball.setY(field.getHeight()/2 + field.getY() - 10);
             ball.accelerate(0, 0);
             SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
+            this.model.appendScore(SoccerConstants.EAST, 1);
             return SoccerConstants.EAST;
         }
 
@@ -128,7 +120,7 @@ public class SoccerPanel extends JPanel
                 if (oldWidth != newWidth || oldHeight != newHeight)
                     ball.offset(newWidth - oldWidth, newHeight - oldHeight);
 
-                ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight(), getPlayerEllipses());
+                this.ball.update(field.getFieldTop(), field.getFieldBot(), field.getFieldLeft(), field.getFieldRight(), this.getPlayerEllipses());
                 this.repaint();
 
                 try {
@@ -144,34 +136,16 @@ public class SoccerPanel extends JPanel
         }).start();
     }
 
-    private void randomKick()
-    {
-        new Thread(() -> {
-            while (true) {
-                ball.accelerate(20 + random.nextInt(50), random.nextInt(360));
-
-                try {
-                    Thread.sleep(5000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
     public SoccerModel getActiveModel()
     {
         return this.model;
     }
 
-    private ArrayList<Ellipse2D.Double> getPlayerEllipses()
+    private synchronized ArrayList<Ellipse2D> getPlayerEllipses()
     {
-        playerEllipses.clear();
-
-        for (int i = 0; fieldPlayers.size() > i; i ++)
-            playerEllipses.add(fieldPlayers.get(i).playerEllipse);
-
-        return playerEllipses;
+        this.playerEllipses.clear();
+        this.playerEllipses.addAll(this.model.getPlayers().stream().map(Player::getEllipse).collect(Collectors.toList()));
+        return this.playerEllipses;
     }
 
     @Override public void paintComponent(Graphics g)
@@ -180,14 +154,13 @@ public class SoccerPanel extends JPanel
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-        final double parentWidth = this.getWidth();
-        final double parentHeight = this.getHeight();
-        final int currentWidth = (int)this.getPreferredSize().getWidth();
-        final int currentHeight = (int)this.getPreferredSize().getHeight();
-        final double widthScale = parentWidth/currentWidth;
-        final double heightScale = parentHeight/currentHeight;
+        checkForGoal(); // Tijdelijk: deze controle moet in een update staan.
 
-        BufferedImage scene = new BufferedImage(currentWidth, currentHeight, BufferedImage.TYPE_INT_ARGB);
+        final int initialWidth = (int)this.getPreferredSize().getWidth(), initialHeight = (int)this.getPreferredSize().getHeight();
+        final double currentWidth = this.getWidth(), currentHeight = this.getHeight();
+        final double widthScale = currentWidth/initialWidth, heightScale = currentHeight/initialHeight;
+
+        BufferedImage scene = new BufferedImage(initialWidth, initialHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D sceneGraphics = (Graphics2D)scene.getGraphics();
         sceneGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -199,18 +172,17 @@ public class SoccerPanel extends JPanel
             for (Drawable component : mainDrawables)
                 component.draw(sceneGraphics);
 
-        // Tekent spelers.
-        if (fieldPlayers != null)
-            for (Drawable fieldPlayer : fieldPlayers)
+        if (this.model.existPlayers()) {
+            // Tekent spelers.
+            for (Drawable fieldPlayer : this.model.getPlayers())
                 fieldPlayer.draw(sceneGraphics);
 
-        // Tekent test indien spelers aangemaakt zijn.
-        if (fieldPlayers != null && fieldPlayers.size() > 0)
+            // Tekent test indien spelers aangemaakt zijn.
             this.drawJoystickTest(sceneGraphics);
 
-        // Tekent bal - tijdelijk.
-        if (fieldPlayers != null && fieldPlayers.size() > 0)
+            // Tekent bal.
             this.ball.draw(sceneGraphics);
+        }
 
         sceneGraphics.dispose();
         g2d.drawImage(scene, AffineTransform.getScaleInstance(widthScale, heightScale), this);

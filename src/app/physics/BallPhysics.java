@@ -1,20 +1,77 @@
 package app.physics;
 
-import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
 
-public class BallPhysics
+public abstract class BallPhysics
 {
     protected int ballSize;
     protected double x, y;
-
     protected double hSpeed, vSpeed;
-    private int top, bot, left, right;
 
-    protected AffineTransform ballTx = new AffineTransform();
+    private int top, bot, left, right;
+    private ArrayList <Ellipse2D> players;
+
+    protected BallPhysics()
+    {
+        players = new ArrayList<>();
+    }
 
     private void step()
     {
-        //Correctie vooraf.
+        //update spelerlocaties
+        for (int i = 0; players.size() - 1 > i; i ++)
+        {
+            //speler collision
+            if (players.get(i).intersects(x, y, ballSize, ballSize))
+            {
+                if (vSpeed > 8 || hSpeed > 8)
+                {
+                    vSpeed *= 0.75;
+                    hSpeed *= 0.75;
+
+                    vSpeed = -vSpeed;
+                    hSpeed = -hSpeed;
+                    break;
+                }
+                if (vSpeed < -8 || hSpeed < -8)
+                {
+                    vSpeed *= 0.75;
+                    hSpeed *= 0.75;
+
+                    vSpeed = -vSpeed;
+                    hSpeed = -hSpeed;
+                    break;
+                }
+                if (vSpeed > 8 && hSpeed > 8)
+                {
+                    vSpeed *= 0.75;
+                    hSpeed *= 0.75;
+
+                    vSpeed = -vSpeed;
+                    hSpeed = -hSpeed;
+                    break;
+                }
+                if (vSpeed < -8 && hSpeed < -8)
+                {
+                    vSpeed *= 0.75;
+                    hSpeed *= 0.75;
+
+                    vSpeed = -vSpeed;
+                    hSpeed = -hSpeed;
+                    break;
+                }
+                //speler snapping
+                else
+                {
+                    x = players.get(i).getX() + (ballSize / 2);
+                    y = players.get(i).getY() + (ballSize / 2);
+                    break;
+                }
+            }
+        }
+
+        //Muur collision
         if (y < top) {
             this.y = top;
             vSpeed *= 0.75;
@@ -37,35 +94,39 @@ public class BallPhysics
             hSpeed = -hSpeed;
         }
 
-        hSpeed *= 0.99;
-        vSpeed *= 0.99;
+        //rolweerstand
+        hSpeed *= 0.9899;
+        vSpeed *= 0.9899;
 
+        //snelheidsupdate
         this.x += hSpeed;
         this.y += vSpeed;
     }
 
-    public void update(int top, int bot, int left, int right)
+    public void update(int top, int bot, int left, int right, ArrayList<Ellipse2D> players)
     {
         this.top = top;
         this.bot = bot;
         this.left = left;
         this.right = right;
+        this.players = players;
 
         this.step();
     }
 
-    public void accelerate(int force, int degrees)
+    public void accelerate(int force, double degrees)
     {
         double radians = Math.toRadians(degrees);
 
-        hSpeed = Math.cos(radians)*force;
-        vSpeed = Math.sin(radians)*force;
+        hSpeed = -Math.sin(radians)*force;
+        vSpeed = Math.cos(radians)*force;
     }
 
     public double getBallX()
     {
         return x;
     }
+
     public double getBallY()
     {
         return y;

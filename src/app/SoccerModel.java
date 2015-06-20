@@ -43,7 +43,7 @@ public class SoccerModel
         this.players.put(SoccerConstants.EAST, new LinkedList<>());
         this.players.put(SoccerConstants.WEST, new LinkedList<>());
 
-        players.forEach((side, players) -> {
+        this.players.forEach((side, players) -> {
             for (int i = 0; i < Field.FIELD_PLAYERS_SUPPORTED/2; i++) {
                 final int[] posXY = field.getDefaultPositions(side)[i];
                 final Player player = new Player(side);
@@ -59,7 +59,12 @@ public class SoccerModel
      */
     public void removePlayers()
     {
-        players.clear();
+        this.players.clear();
+    }
+
+    public boolean existPlayers()
+    {
+        return this.getPlayerCount() > 0;
     }
 
     public void update()
@@ -84,7 +89,7 @@ public class SoccerModel
             return null;
 
         List<Player> allFieldPlayers = new ArrayList<>(Field.FIELD_PLAYERS_SUPPORTED);
-        players.forEach((side, players) -> allFieldPlayers.addAll(players.stream().collect(Collectors.toList())));
+        this.players.forEach((side, players) -> allFieldPlayers.addAll(players.stream().collect(Collectors.toList())));
 
         return allFieldPlayers;
     }
@@ -95,6 +100,11 @@ public class SoccerModel
             return null;
 
         return this.players.get(side);
+    }
+
+    public int getPlayerCount()
+    {
+        return this.players.size();
     }
 
     public void resetScores()

@@ -313,21 +313,10 @@ class SoccerController extends WiimoteAdapter implements Runnable
         xm = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
         ym = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
 
-
         xm = xm > 0 ? xm*2.5 : xm*2;
         ym = ym > 0 ? ym*2.5 : ym*2;
 
-
-        return new double[] {xm, ym // x-waarde.// y-waarde.
-        };
-    }
-
-    public boolean isMoving()
-    {
-        if (xm > 0)
-            return true;
-        else
-            return false;
+        return new double[] {xm, ym};
     }
 
     private static void sleep(long millis)
@@ -353,18 +342,11 @@ class SoccerController extends WiimoteAdapter implements Runnable
         final SoccerRemote remote = this.model.getRemote(e.getWiimoteId());
         Player controlledFieldPlayer = remote.getControlledPlayer();
 
-        if (remote == null)
-            return;
-
         if (isRunning) {
             if (e.isButtonAJustPressed() && e.isButtonBHeld()) {
                 this.stop();
                 return;
             }
-
-            if (e.isButtonHomePressed())
-                // Indien op HOME is gedrukt.
-                this.togglePause();
 
             if (e.isButtonUpJustPressed())
                 remote.pressButton(WiimoteButton.UP);
@@ -389,8 +371,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
             // Dichstbijzijnde speler selecteren.
             remote.controlPlayer(this.getNearestFieldPlayer(remote));
         } else {
-                if (e.isButtonAJustPressed() && !e.isButtonBPressed())
-                    this.start();
+            if (e.isButtonAJustPressed() && !e.isButtonBPressed())
+                this.start();
         }
     }
 
@@ -432,14 +414,11 @@ class SoccerController extends WiimoteAdapter implements Runnable
             controlledFieldPlayer.setAngle(getJoystickAngle(je));
 
             //ball passen
-            if (ne.getButtonsEvent().isButtonCJustPressed() && controlledFieldPlayer.playerEllipse.contains(view.getBall().getBall()))
-            {
+            if (ne.getButtonsEvent().isButtonCJustPressed() && controlledFieldPlayer.getEllipse().contains(view.getBall().getBall()))
                 view.getBall().accelerate(45, joystickAngle);
-            }
-            if (ne.getNunchukMotionSensingEvent().getGforce().getY() * 100 > 20 && controlledFieldPlayer.playerEllipse.contains(view.getBall().getBall()))
-            {
+
+            if (ne.getNunchukMotionSensingEvent().getGforce().getY() * 100 > 20 && controlledFieldPlayer.getEllipse().contains(view.getBall().getBall()))
                 view.getBall().accelerate((int)(ne.getNunchukMotionSensingEvent().getGforce().getY() * 100), joystickAngle);
-            }
         }
     }
 }
