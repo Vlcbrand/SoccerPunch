@@ -92,8 +92,8 @@ public class HUD implements Drawable, Updatable
         g2d.setStroke(new BasicStroke(7));
         final int leftTeamScoreWidth = Text.Integer.getWidth(g2d, leftTeamScore);
         final int scoreHeight = Text.Integer.getHeight(g2d, rightTeamScore);
-        g2d.drawString(this.leftTeamScore, centerX - leftTeamScoreWidth - SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
-        g2d.drawString(this.rightTeamScore, centerX + SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
+        g2d.drawString(this.rightTeamScore, centerX - leftTeamScoreWidth - SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
+        g2d.drawString(this.leftTeamScore, centerX + SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
         g2d.drawLine(centerX - SCORE_MARGIN_HORIZONTAL/2, OFFSET_Y + scoreHeight/2, centerX + SCORE_MARGIN_HORIZONTAL/2, OFFSET_Y + scoreHeight/2);
 
         // Banners voorbereiden.
