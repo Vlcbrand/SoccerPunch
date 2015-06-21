@@ -20,7 +20,7 @@ public abstract class BallPhysics
     private void step()
     {
         //update spelerlocaties
-        for (int i = 0; players.size() - 1 > i; i ++)
+        for (int i = 0; players.size() > i; i ++)
         {
             //speler collision
             if (players.get(i).intersects(x, y, ballSize, ballSize))
