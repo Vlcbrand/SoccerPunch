@@ -2,6 +2,7 @@ package app;
 
 import app.entity.Field;
 import app.entity.Player;
+import app.wii.WiimoteButton;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,7 +14,7 @@ public class SoccerModel
 {
     private List<SoccerRemote> remotes;
 
-    private double fps;
+    private double framesPerSecond;
 
     private volatile Map<SoccerConstants, List<Player>> players;
     private volatile Map<SoccerConstants, Integer> scores;
@@ -33,9 +34,33 @@ public class SoccerModel
     private void init()
     {
         this.resetScores();
-        // TEST:
-        this.appendScore(SoccerConstants.WEST, 27);
-        this.appendScore(SoccerConstants.EAST, 27);
+    }
+
+    public void update()
+    {
+        this.updatePlayers();
+    }
+
+    public void updatePlayers()
+    {
+        Random random = new Random();
+
+        for (Player player : this.getPlayers()) {
+            final int x = player.getX();
+            final int y = player.getY();
+            final double[] dxdy = player.getMovement();
+
+            if (player.isControlled()) {
+                // Verplaats speler met gegeven afstand.
+                player.setPosition((int)(x + dxdy[0]), (int)(y + dxdy[1]));
+            } else if (random.nextBoolean()) {
+                // Verplaats CPU willekeurig met x- en y-waarden.
+                player.setPosition((int)(x + Math.random()*3), (int)(y + Math.random()*3));
+            } else {
+                // Math.random() geeft snelheidsproblemen, zie javadoc.
+                player.setPosition((int)(x - Math.random()/2), (int)(y - Math.random()/2));
+            }
+        }
     }
 
     /**
@@ -70,33 +95,6 @@ public class SoccerModel
         return this.getPlayerCount() > 0;
     }
 
-    public void update()
-    {
-        this.updatePlayers();
-    }
-
-    public void updatePlayers()
-    {
-        Random random = new Random();
-
-        for (Player player : this.getPlayers()) {
-            final int x = player.getX();
-            final int y = player.getY();
-            final double[] dxdy = player.getMovement();
-
-            if (player.isControlled()) {
-                // Verplaats speler met gegeven afstand.
-                player.setPosition((int)(x + dxdy[0]), (int)(y + dxdy[1]));
-            } else if (random.nextBoolean()) {
-                // Verplaats CPU willekeurig met x- en y-waarden.
-                player.setPosition((int)(x + Math.random()*3), (int)(y + Math.random()*3));
-            } else {
-                // Math.random() geeft snelheidsproblemen, zie javadoc.
-                player.setPosition((int)(x - Math.random()/2), (int)(y - Math.random()/2));
-            }
-        }
-    }
-
     public List<Player> getPlayers()
     {
         if (players.size() == 0)
@@ -114,6 +112,72 @@ public class SoccerModel
             return null;
 
         return this.players.get(side);
+    }
+
+    public Player getNearestPlayer(SoccerRemote remote)
+    {
+        final Player current = remote.getControlledPlayer();
+        final Set<WiimoteButton> pressed = remote.getPressedButtons();
+        final List<Player> fieldPlayers = this.getPlayers(remote.getSide());
+        final List<Player> candidatePlayers = new ArrayList<>();
+
+        for (Player temp : fieldPlayers) {
+            if (temp == current || temp.isControlled())
+                // Skip zelfde speler of bezette spelers.
+                continue;
+
+            if (pressed.contains(WiimoteButton.UP)) {
+                if (temp.getY() < current.getY())
+                    candidatePlayers.add(temp);
+            } else if (pressed.contains(WiimoteButton.DOWN)) {
+                if (temp.getY() > current.getY())
+                    candidatePlayers.add(temp);
+            } else if (pressed.contains(WiimoteButton.LEFT)) {
+                if (temp.getX() < current.getX())
+                    candidatePlayers.add(temp);
+            } else if (pressed.contains(WiimoteButton.RIGHT)) {
+                if (temp.getX() > current.getX())
+                    candidatePlayers.add(temp);
+            }
+        }
+
+        // Stoppen, indien geen keuzemogelijkheden.
+        if (candidatePlayers.size() < 1)
+            return current;
+
+        Player nearest = null;
+
+        for (Player candidate : candidatePlayers) {
+            if (nearest == null) {
+                // Een startwaarde aannemen.
+                nearest = candidate;
+            } else {
+                // Deltawaarden van de huidige dichstbijzijnde veldspeler.
+                final int nearestXdiff = Math.abs(current.getX() - nearest.getX());
+                final int nearestYdiff = Math.abs(current.getY() - nearest.getY());
+                // Deltawaarden van de huidige te testen veldspeler in de loop.
+                final int candidateXdiff = Math.abs(current.getX() - candidate.getX());
+                final int candidateYdiff = Math.abs(current.getY() - candidate.getY());
+
+                if (pressed.contains(WiimoteButton.UP))
+                    if (candidateYdiff <= nearestYdiff && candidateXdiff < nearestXdiff)
+                        nearest = candidate;
+                else if (pressed.contains(WiimoteButton.DOWN))
+                    if (candidateYdiff <= nearestYdiff && candidateXdiff < nearestXdiff)
+                        nearest = candidate;
+                else if (pressed.contains(WiimoteButton.LEFT))
+                    if (candidateXdiff <= nearestXdiff && candidateYdiff < nearestYdiff)
+                        nearest = candidate;
+                else if (pressed.contains(WiimoteButton.RIGHT))
+                    if (candidateXdiff <= nearestXdiff && candidateYdiff < nearestYdiff)
+                        nearest = candidate;
+            }
+        }
+
+        // Geluid afspelen na het kiezen van speler.
+        SoccerSound.getInstance().addFile(SoccerSound.SOUND_COIN).play();
+
+        return nearest;
     }
 
     public int getPlayerCount()
@@ -140,12 +204,12 @@ public class SoccerModel
 
     public void updateFramesPerSecond(double fps)
     {
-        this.fps = fps;
+        this.framesPerSecond = fps;
     }
 
     public int getFramesPerSecond()
     {
-        return (int)this.fps;
+        return (int)this.framesPerSecond;
     }
 
     public void addRemote(int index, SoccerRemote remote)

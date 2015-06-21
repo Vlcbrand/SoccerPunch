@@ -6,10 +6,11 @@ import app.wii.WiimoteButton;
 import util.Resource;
 import wiiusej.WiiUseApiManager;
 import wiiusej.Wiimote;
-import wiiusej.wiiusejevents.physicalevents.*;
-import wiiusej.wiiusejevents.wiiuseapievents.WiimoteEvent;
+import wiiusej.wiiusejevents.physicalevents.ExpansionEvent;
+import wiiusej.wiiusejevents.physicalevents.JoystickEvent;
+import wiiusej.wiiusejevents.physicalevents.NunchukEvent;
+import wiiusej.wiiusejevents.physicalevents.WiimoteButtonsEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
 {
     static final int SECOND_IN_NANOS = 1000000000;
     static final int PLAYERS_SUPPORTED = 2;
+
     static final int FPS, UPS;
     static final boolean SHOW_FPS;
 
@@ -48,6 +50,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
         this.runner = null;
         this.isRunning = false;
         this.isPaused = false;
+
         this.getWiimotes();
 
         if (wiimotes == null)
@@ -91,6 +94,11 @@ class SoccerController extends WiimoteAdapter implements Runnable
         }
     }
 
+    public void togglePause()
+    {
+        this.isPaused = !this.isPaused;
+    }
+
     /**
      * Alle nodige operaties voor het starten van het spel.
      */
@@ -104,8 +112,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
         // Elke controller één veldspeler laten besturen.
         for (int i = 0; i < remotes.size(); i++) {
             final SoccerRemote remote = remotes.get(i);
-            final SoccerConstants side = remote.getSide();
-            final List<Player> team = this.model.getPlayers(side);
+            final List<Player> team = this.model.getPlayers(remote.getSide());
             final Player ctrlPlayer = team.get(i < 1 ? 1 : 2);
 
             remote.controlPlayer(ctrlPlayer);
@@ -119,17 +126,20 @@ class SoccerController extends WiimoteAdapter implements Runnable
     }
 
     /**
-     * Clean-up operaties voor het stoppen van het spel.
+     * Clean-up operaties vóór het stoppen van het spel.
      */
     private void prepareForStop()
     {
         this.model.removePlayers();
 
-        // Startanimatie hervatten.
-        this.view.getStartSequence().activate();
+        // Score herstellen.
+        this.model.resetScores();
 
         // Bal op middelpunt plaatsen - tijdelijke oplossing.
         this.view.centerBall();
+
+        // Startanimatie hervatten.
+        this.view.getStartSequence().activate();
 
         // Achtergrondmuziek stoppen.
         SoccerSound.getInstance().addFile(SoccerSound.MUSIC_MAIN).stop();
@@ -170,9 +180,21 @@ class SoccerController extends WiimoteAdapter implements Runnable
         }
     }
 
-    public void togglePause()
+    private void processInput()
     {
-        this.isPaused = !this.isPaused;
+        for (SoccerRemote remote : this.model.getRemotes()) {
+            final Set<WiimoteButton> pressedButtons = remote.getPressedButtons();
+
+            // Indien geen knoppen ingedrukt, volgende remote nagaan.
+            if (pressedButtons.isEmpty())
+                continue;
+
+            // Wisselen van speler - indien nodig.
+            remote.controlPlayer(this.model.getNearestPlayer(remote));
+
+            // Knoppen afgehandeld, laat los.
+            remote.releaseButtons();
+        }
     }
 
     private void loop()
@@ -229,84 +251,13 @@ class SoccerController extends WiimoteAdapter implements Runnable
         while (isRunning) {
             long now = System.currentTimeMillis();
 
-            model.update();
-            view.update();
-            view.repaint();
+            this.processInput();
+            this.model.update();
+            this.view.update();
+            this.view.repaint();
 
             sleep(now - System.currentTimeMillis() + MILLIS_PER_LOOP);
         }
-    }
-
-    private Player getNearestFieldPlayer(SoccerRemote remote)
-    {
-        final Player current = remote.getControlledPlayer();
-        final Set<WiimoteButton> pressed = remote.getPressedButtons();
-        final List<Player> fieldPlayers = model.getPlayers(remote.getSide());
-        final List<Player> candidatePlayers = new ArrayList<>();
-
-        // Tel mogelijke keuzes.
-        for (Player temp : fieldPlayers) {
-            if (temp == current || temp.isControlled())
-                // Skip zelfde speler of bezette spelers.
-                continue;
-
-            if (pressed.contains(WiimoteButton.UP)) {
-                if (temp.getY() < current.getY())
-                    candidatePlayers.add(temp);
-            } else if (pressed.contains(WiimoteButton.DOWN)) {
-                if (temp.getY() > current.getY())
-                    candidatePlayers.add(temp);
-            } else if (pressed.contains(WiimoteButton.LEFT)) {
-                if (temp.getX() < current.getX())
-                    candidatePlayers.add(temp);
-            } else if (pressed.contains(WiimoteButton.RIGHT)) {
-                if (temp.getX() > current.getX())
-                    candidatePlayers.add(temp);
-            }
-        }
-
-        // Stoppen, indien geen keuzemogelijkheden.
-        if (candidatePlayers.size() < 1)
-            return current;
-
-        Player nearest = null;
-
-        for (Player candidate : candidatePlayers) {
-            if (nearest == null) {
-                // Een startwaarde aannemen.
-                nearest = candidate;
-            } else {
-                // Deltawaarden van de huidige dichstbijzijnde veldspeler.
-                final int nearestXdiff = Math.abs(current.getX() - nearest.getX());
-                final int nearestYdiff = Math.abs(current.getY() - nearest.getY());
-                // Deltawaarden van de huidige te testen veldspeler in de loop.
-                final int candidateXdiff = Math.abs(current.getX() - candidate.getX());
-                final int candidateYdiff = Math.abs(current.getY() - candidate.getY());
-
-                if (pressed.contains(WiimoteButton.UP))
-                    if (candidateYdiff <= nearestYdiff && candidateXdiff < nearestXdiff)
-                        nearest = candidate;
-
-                if (pressed.contains(WiimoteButton.DOWN))
-                    if (candidateYdiff <= nearestYdiff && candidateXdiff < nearestXdiff)
-                        nearest = candidate;
-
-                if (pressed.contains(WiimoteButton.LEFT))
-                    if (candidateXdiff <= nearestXdiff && candidateYdiff < nearestYdiff)
-                        nearest = candidate;
-
-                if (pressed.contains(WiimoteButton.RIGHT))
-                    if (candidateXdiff <= nearestXdiff && candidateYdiff < nearestYdiff)
-                        nearest = candidate;
-            }
-        }
-
-        // Geluid afspelen na het kiezen van speler.
-        SoccerSound.getInstance().addFile(SoccerSound.SOUND_COIN).play();
-
-        pressed.forEach(remote::releaseButton); // Tijdelijke oplossing - niet te veel knoppen indrukken.
-
-        return nearest;
     }
 
     /**
@@ -334,8 +285,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
     private static void sleep(long millis)
     {
-        // Kan niet terug in de tijd.
         if (millis < 0)
+            // Kan niet terug in de tijd, stoppen.
             return;
 
         try {
@@ -355,6 +306,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
         final SoccerRemote remote = this.model.getRemote(e.getWiimoteId());
 
         if (isRunning) {
+            // Indien spel draait, knoppen doorgeven aan SoccerRemotes.
+
             if (e.isButtonAJustPressed() && e.isButtonBHeld()) {
                 this.stop();
                 return;
@@ -379,10 +332,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
                 remote.pressButton(WiimoteButton.RIGHT);
             else if (e.isButtonRightJustReleased())
                 remote.releaseButton(WiimoteButton.RIGHT);
-
-            // Dichstbijzijnde speler selecteren.
-            remote.controlPlayer(this.getNearestFieldPlayer(remote));
         } else {
+            // Spel starten indien B wordt vastgehouden en A wordt ingedrukt.
             if (e.isButtonAJustPressed() && !e.isButtonBPressed())
                 this.start();
         }
@@ -395,8 +346,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         final SoccerRemote remote = this.model.getRemote(e.getWiimoteId());
 
-        // Stoppen, indien speler niet bestaat.
         if (remote == null)
+            // Indien speler niet bestaat, stoppen.
             return;
 
         final NunchukEvent ne = (NunchukEvent)e;

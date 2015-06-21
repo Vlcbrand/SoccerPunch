@@ -55,6 +55,11 @@ class SoccerRemote
         this.pressedButtons.remove(button);
     }
 
+    public void releaseButtons()
+    {
+        this.pressedButtons.clear();
+    }
+
     public Set<WiimoteButton> getPressedButtons()
     {
         return this.pressedButtons;
