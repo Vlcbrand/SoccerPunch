@@ -159,18 +159,19 @@ public class SoccerModel
                 final int candidateXdiff = Math.abs(current.getX() - candidate.getX());
                 final int candidateYdiff = Math.abs(current.getY() - candidate.getY());
 
-                if (pressed.contains(WiimoteButton.UP))
-                    if (candidateYdiff <= nearestYdiff && candidateXdiff < nearestXdiff)
+                if (pressed.contains(WiimoteButton.UP)) {
+                    if (candidateYdiff < nearestYdiff && candidateXdiff < nearestXdiff)
                         nearest = candidate;
-                else if (pressed.contains(WiimoteButton.DOWN))
-                    if (candidateYdiff <= nearestYdiff && candidateXdiff < nearestXdiff)
+                } else if (pressed.contains(WiimoteButton.DOWN)) {
+                    if (candidateYdiff < nearestYdiff && candidateXdiff < nearestXdiff)
                         nearest = candidate;
-                else if (pressed.contains(WiimoteButton.LEFT))
-                    if (candidateXdiff <= nearestXdiff && candidateYdiff < nearestYdiff)
+                } else if (pressed.contains(WiimoteButton.LEFT)) {
+                    if (candidateXdiff < nearestXdiff && candidateYdiff < nearestYdiff)
                         nearest = candidate;
-                else if (pressed.contains(WiimoteButton.RIGHT))
-                    if (candidateXdiff <= nearestXdiff && candidateYdiff < nearestYdiff)
+                } else if (pressed.contains(WiimoteButton.RIGHT)) {
+                    if (candidateXdiff < nearestXdiff && candidateYdiff < nearestYdiff)
                         nearest = candidate;
+                }
             }
         }
 

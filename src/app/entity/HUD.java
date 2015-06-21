@@ -15,11 +15,12 @@ import java.awt.image.BufferedImage;
  */
 public class HUD implements Drawable, Updatable
 {
-    private final static BufferedImage BANNER_IMAGE_WEST, BANNER_IMAGE_EAST;
     private final static int OFFSET_x, OFFSET_Y;
     private final static int SCORE_MARGIN_HORIZONTAL;
     private final static int BANNER_MARGIN_TOP;
     private final static double BANNER_IMAGE_SCALE;
+
+    private final static BufferedImage BANNER_IMAGE_WEST, BANNER_IMAGE_EAST;
     private final static boolean SHOW_FPS;
 
     private static HUD instance = null;
@@ -30,13 +31,13 @@ public class HUD implements Drawable, Updatable
     private int fps;
 
     static {
-        BANNER_IMAGE_WEST = Image.get("teambanner_blue.png");
-        BANNER_IMAGE_EAST = Image.get("teambanner_red.png");
-
         OFFSET_x = OFFSET_Y = 10;
-        SCORE_MARGIN_HORIZONTAL = 15;
+        SCORE_MARGIN_HORIZONTAL = 20;
         BANNER_MARGIN_TOP = 20;
         BANNER_IMAGE_SCALE = .2;
+
+        BANNER_IMAGE_WEST = Image.get("teambanner_blue.png");
+        BANNER_IMAGE_EAST = Image.get("teambanner_red.png");
 
         SHOW_FPS = Resource.getBoolean("bool.show_fps");
     }
@@ -88,11 +89,11 @@ public class HUD implements Drawable, Updatable
 
         // Tekent scores.
         g2d.setFont(new Font("Arial Black", Font.BOLD + Font.ITALIC, 32));
-        g2d.setColor(Color.darkGray);
+        g2d.setColor(Color.gray);
         g2d.setStroke(new BasicStroke(7));
-        final int rightTeamScoreWidth = Text.Integer.getWidth(g2d, rightTeamScore);
+        final int leftTeamScoreWidth = Text.Integer.getWidth(g2d, leftTeamScore);
         final int scoreHeight = Text.Integer.getHeight(g2d, rightTeamScore);
-        g2d.drawString(this.leftTeamScore, centerX - rightTeamScoreWidth - SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
+        g2d.drawString(this.leftTeamScore, centerX - leftTeamScoreWidth - SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
         g2d.drawString(this.rightTeamScore, centerX + SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
         g2d.drawLine(centerX - SCORE_MARGIN_HORIZONTAL/2, OFFSET_Y + scoreHeight/2, centerX + SCORE_MARGIN_HORIZONTAL/2, OFFSET_Y + scoreHeight/2);
 
