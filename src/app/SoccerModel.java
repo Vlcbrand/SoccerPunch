@@ -1,6 +1,5 @@
 package app;
 
-import app.entity.Ball;
 import app.entity.Field;
 import app.entity.Player;
 
@@ -76,18 +75,22 @@ public class SoccerModel
     public void updatePlayers()
     {
         Random random = new Random();
+
         for (Player player : this.getPlayers()) {
             final int x = player.getX();
             final int y = player.getY();
             final double[] dxdy = player.getMovement();
-            if (player.isControlled())
-                player.setPosition((int)(x + dxdy[0]), (int)(y + dxdy[1]));
-            else if(random.nextBoolean()){
-                player.setPosition((int)(x+Math.random()*3), (int)(y+Math.random()*3));
-            }
-            else
-                player.setPosition((int)(x-Math.random()/2),(int)(y-Math.random()/2));
 
+            if (player.isControlled()) {
+                // Verplaats speler met gegeven afstand.
+                player.setPosition((int)(x + dxdy[0]), (int)(y + dxdy[1]));
+            } else if (random.nextBoolean()) {
+                // Verplaats CPU willekeurig met x- en y-waarden.
+                player.setPosition((int)(x + Math.random()*3), (int)(y + Math.random()*3));
+            } else {
+                // Math.random() geeft snelheidsproblemen, zie javadoc.
+                player.setPosition((int)(x - Math.random()/2), (int)(y - Math.random()/2));
+            }
         }
     }
 

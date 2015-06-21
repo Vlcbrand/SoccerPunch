@@ -73,6 +73,7 @@ public class HUD implements Drawable, Updatable
     {
         final Font originalFont = g2d.getFont();
         final Stroke originalStroke = g2d.getStroke();
+        final Paint originalColor = g2d.getPaint();
 
         // Hulpafmetingen.
         final int centerY = this.parentHeight/2;
@@ -106,6 +107,7 @@ public class HUD implements Drawable, Updatable
         // Herstellen.
         g2d.setFont(originalFont);
         g2d.setStroke(originalStroke);
+        g2d.setPaint(originalColor);
     }
 
     @Override public int getX()

@@ -22,8 +22,6 @@ class SoccerController extends WiimoteAdapter implements Runnable
     static final int PLAYERS_SUPPORTED = 2;
     static final int FPS, UPS;
     static final boolean SHOW_FPS;
-    private static double xm, ym;
-    private double joystickAngle;
 
     private SoccerPanel view;
     private SoccerModel model;
@@ -32,6 +30,9 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
     private volatile Thread runner;
     private boolean isRunning, isPaused;
+
+    private static double xm, ym;
+    private double joystickAngle;
 
     static {
         FPS = Resource.getInteger("int.frames_per_second");
@@ -312,14 +313,11 @@ class SoccerController extends WiimoteAdapter implements Runnable
     public static double[] toPoints(JoystickEvent e)
     {
         if (e == null)
-            return new double[] {0, 10};
+            return new double[] {0, 0};
 
         xm = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
         ym = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
 
-        xm = xm > 0 ? xm*2.5 : xm*2;
-        ym = ym > 0 ? ym*2.5 : ym*2;
-        System.out.println(ym);
         return new double[] {xm, ym};
     }
 
@@ -386,7 +384,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
             return 0;
 
         //hoek in graden
-        joystickAngle = e.getAngle();
+        this.joystickAngle = e.getAngle();
         return Math.toDegrees(Math.atan(ym/xm));
     }
 

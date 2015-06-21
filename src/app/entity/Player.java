@@ -5,6 +5,7 @@ import app.SoccerConstants;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 /**
  * Een tekenbare speler voor op het voetbalveld.
@@ -17,18 +18,16 @@ public class Player implements Drawable
     public static  final int SPRITE_HEIGHT = 105;
     public static  final int SPRITE_WIDTH = 70;
 
-
-
-    private double angle;
-
     private Field field = Field.getInstance();
+
     private String title;
     private final SoccerConstants side;
-    private int x = 0, y = 0;
-    private double x1 = 0;
-    private double[] dxdy;
     private boolean isControlled;
+    private double[] dxdy;
+
+    private int x = 0, y = 0;
     private Ellipse2D.Double playerEllipse;
+    private double angle;
 
     private int count;
     private int imgCount;
@@ -57,38 +56,15 @@ public class Player implements Drawable
         sprites[5] = playerImage.getSubimage(140, 300, 70, 105);
     }
 
-    BufferedImage playerSprite()
-    {
-        if (!moving) {
-            imgCount = 1;
-        } else {
-            if (imgCount >= (3 - 1)) {
-                imgCount = 0;
-                return sprites[imgCount];
-            } else {
-                if (count%6 == 0)
-                    imgCount++;
-            }
-        }
-
-        return sprites[imgCount];
-    }
-
-    public BufferedImage playerSpriteLeft()
-    {
-        if (imgCount >= 5) {
-            imgCount = 3;
-        } else {
-            if (count%6 == 0)
-                imgCount++;
-        }
-
-        return sprites[imgCount];
-    }
-
     public void setPosition(int x, int y)
     {
-        if (x != 0 && y != 0 && field.getX() < x-20 && field.getY() < y && field.getWidth() + field.getX() - SIZE+40 > x && field.getHeight() + field.getY() - SIZE > y) {
+        if (x != 0 &&
+            y != 0 &&
+            field.getX() < x-20 &&
+            field.getY() < y &&
+            field.getWidth() + field.getX() - SIZE+40 > x &&
+            field.getHeight() + field.getY() - SIZE > y)
+        {
             this.x = x;
             this.y = y;
             playerEllipse = new Ellipse2D.Double(this.x - (SIZE / 2), this.y, SIZE, SIZE);
@@ -98,16 +74,24 @@ public class Player implements Drawable
     public void setMovement(double[] dxdy)
     {
         double[] doubleArray = {0, 0};
-        if (!dxdy.equals(doubleArray))
-            this.dxdy = dxdy;
-        x1 = dxdy[1];
-        if (dxdy[0] > 0.2 || dxdy[1] > 0.2)
-            moving = true;
-        else if (dxdy[0] < -0.2)
-            movingLeft = true;
-        else {
-            moving = false;
-            movingLeft = false;
+
+        // X-richting versnellen, en sneller indien positief.
+        final double dx = dxdy[0] > 0 ? dxdy[0]*2.5 : dxdy[0]*2;
+        // Y-richting versnellen, en sneller indien positief.
+        final double dy = dxdy[1] > 0 ? dxdy[1]*2.5 : dxdy[1]*2;
+
+        // Stel nieuwe beweging in, indien niet 0, 0.
+        if (!Arrays.equals(dxdy, doubleArray))
+            this.dxdy = new double[] {dx, dy};
+
+        // Richting bepalen voor player image sprite.
+        if (dxdy[0] > 0.2 || dxdy[1] > 0.2) {
+            this.moving = true;
+        } else if (dxdy[0] < -0.2) {
+            this.movingLeft = true;
+        } else {
+            this.moving = false;
+            this.movingLeft = false;
         }
     }
 
@@ -146,6 +130,45 @@ public class Player implements Drawable
         return this.side;
     }
 
+    public void setAngle(double angle)
+    {
+        this.angle = angle;
+    }
+
+    public double getAngle()
+    {
+        return angle;
+    }
+
+    public Ellipse2D getEllipse()
+    {
+        return this.playerEllipse;
+    }
+
+    private BufferedImage getPlayerSpriteImage()
+    {
+        if (!moving) {
+            imgCount = 1;
+        } else {
+            if (imgCount >= (3 - 1))
+                return sprites[imgCount = 0];
+            else if (count%6 == 0)
+                imgCount++;
+        }
+
+        return sprites[imgCount];
+    }
+
+    private BufferedImage getPlayerSpriteImageLeft()
+    {
+        if (imgCount >= 5)
+            imgCount = 3;
+        else if (count%6 == 0)
+            imgCount++;
+
+        return sprites[imgCount];
+    }
+
     @Override public void draw(Graphics2D g2d)
     {
         g2d.setPaint(side.equals(SoccerConstants.EAST) ? Color.red : Color.blue);
@@ -153,35 +176,32 @@ public class Player implements Drawable
         if (moving)
             moving1 = true;
 
-        if (!moving1 && side.equals(SoccerConstants.WEST))
+        if (!moving1 && side.equals(SoccerConstants.WEST)) {
             g2d.drawImage(sprites[1], this.x - 70, this.y - 75, null);
-        else if (!moving1 && side.equals(SoccerConstants.EAST))
+        } else if (!moving1 && side.equals(SoccerConstants.EAST)) {
             g2d.drawImage(sprites[4], this.x, this.y - 75, null);
-
-        else if (moved && !moving && !movingLeft && side.equals(SoccerConstants.EAST))
+        } else if (moved && !moving && !movingLeft && side.equals(SoccerConstants.EAST)) {
             g2d.drawImage(sprites[1], this.x - 20, this.y - 75, null);
-        else if (!moved && !moving && !movingLeft && side.equals(SoccerConstants.EAST))
+        } else if (!moved && !moving && !movingLeft && side.equals(SoccerConstants.EAST)) {
             g2d.drawImage(sprites[4], this.x, this.y - 75, null);
-
-        else if (moved && !moving && !movingLeft && side.equals(SoccerConstants.WEST))
+        } else if (moved && !moving && !movingLeft && side.equals(SoccerConstants.WEST)) {
             g2d.drawImage(sprites[1], this.x - 70, this.y - 75, null);
-        else if (!moved && !moving && !movingLeft && side.equals(SoccerConstants.WEST))
+        } else if (!moved && !moving && !movingLeft && side.equals(SoccerConstants.WEST)) {
             g2d.drawImage(sprites[4], this.x - 70, this.y - 75, null);
-
-        else if (side.equals(SoccerConstants.WEST))
+        } else if (side.equals(SoccerConstants.WEST)) {
             if (!movingLeft) {
-                g2d.drawImage(playerSprite(), this.x - 70, this.y - 75, null);
+                g2d.drawImage(getPlayerSpriteImage(), this.x - 70, this.y - 75, null);
                 moved = true;
             } else {
-                g2d.drawImage(playerSpriteLeft(), this.x - 60, this.y - 75, null);
+                g2d.drawImage(getPlayerSpriteImageLeft(), this.x - 60, this.y - 75, null);
                 moved = false;
             }
-        else {
+        } else {
             if (!movingLeft) {
-                g2d.drawImage(playerSprite(), this.x - 20, this.y - 75, null);
+                g2d.drawImage(getPlayerSpriteImage(), this.x - 20, this.y - 75, null);
                 moved = true;
             } else {
-                g2d.drawImage(playerSpriteLeft(), this.x, this.y - 75, null);
+                g2d.drawImage(getPlayerSpriteImageLeft(), this.x, this.y - 75, null);
                 moved = false;
             }
         }
@@ -202,20 +222,5 @@ public class Player implements Drawable
     @Override public int getHeight()
     {
         return SIZE;
-    }
-
-    public double getAngle()
-    {
-        return angle;
-    }
-
-    public void setAngle(double angle)
-    {
-        this.angle = angle;
-    }
-
-    public Ellipse2D getEllipse()
-    {
-        return this.playerEllipse;
     }
 }
