@@ -25,7 +25,7 @@ public class HUD implements Drawable, Updatable
     private static HUD instance = null;
 
     private int parentWidth, parentHeight;
-    private boolean hasSuze;
+    private boolean hasSize;
     private String leftTeamScore, rightTeamScore;
     private int fps;
 
@@ -43,7 +43,7 @@ public class HUD implements Drawable, Updatable
 
     private HUD()
     {
-        this.hasSuze = false;
+        this.hasSize = false;
     }
 
     public static HUD getInstance()
@@ -56,10 +56,10 @@ public class HUD implements Drawable, Updatable
 
     @Override public void update(final SoccerPanel parent)
     {
-        if (!hasSuze) {
+        if (!hasSize) {
             this.parentWidth = parent.getWidth();
             this.parentHeight = parent.getHeight();
-            this.hasSuze = true;
+            this.hasSize = true;
         }
 
         final SoccerModel activeModel = parent.getActiveModel();
@@ -90,10 +90,10 @@ public class HUD implements Drawable, Updatable
         g2d.setFont(new Font("Arial Black", Font.BOLD + Font.ITALIC, 32));
         g2d.setColor(Color.darkGray);
         g2d.setStroke(new BasicStroke(7));
-        final int leftTeamScoreWidth = Text.Integer.getWidth(g2d, leftTeamScore);
+        final int rightTeamScoreWidth = Text.Integer.getWidth(g2d, rightTeamScore);
         final int scoreHeight = Text.Integer.getHeight(g2d, rightTeamScore);
-        g2d.drawString(this.rightTeamScore, centerX - leftTeamScoreWidth - SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
-        g2d.drawString(this.leftTeamScore, centerX + SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
+        g2d.drawString(this.leftTeamScore, centerX - rightTeamScoreWidth - SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
+        g2d.drawString(this.rightTeamScore, centerX + SCORE_MARGIN_HORIZONTAL, scoreHeight + OFFSET_Y);
         g2d.drawLine(centerX - SCORE_MARGIN_HORIZONTAL/2, OFFSET_Y + scoreHeight/2, centerX + SCORE_MARGIN_HORIZONTAL/2, OFFSET_Y + scoreHeight/2);
 
         // Banners voorbereiden.

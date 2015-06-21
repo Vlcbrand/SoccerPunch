@@ -33,6 +33,9 @@ public class SoccerModel
     private void init()
     {
         this.resetScores();
+        // TEST:
+        this.appendScore(SoccerConstants.WEST, 27);
+        this.appendScore(SoccerConstants.EAST, 27);
     }
 
     /**

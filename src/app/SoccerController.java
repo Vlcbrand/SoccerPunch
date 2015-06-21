@@ -270,8 +270,6 @@ class SoccerController extends WiimoteAdapter implements Runnable
             return current;
 
         Player nearest = null;
-        int candidateXdiff, candidateYdiff;
-        int nearestXdiff, nearestYdiff;
 
         for (Player candidate : candidatePlayers) {
             if (nearest == null) {
@@ -279,23 +277,23 @@ class SoccerController extends WiimoteAdapter implements Runnable
                 nearest = candidate;
             } else {
                 // Deltawaarden van de huidige dichstbijzijnde veldspeler.
-                nearestXdiff = Math.abs(current.getX() - nearest.getX());
-                nearestYdiff = Math.abs(current.getY() - nearest.getY());
+                final int nearestXdiff = Math.abs(current.getX() - nearest.getX());
+                final int nearestYdiff = Math.abs(current.getY() - nearest.getY());
                 // Deltawaarden van de huidige veldspeler in de loop.
-                candidateXdiff = Math.abs(current.getX() - candidate.getX());
-                candidateYdiff = Math.abs(current.getY() - candidate.getY());
+                final int candidateXdiff = Math.abs(current.getX() - candidate.getX());
+                final int candidateYdiff = Math.abs(current.getY() - candidate.getY());
 
                 if (pressed.contains(WiimoteButton.UP)) {
-                    if (candidate.getY() < current.getY() && candidateYdiff < nearestYdiff && candidateXdiff < nearestXdiff)
+                    if (candidateYdiff <= nearestYdiff && candidateXdiff < nearestXdiff)
                         nearest = candidate;
                 } else if (pressed.contains(WiimoteButton.DOWN)) {
-                    if (candidate.getY() > current.getY() && candidateYdiff < nearestYdiff && candidateXdiff < nearestXdiff)
+                    if (candidateYdiff <= nearestYdiff && candidateXdiff < nearestXdiff)
                         nearest = candidate;
                 } else if (pressed.contains(WiimoteButton.LEFT)) {
-                    if (candidate.getX() < current.getX() && candidateXdiff < nearestXdiff && candidateYdiff < nearestYdiff)
+                    if (candidateXdiff <= nearestXdiff && candidateYdiff < nearestYdiff)
                         nearest = candidate;
                 } else if (pressed.contains(WiimoteButton.RIGHT)) {
-                    if (candidate.getX() > current.getX() && candidateXdiff < nearestXdiff && candidateYdiff < nearestYdiff)
+                    if (candidateXdiff <= nearestXdiff && candidateYdiff < nearestYdiff)
                         nearest = candidate;
                 }
             }
@@ -303,6 +301,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         // Geluid afspelen.
         SoccerSound.getInstance().addFile(SoccerSound.SOUND_COIN).play();
+
+        System.out.println("Switched to: " + nearest.getX() + ", " + nearest.getY());
 
         return nearest;
     }
@@ -342,7 +342,6 @@ class SoccerController extends WiimoteAdapter implements Runnable
     @Override public void onButtonsEvent(WiimoteButtonsEvent e)
     {
         final SoccerRemote remote = this.model.getRemote(e.getWiimoteId());
-        Player controlledFieldPlayer = remote.getControlledPlayer();
 
         if (isRunning) {
             if (e.isButtonAJustPressed() && e.isButtonBHeld()) {
@@ -360,12 +359,12 @@ class SoccerController extends WiimoteAdapter implements Runnable
             else if (e.isButtonDownJustReleased())
                 remote.releaseButton(WiimoteButton.DOWN);
 
-            if (e.isButtonLeftPressed())
+            if (e.isButtonLeftJustPressed())
                 remote.pressButton(WiimoteButton.LEFT);
             else if (e.isButtonLeftJustReleased())
                 remote.releaseButton(WiimoteButton.LEFT);
 
-            if (e.isButtonRightPressed())
+            if (e.isButtonRightJustPressed())
                 remote.pressButton(WiimoteButton.RIGHT);
             else if (e.isButtonRightJustReleased())
                 remote.releaseButton(WiimoteButton.RIGHT);
@@ -401,11 +400,10 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         final NunchukEvent ne = (NunchukEvent)e;
         final JoystickEvent je = ne.getNunchukJoystickEvent();
-
         final Player controlledFieldPlayer = remote.getControlledPlayer();
 
         // Stoppen, indien nog geen veldspelers zijn toegewezen.
-        if (controlledFieldPlayer == null)
+        if (!this.model.existPlayers())
             return;
 
         if (ne.isThereNunchukJoystickEvent()) {

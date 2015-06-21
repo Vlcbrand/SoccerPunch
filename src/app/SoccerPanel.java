@@ -88,12 +88,12 @@ public class SoccerPanel extends JPanel
     {
         if (field.getLeftGoal().intersects(ball.getBall())) {
             SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
-            this.model.appendScore(SoccerConstants.WEST, 1);
+            this.model.appendScore(SoccerConstants.EAST, 1);
             this.centerBall();
             return SoccerConstants.WEST;
         } else if (field.getRightGoal().intersects(ball.getBall())) {
             SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
-            this.model.appendScore(SoccerConstants.EAST, 1);
+            this.model.appendScore(SoccerConstants.WEST, 1);
             this.centerBall();
             return SoccerConstants.EAST;
         }
