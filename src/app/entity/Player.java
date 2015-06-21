@@ -15,8 +15,8 @@ public class Player implements Drawable
     public static final int SIZE = 30;
     public static final String TITLE_DEFAULT = "CPU";
     private static final BufferedImage playerImage;
-    public static  final int SPRITE_HEIGHT = 105;
-    public static  final int SPRITE_WIDTH = 70;
+    public static final int SPRITE_HEIGHT = 105;
+    public static final int SPRITE_WIDTH = 70;
 
     private Field field = Field.getInstance();
 
@@ -59,15 +59,18 @@ public class Player implements Drawable
     public void setPosition(int x, int y)
     {
         if (x != 0 &&
-            y != 0 &&
-            field.getX() < x-20 &&
-            field.getY() < y &&
-            field.getWidth() + field.getX() - SIZE+40 > x &&
-            field.getHeight() + field.getY() - SIZE > y)
-        {
+                y != 0 &&
+                field.getX() < x - 20 &&
+                field.getY() < y &&
+                field.getWidth() + field.getX() - SIZE + 40 > x &&
+                field.getHeight() + field.getY() - SIZE > y) {
             this.x = x;
             this.y = y;
-            playerEllipse = new Ellipse2D.Double(this.x - (SIZE / 2), this.y, SIZE, SIZE);
+            if (this.getSide().equals(SoccerConstants.EAST))
+                playerEllipse = new Ellipse2D.Double(this.x + 35 - (SIZE/2), this.y - 8, SIZE, SIZE);
+            else if (this.getSide().equals(SoccerConstants.WEST))
+                playerEllipse = new Ellipse2D.Double(this.x - 35 - (SIZE/2), this.y - 8, SIZE, SIZE);
+
         }
     }
 
