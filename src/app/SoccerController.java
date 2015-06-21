@@ -279,30 +279,32 @@ class SoccerController extends WiimoteAdapter implements Runnable
                 // Deltawaarden van de huidige dichstbijzijnde veldspeler.
                 final int nearestXdiff = Math.abs(current.getX() - nearest.getX());
                 final int nearestYdiff = Math.abs(current.getY() - nearest.getY());
-                // Deltawaarden van de huidige veldspeler in de loop.
+                // Deltawaarden van de huidige te testen veldspeler in de loop.
                 final int candidateXdiff = Math.abs(current.getX() - candidate.getX());
                 final int candidateYdiff = Math.abs(current.getY() - candidate.getY());
 
-                if (pressed.contains(WiimoteButton.UP)) {
+                if (pressed.contains(WiimoteButton.UP))
                     if (candidateYdiff <= nearestYdiff && candidateXdiff < nearestXdiff)
                         nearest = candidate;
-                } else if (pressed.contains(WiimoteButton.DOWN)) {
+
+                if (pressed.contains(WiimoteButton.DOWN))
                     if (candidateYdiff <= nearestYdiff && candidateXdiff < nearestXdiff)
                         nearest = candidate;
-                } else if (pressed.contains(WiimoteButton.LEFT)) {
+
+                if (pressed.contains(WiimoteButton.LEFT))
                     if (candidateXdiff <= nearestXdiff && candidateYdiff < nearestYdiff)
                         nearest = candidate;
-                } else if (pressed.contains(WiimoteButton.RIGHT)) {
+
+                if (pressed.contains(WiimoteButton.RIGHT))
                     if (candidateXdiff <= nearestXdiff && candidateYdiff < nearestYdiff)
                         nearest = candidate;
-                }
             }
         }
 
-        // Geluid afspelen.
+        // Geluid afspelen na het kiezen van speler.
         SoccerSound.getInstance().addFile(SoccerSound.SOUND_COIN).play();
 
-        System.out.println("Switched to: " + nearest.getX() + ", " + nearest.getY());
+        pressed.forEach(remote::releaseButton); // Tijdelijke oplossing - niet te veel knoppen indrukken.
 
         return nearest;
     }
@@ -319,6 +321,15 @@ class SoccerController extends WiimoteAdapter implements Runnable
         ym = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
 
         return new double[] {xm, ym};
+    }
+
+    public double getJoystickAngle(JoystickEvent e)
+    {
+        if (e == null)
+            return 0;
+
+        this.joystickAngle = e.getAngle();
+        return Math.toDegrees(Math.atan(ym/xm));
     }
 
     private static void sleep(long millis)
@@ -377,16 +388,6 @@ class SoccerController extends WiimoteAdapter implements Runnable
         }
     }
 
-    public double getJoystickAngle(JoystickEvent e)
-    {
-        if (e == null)
-            return 0;
-
-        //hoek in graden
-        this.joystickAngle = e.getAngle();
-        return Math.toDegrees(Math.atan(ym/xm));
-    }
-
     @Override public void onExpansionEvent(ExpansionEvent e)
     {
         if (!NunchukEvent.class.isInstance(e))
@@ -410,12 +411,13 @@ class SoccerController extends WiimoteAdapter implements Runnable
             controlledFieldPlayer.setMovement(toPoints(je));
             controlledFieldPlayer.setAngle(getJoystickAngle(je));
 
-            //ball passen
+            // Bal pasen met de c-knop van de nunchuk.
             if (ne.getButtonsEvent().isButtonCJustPressed() && controlledFieldPlayer.getEllipse().contains(view.getBall().getBall()))
-                view.getBall().accelerate(45, joystickAngle);
+                view.getBall().accelerate(45, this.joystickAngle);
 
+            // Bal pasen met nunchukbeweging.
             if (ne.getNunchukMotionSensingEvent().getGforce().getY()*100 > 20 && controlledFieldPlayer.getEllipse().contains(view.getBall().getBall()))
-                view.getBall().accelerate((int)(ne.getNunchukMotionSensingEvent().getGforce().getY()*100), joystickAngle);
+                view.getBall().accelerate((int)(ne.getNunchukMotionSensingEvent().getGforce().getY()*100), this.joystickAngle);
         }
     }
 }
