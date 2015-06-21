@@ -86,7 +86,7 @@ public class SoccerModel
                 player.setPosition((int)(x+Math.random()*3), (int)(y+Math.random()*3));
             }
             else
-                player.setPosition((int)(x-Math.random()),(int)(y-Math.random()));
+                player.setPosition((int)(x-Math.random()/2),(int)(y-Math.random()/2));
 
         }
     }

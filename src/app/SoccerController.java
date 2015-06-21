@@ -319,7 +319,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
 
         xm = xm > 0 ? xm*2.5 : xm*2;
         ym = ym > 0 ? ym*2.5 : ym*2;
-
+        System.out.println(ym);
         return new double[] {xm, ym};
     }
 
