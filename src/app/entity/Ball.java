@@ -3,25 +3,30 @@ package app.entity;
 import app.physics.BallPhysics;
 
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 public class Ball extends BallPhysics implements Drawable
 {
-    private Ellipse2D ball;
-    private int imgCount;
-    private Random random;
+    private final BufferedImage[] ballImage;
 
-    public Ball(double locX, double locY)
+    private int imageIndex;
+
+    public Ball(double x, double y)
     {
-        super.x = locX;
-        super.y = locY;
+        super.x = x;
+        super.y = y;
 
-        super.ballSize = ballImages().getHeight() - 5;
-        ball = new Ellipse2D.Double();
-        random = new Random();
+        this.ballImage = new BufferedImage[7];
+        this.ballImage[0] = util.Image.get("ball/ball1.1.png");
+        this.ballImage[1] = util.Image.get("ball/ball2.2.png");
+        this.ballImage[2] = util.Image.get("ball/ball3.3.png");
+        this.ballImage[3] = util.Image.get("ball/ball4.4.png");
+        this.ballImage[4] = util.Image.get("ball/ball5.5.png");
+        this.ballImage[5] = util.Image.get("ball/ball6.6.png");
+        this.ballImage[6] = util.Image.get("ball/ball7.7.png");
+
+        super.ballSize = getBallImage().getHeight() - 5;
     }
 
     public void offset(int dx, int dy)
@@ -30,31 +35,19 @@ public class Ball extends BallPhysics implements Drawable
         super.y += dy;
     }
 
-    private BufferedImage ballImages()
+    private BufferedImage getBallImage()
     {
-        BufferedImage ballImage[] = new BufferedImage[7];
-        ballImage[0] = util.Image.get("ball/ball1.1.png");
-        ballImage[1] = util.Image.get("ball/ball2.2.png");
-        ballImage[2] = util.Image.get("ball/ball3.3.png");
-        ballImage[3] = util.Image.get("ball/ball4.4.png");
-        ballImage[4] = util.Image.get("ball/ball5.5.png");
-        ballImage[5] = util.Image.get("ball/ball6.6.png");
-        ballImage[6] = util.Image.get("ball/ball7.7.png");
+        if (this.imageIndex >= this.ballImage.length - 1)
+            this.imageIndex = 0;
+        else
+            this.imageIndex++;
 
-        if (imgCount >= (ballImage.length - 1)) {
-            imgCount = 0;
-            return ballImage[imgCount];
-        } else {
-            imgCount++;
-        }
-
-        return ballImage[imgCount];
+        return ballImage[imageIndex];
     }
 
     @Override public void draw(Graphics2D g2d)
     {
-        g2d.fill(ball);
-        g2d.drawImage(ballImages(), (int)getBallX(), (int)getBallY(), null);
+        g2d.drawImage(this.isMoving() ? getBallImage() : ballImage[0], (int)getBallX(), (int)getBallY(), null);
     }
 
     public Rectangle2D getBall()
@@ -62,11 +55,6 @@ public class Ball extends BallPhysics implements Drawable
         Rectangle2D ballRect = new Rectangle2D.Double();
         ballRect.setRect(getBallX(), getBallY(), ballSize, ballSize);
         return ballRect;
-    }
-
-    @Override public int getX()
-    {
-        return 0;
     }
 
     public void setX(int x)
@@ -77,6 +65,11 @@ public class Ball extends BallPhysics implements Drawable
     public void setY(int y)
     {
         this.y = y;
+    }
+
+    @Override public int getX()
+    {
+        return 0;
     }
 
     @Override public int getY()

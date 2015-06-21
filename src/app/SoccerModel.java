@@ -36,6 +36,9 @@ public class SoccerModel
         this.resetScores();
     }
 
+    /**
+     * Wordt periodiek aangeroepen door de controller.
+     */
     public void update()
     {
         this.updatePlayers();
@@ -123,7 +126,7 @@ public class SoccerModel
 
         for (Player temp : fieldPlayers) {
             if (temp == current || temp.isControlled())
-                // Skip zelfde speler of bezette spelers.
+                // Sla zelfde- of bezette speler over.
                 continue;
 
             if (pressed.contains(WiimoteButton.UP)) {
@@ -147,29 +150,31 @@ public class SoccerModel
 
         Player nearest = null;
 
+        final int thershold = current.getHeight()*2;
+
         for (Player candidate : candidatePlayers) {
             if (nearest == null) {
-                // Een startwaarde aannemen.
+                // Startwaarde aannemen.
                 nearest = candidate;
             } else {
                 // Deltawaarden van de huidige dichstbijzijnde veldspeler.
                 final int nearestXdiff = Math.abs(current.getX() - nearest.getX());
                 final int nearestYdiff = Math.abs(current.getY() - nearest.getY());
-                // Deltawaarden van de huidige te testen veldspeler in de loop.
+                // Deltawaarden van de huidige te testen veldspeler.
                 final int candidateXdiff = Math.abs(current.getX() - candidate.getX());
                 final int candidateYdiff = Math.abs(current.getY() - candidate.getY());
 
                 if (pressed.contains(WiimoteButton.UP)) {
-                    if (candidateYdiff < nearestYdiff && candidateXdiff < nearestXdiff)
+                    if (candidateXdiff < nearestXdiff)
                         nearest = candidate;
                 } else if (pressed.contains(WiimoteButton.DOWN)) {
-                    if (candidateYdiff < nearestYdiff && candidateXdiff < nearestXdiff)
+                    if (candidateXdiff < nearestXdiff)
                         nearest = candidate;
                 } else if (pressed.contains(WiimoteButton.LEFT)) {
-                    if (candidateXdiff < nearestXdiff && candidateYdiff < nearestYdiff)
+                    if (candidateYdiff + thershold < nearestYdiff)
                         nearest = candidate;
                 } else if (pressed.contains(WiimoteButton.RIGHT)) {
-                    if (candidateXdiff < nearestXdiff && candidateYdiff < nearestYdiff)
+                    if (candidateYdiff + thershold < nearestYdiff)
                         nearest = candidate;
                 }
             }

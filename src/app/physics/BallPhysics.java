@@ -114,6 +114,13 @@ public abstract class BallPhysics
         this.step();
     }
 
+    public boolean isMoving()
+    {
+        final double horizontalSpeed = Math.abs(this.hSpeed);
+        final double verticalSpeed = Math.abs(this.vSpeed);
+        return horizontalSpeed > .1 || verticalSpeed > .1;
+    }
+
     public void accelerate(int force, double degrees)
     {
         double radians = Math.toRadians(degrees);

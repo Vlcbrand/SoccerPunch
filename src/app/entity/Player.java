@@ -13,7 +13,7 @@ import java.util.Arrays;
 public class Player implements Drawable
 {
     public static final int SIZE = 30;
-    public static final String TITLE_DEFAULT = "CPU";
+    public static final String TITLE_DEFAULT = "";
     private static final BufferedImage playerImage;
     public static final int SPRITE_HEIGHT = 105;
     public static final int SPRITE_WIDTH = 70;
@@ -175,6 +175,7 @@ public class Player implements Drawable
     @Override public void draw(Graphics2D g2d)
     {
         g2d.setPaint(side.equals(SoccerConstants.EAST) ? Color.red : Color.blue);
+        g2d.setFont(g2d.getFont().deriveFont(Font.BOLD));
 
         if (moving)
             moving1 = true;
