@@ -150,8 +150,6 @@ public class SoccerModel
 
         Player nearest = null;
 
-        final int thershold = current.getHeight()*2;
-
         for (Player candidate : candidatePlayers) {
             if (nearest == null) {
                 // Startwaarde aannemen.
@@ -171,10 +169,10 @@ public class SoccerModel
                     if (candidateXdiff < nearestXdiff)
                         nearest = candidate;
                 } else if (pressed.contains(WiimoteButton.LEFT)) {
-                    if (candidateYdiff + thershold < nearestYdiff)
+                    if (candidateYdiff < nearestYdiff)
                         nearest = candidate;
                 } else if (pressed.contains(WiimoteButton.RIGHT)) {
-                    if (candidateYdiff + thershold < nearestYdiff)
+                    if (candidateYdiff < nearestYdiff)
                         nearest = candidate;
                 }
             }

@@ -1,6 +1,7 @@
 package app.entity;
 
 import app.SoccerConstants;
+import util.Image;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -14,14 +15,13 @@ public class Player implements Drawable
 {
     public static final int SIZE = 30;
     public static final String TITLE_DEFAULT = "";
-    private static final BufferedImage playerImage;
-    public static final int SPRITE_HEIGHT = 105;
-    public static final int SPRITE_WIDTH = 70;
+    public static final BufferedImage IMAGE_WEST, IMAGE_EAST;
 
     private Field field = Field.getInstance();
 
     private String title;
     private final SoccerConstants side;
+    private final BufferedImage image;
     private boolean isControlled;
     private double[] dxdy;
 
@@ -39,7 +39,8 @@ public class Player implements Drawable
     boolean moved = false;
 
     static {
-        playerImage = util.Image.get("sprite_player_brazil.png");
+        IMAGE_WEST = Image.get("sprite_player_blue.png");
+        IMAGE_EAST = Image.get("sprite_player_red.png");
     }
 
     public Player(SoccerConstants side)
@@ -48,24 +49,28 @@ public class Player implements Drawable
         this.title = TITLE_DEFAULT;
         this.isControlled = false;
         this.dxdy = new double[] {0, 0};
-        sprites[0] = playerImage.getSubimage(0, 105, 70, 105);
-        sprites[1] = playerImage.getSubimage(70, 105, 70, 105);
-        sprites[2] = playerImage.getSubimage(140, 105, 70, 105);
-        sprites[3] = playerImage.getSubimage(0, 300, 70, 105);
-        sprites[4] = playerImage.getSubimage(70, 300, 70, 105);
-        sprites[5] = playerImage.getSubimage(140, 300, 70, 105);
+
+        this.image = this.side.equals(SoccerConstants.WEST) ? IMAGE_WEST : IMAGE_EAST;
+        sprites[0] = this.image.getSubimage(0, 105, 70, 105);
+        sprites[1] = this.image.getSubimage(70, 105, 70, 105);
+        sprites[2] = this.image.getSubimage(140, 105, 70, 105);
+        sprites[3] = this.image.getSubimage(0, 300, 70, 105);
+        sprites[4] = this.image.getSubimage(70, 300, 70, 105);
+        sprites[5] = this.image.getSubimage(140, 300, 70, 105);
     }
 
     public void setPosition(int x, int y)
     {
         if (x != 0 &&
-                y != 0 &&
-                field.getX() < x - 20 &&
-                field.getY() < y &&
-                field.getWidth() + field.getX() - SIZE + 40 > x &&
-                field.getHeight() + field.getY() - SIZE > y) {
+            y != 0 &&
+            field.getX() < x - 20 &&
+            field.getY() < y &&
+            field.getWidth() + field.getX() - SIZE + 40 > x &&
+            field.getHeight() + field.getY() - SIZE > y)
+        {
             this.x = x;
             this.y = y;
+
             if (this.getSide().equals(SoccerConstants.EAST))
                 playerEllipse = new Ellipse2D.Double(this.x + 35 - (SIZE/2), this.y - 8, SIZE, SIZE);
             else if (this.getSide().equals(SoccerConstants.WEST))
@@ -174,6 +179,8 @@ public class Player implements Drawable
 
     @Override public void draw(Graphics2D g2d)
     {
+        final Font originalFont = g2d.getFont();
+
         g2d.setPaint(side.equals(SoccerConstants.EAST) ? Color.red : Color.blue);
         g2d.setFont(g2d.getFont().deriveFont(Font.BOLD));
 
@@ -216,6 +223,9 @@ public class Player implements Drawable
             g2d.drawString(title.trim(), this.x + 55, this.y - 2);
 
         count++;
+
+        // Herstellen.
+        g2d.setFont(originalFont);
     }
 
     @Override public int getWidth()
