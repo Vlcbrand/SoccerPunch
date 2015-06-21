@@ -87,6 +87,7 @@ public class HUD implements Drawable, Updatable
 
         // Tekent scores.
         g2d.setFont(new Font("Arial Black", Font.BOLD + Font.ITALIC, 32));
+        g2d.setColor(Color.darkGray);
         g2d.setStroke(new BasicStroke(7));
         final int leftTeamScoreWidth = Text.Integer.getWidth(g2d, leftTeamScore);
         final int scoreHeight = Text.Integer.getHeight(g2d, rightTeamScore);

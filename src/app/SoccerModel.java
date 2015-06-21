@@ -1,5 +1,6 @@
 package app;
 
+import app.entity.Ball;
 import app.entity.Field;
 import app.entity.Player;
 
@@ -74,12 +75,19 @@ public class SoccerModel
 
     public void updatePlayers()
     {
+        Random random = new Random();
         for (Player player : this.getPlayers()) {
             final int x = player.getX();
             final int y = player.getY();
             final double[] dxdy = player.getMovement();
+            if (player.isControlled())
+                player.setPosition((int)(x + dxdy[0]), (int)(y + dxdy[1]));
+            else if(random.nextBoolean()){
+                player.setPosition((int)(x+Math.random()*3), (int)(y+Math.random()*3));
+            }
+            else
+                player.setPosition((int)(x-Math.random()),(int)(y-Math.random()));
 
-            player.setPosition((int)(x + dxdy[0]), (int)(y + dxdy[1]));
         }
     }
 
@@ -147,7 +155,7 @@ public class SoccerModel
         if (id < 1 || id > 4)
             return null;
 
-        return this.remotes.get(id -1);
+        return this.remotes.get(id - 1);
     }
 
     public List<SoccerRemote> getRemotes()

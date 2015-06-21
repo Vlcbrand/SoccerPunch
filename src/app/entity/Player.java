@@ -14,6 +14,10 @@ public class Player implements Drawable
     public static final int SIZE = 30;
     public static final String TITLE_DEFAULT = "CPU";
     private static final BufferedImage playerImage;
+    public static  final int SPRITE_HEIGHT = 105;
+    public static  final int SPRITE_WIDTH = 70;
+
+
 
     private double angle;
 
@@ -84,7 +88,7 @@ public class Player implements Drawable
 
     public void setPosition(int x, int y)
     {
-        if (x != 0 && y != 0 && field.getX() < x && field.getY() < y && field.getWidth() + field.getX() - SIZE > x && field.getHeight() + field.getY() - SIZE > y) {
+        if (x != 0 && y != 0 && field.getX() < x-20 && field.getY() < y && field.getWidth() + field.getX() - SIZE+40 > x && field.getHeight() + field.getY() - SIZE > y) {
             this.x = x;
             this.y = y;
             playerEllipse = new Ellipse2D.Double(this.x - (SIZE / 2), this.y, SIZE, SIZE);

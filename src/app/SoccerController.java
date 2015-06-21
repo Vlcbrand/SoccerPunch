@@ -312,7 +312,7 @@ class SoccerController extends WiimoteAdapter implements Runnable
     public static double[] toPoints(JoystickEvent e)
     {
         if (e == null)
-            return new double[] {10d, 10d};
+            return new double[] {0, 10};
 
         xm = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
         ym = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
@@ -385,9 +385,6 @@ class SoccerController extends WiimoteAdapter implements Runnable
         if (e == null)
             return 0;
 
-        xm = Math.sin(e.getAngle()*Math.PI/180d)*e.getMagnitude();
-        ym = -Math.cos(e.getAngle()*Math.PI/180d)*e.getMagnitude();
-
         //hoek in graden
         joystickAngle = e.getAngle();
         return Math.toDegrees(Math.atan(ym/xm));
@@ -421,8 +418,8 @@ class SoccerController extends WiimoteAdapter implements Runnable
             if (ne.getButtonsEvent().isButtonCJustPressed() && controlledFieldPlayer.getEllipse().contains(view.getBall().getBall()))
                 view.getBall().accelerate(45, joystickAngle);
 
-            if (ne.getNunchukMotionSensingEvent().getGforce().getY() * 100 > 20 && controlledFieldPlayer.getEllipse().contains(view.getBall().getBall()))
-                view.getBall().accelerate((int)(ne.getNunchukMotionSensingEvent().getGforce().getY() * 100), joystickAngle);
+            if (ne.getNunchukMotionSensingEvent().getGforce().getY()*100 > 20 && controlledFieldPlayer.getEllipse().contains(view.getBall().getBall()))
+                view.getBall().accelerate((int)(ne.getNunchukMotionSensingEvent().getGforce().getY()*100), joystickAngle);
         }
     }
 }
