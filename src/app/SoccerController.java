@@ -127,6 +127,9 @@ class SoccerController extends WiimoteAdapter implements Runnable
         // Startanimatie hervatten.
         this.view.getStartSequence().activate();
 
+        // Bal op middelpunt plaatsen - tijdelijke oplossing.
+        this.view.centerBall();
+
         // Achtergrondmuziek stoppen.
         SoccerSound.getInstance().addFile(SoccerSound.MUSIC_MAIN).stop();
     }

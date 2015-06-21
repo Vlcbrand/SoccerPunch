@@ -11,7 +11,7 @@
     <entry key="int.height.min">600</entry>
     <entry key="int.frames_per_second">60</entry>
     <entry key="int.updates_per_second">30</entry>
-    <entry key="bool.show_fps">yes</entry>
+    <entry key="bool.show_fps">no</entry>
 
     <entry key="path.sound.cheer">snd/cheer.wav</entry>
     <entry key="path.sound.coin">snd/coin.wav</entry>

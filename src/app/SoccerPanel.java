@@ -87,22 +87,25 @@ public class SoccerPanel extends JPanel
     private SoccerConstants checkForGoal()
     {
         if (field.getLeftGoal().intersects(ball.getBall())) {
-            ball.setX(field.getWidth()/2 + field.getX() - 10);
-            ball.setY(field.getHeight()/2 + field.getY() - 10);
-            ball.accelerate(0, 0);
             SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
             this.model.appendScore(SoccerConstants.WEST, 1);
+            this.centerBall();
             return SoccerConstants.WEST;
         } else if (field.getRightGoal().intersects(ball.getBall())) {
-            ball.setX(field.getWidth()/2 + field.getX() - 10);
-            ball.setY(field.getHeight()/2 + field.getY() - 10);
-            ball.accelerate(0, 0);
             SoccerSound.getInstance().addFile(SoccerSound.SOUND_CHEER).play();
             this.model.appendScore(SoccerConstants.EAST, 1);
+            this.centerBall();
             return SoccerConstants.EAST;
         }
 
         return null;
+    }
+
+    public void centerBall()
+    {
+        ball.setX(field.getWidth()/2 + field.getX() - 10);
+        ball.setY(field.getHeight()/2 + field.getY() - 10);
+        ball.accelerate(0, 0);
     }
 
     private void updateBall()

@@ -19,8 +19,8 @@ public class Field implements Drawable, Updatable
 {
     public static final int FIELD_PLAYERS_SUPPORTED = 8;
 
-    static final SoccerConstants goalImageOpenFrom;
-    static final BufferedImage goalImage;
+    private static final SoccerConstants IMAGE_GOAL_OPEN_FROM;
+    private static final BufferedImage IMAGE_GOAL;
 
     private static Field instance = null;
 
@@ -30,11 +30,11 @@ public class Field implements Drawable, Updatable
     private int[][] defaultLeftPositions, defaultRightPositions;
     private Shape[] lines, spots;
 
-    private Rectangle2D fieldRect, leftGoal, rightGoal;
+    private Rectangle2D leftGoal, rightGoal;
 
     static {
-        goalImageOpenFrom = SoccerConstants.SOUTH;
-        goalImage = util.Image.get("goal.gif");
+        IMAGE_GOAL_OPEN_FROM = SoccerConstants.SOUTH;
+        IMAGE_GOAL = util.Image.get("goal.gif");
     }
 
     private Field()
@@ -69,15 +69,15 @@ public class Field implements Drawable, Updatable
      *
      * @return de hoogte van het doel, gelet op de oriëntatie van de originele afbeelding
      */
-    public static float getGoalImageWidth()
+    private static float getGoalImageWidth()
     {
-        switch (goalImageOpenFrom) {
+        switch (IMAGE_GOAL_OPEN_FROM) {
             case NORTH:
             case SOUTH:
-                return goalImage.getHeight();
+                return IMAGE_GOAL.getHeight();
             case EAST:
             case WEST:
-                return goalImage.getWidth();
+                return IMAGE_GOAL.getWidth();
             default:
                 return -1;
         }
@@ -88,15 +88,15 @@ public class Field implements Drawable, Updatable
      *
      * @return de breedte van het doel, gelet op de oriëntatie van de originele afbeelding
      */
-    public static float getGoalImageHeight()
+    private static float getGoalImageHeight()
     {
-        switch (goalImageOpenFrom) {
+        switch (IMAGE_GOAL_OPEN_FROM) {
             case NORTH:
             case SOUTH:
-                return goalImage.getWidth();
+                return IMAGE_GOAL.getWidth();
             case EAST:
             case WEST:
-                return goalImage.getHeight();
+                return IMAGE_GOAL.getHeight();
             default:
                 return -1;
         }
@@ -113,7 +113,7 @@ public class Field implements Drawable, Updatable
         double theta;
 
         // Alles richting het noorden draaien.
-        switch (goalImageOpenFrom) {
+        switch (IMAGE_GOAL_OPEN_FROM) {
             case NORTH:
                 theta = 0;
                 break;
@@ -143,22 +143,22 @@ public class Field implements Drawable, Updatable
 
     public int getFieldTop()
     {
-        return (int)fieldRect.getMinY();
+        return this.fieldY;
     }
 
     public int getFieldBot()
     {
-        return (int)fieldRect.getMaxY();
+        return this.fieldY + this.fieldHeight;
     }
 
     public int getFieldRight()
     {
-        return (int)fieldRect.getMaxX();
+        return this.fieldX + this.fieldWidth;
     }
 
     public int getFieldLeft()
     {
-        return (int)fieldRect.getMinX();
+        return fieldX;
     }
 
     public Rectangle2D getLeftGoal()
@@ -182,8 +182,8 @@ public class Field implements Drawable, Updatable
             g2d.fill(s);
 
         // Tekent doelen.
-        g2d.drawImage(goalImage, leftGoalTransform, null);
-        g2d.drawImage(goalImage, rightGoalTransform, null);
+        g2d.drawImage(IMAGE_GOAL, this.leftGoalTransform, null);
+        g2d.drawImage(IMAGE_GOAL, this.rightGoalTransform, null);
     }
 
     @Override public void update(final SoccerPanel parent)
@@ -215,32 +215,32 @@ public class Field implements Drawable, Updatable
         final float goalHeightScale = goalHeight/getGoalImageHeight();
 
         // Transformatie linker doel.
-        leftGoalTransform = new AffineTransform();
-        leftGoalTransform.translate(fieldX - goalWidth, centerY + goalHeight/2);
-        leftGoalTransform.scale(goalWidthScale, goalHeightScale);
-        leftGoalTransform.rotate(getGoalRotation(SoccerConstants.WEST));
+        this.leftGoalTransform = new AffineTransform();
+        this.leftGoalTransform.translate(fieldX - goalWidth, centerY + goalHeight/2);
+        this.leftGoalTransform.scale(goalWidthScale, goalHeightScale);
+        this.leftGoalTransform.rotate(getGoalRotation(SoccerConstants.WEST));
 
         // Transformatie rechter doel.
-        rightGoalTransform = new AffineTransform();
-        rightGoalTransform.translate(fieldX + this.fieldWidth + goalWidth, centerY - goalHeight/2);
-        rightGoalTransform.scale(goalWidthScale, goalHeightScale);
-        rightGoalTransform.rotate(getGoalRotation(SoccerConstants.EAST));
+        this.rightGoalTransform = new AffineTransform();
+        this.rightGoalTransform.translate(fieldX + this.fieldWidth + goalWidth, centerY - goalHeight/2);
+        this.rightGoalTransform.scale(goalWidthScale, goalHeightScale);
+        this.rightGoalTransform.rotate(getGoalRotation(SoccerConstants.EAST));
 
         // Tekent veldgrenzen.
-        fieldRect = new Rectangle2D.Double(fieldX, fieldY, this.fieldWidth, this.fieldHeight);
+        final Rectangle2D fieldRect = new Rectangle2D.Double(fieldX, fieldY, this.fieldWidth, this.fieldHeight);
 
         // Midden veldonderdelen.
-        Line2D centerLine = new Line2D.Double(centerX, fieldY, centerX, fieldY + this.fieldHeight);
-        Ellipse2D centerCircle = new Ellipse2D.Double(centerX - centerCircleSize/2, centerY - centerCircleSize/2, centerCircleSize, centerCircleSize);
-        Ellipse2D centerSpot = new Ellipse2D.Double(centerX - centerSpotSize/2, centerY - centerSpotSize/2, centerSpotSize, centerSpotSize);
+        final Line2D centerLine = new Line2D.Double(centerX, fieldY, centerX, fieldY + this.fieldHeight);
+        final Ellipse2D centerCircle = new Ellipse2D.Double(centerX - centerCircleSize/2, centerY - centerCircleSize/2, centerCircleSize, centerCircleSize);
+        final Ellipse2D centerSpot = new Ellipse2D.Double(centerX - centerSpotSize/2, centerY - centerSpotSize/2, centerSpotSize, centerSpotSize);
 
         // Goal veldonderdelen.
-        Rectangle2D leftPenaltyArea = new Rectangle.Double(fieldX, centerY - penaltyAreaHeight/2, penaltyAreaWidth, penaltyAreaHeight);
-        Rectangle2D leftGoalArea = new Rectangle.Double(fieldX, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
-        Rectangle2D rightPenaltyArea = new Rectangle.Double(fieldX + this.fieldWidth - penaltyAreaWidth, centerY - penaltyAreaHeight/2, penaltyAreaWidth, penaltyAreaHeight);
-        Rectangle2D rightGoalArea = new Rectangle.Double(fieldX + this.fieldWidth - goalAreaWidth, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
-        leftGoal = new Rectangle.Double(fieldX - goalWidth, centerY - goalHeight/2, goalWidth, goalHeight);
-        rightGoal = new Rectangle.Double(fieldX + this.fieldWidth, centerY - goalHeight/2, goalWidth, goalHeight);
+        final Rectangle2D leftPenaltyArea = new Rectangle.Double(fieldX, centerY - penaltyAreaHeight/2, penaltyAreaWidth, penaltyAreaHeight);
+        final Rectangle2D leftGoalArea = new Rectangle.Double(fieldX, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
+        final Rectangle2D rightPenaltyArea = new Rectangle.Double(fieldX + this.fieldWidth - penaltyAreaWidth, centerY - penaltyAreaHeight/2, penaltyAreaWidth, penaltyAreaHeight);
+        final Rectangle2D rightGoalArea = new Rectangle.Double(fieldX + this.fieldWidth - goalAreaWidth, centerY - goalAreaHeight/2, goalAreaWidth, goalAreaHeight);
+        this.leftGoal = new Rectangle.Double(fieldX - goalWidth, centerY - goalHeight/2, goalWidth, goalHeight);
+        this.rightGoal = new Rectangle.Double(fieldX + this.fieldWidth, centerY - goalHeight/2, goalWidth, goalHeight);
 
         // Bereken hulpwaarden voor standaardposities.
         final int positionsPerSide = FIELD_PLAYERS_SUPPORTED/2;
@@ -253,20 +253,20 @@ public class Field implements Drawable, Updatable
         final int posYLowerHalf = centerY + posYSpacing - playerOffset;
 
         // Bereken linkse posities.
-        defaultLeftPositions[0] = new int[] {posXLeftFirst, centerY - playerOffset};
-        defaultLeftPositions[1] = new int[] {centerX - posXSpacing - playerOffset*2, centerY - playerOffset};
-        defaultLeftPositions[2] = new int[] {posXLeftFirst + posXSpacing, posYUpperHalf};
-        defaultLeftPositions[3] = new int[] {posXLeftFirst + posXSpacing, posYLowerHalf};
+        this.defaultLeftPositions[0] = new int[] {posXLeftFirst, centerY - playerOffset};
+        this.defaultLeftPositions[1] = new int[] {centerX - posXSpacing - playerOffset*2, centerY - playerOffset};
+        this.defaultLeftPositions[2] = new int[] {posXLeftFirst + posXSpacing, posYUpperHalf};
+        this.defaultLeftPositions[3] = new int[] {posXLeftFirst + posXSpacing, posYLowerHalf};
 
         // Bereken rechtse posities.
-        defaultRightPositions[0] = new int[] {posXRightFirst - playerOffset*2, centerY - playerOffset};
-        defaultRightPositions[1] = new int[] {centerX + posXSpacing, centerY - playerOffset};
-        defaultRightPositions[2] = new int[] {posXRightFirst - posXSpacing, posYUpperHalf};
-        defaultRightPositions[3] = new int[] {posXRightFirst - posXSpacing, posYLowerHalf};
+        this.defaultRightPositions[0] = new int[] {posXRightFirst - playerOffset*2, centerY - playerOffset};
+        this.defaultRightPositions[1] = new int[] {centerX + posXSpacing, centerY - playerOffset};
+        this.defaultRightPositions[2] = new int[] {posXRightFirst - posXSpacing, posYUpperHalf};
+        this.defaultRightPositions[3] = new int[] {posXRightFirst - posXSpacing, posYLowerHalf};
 
         // Lines worden getekend en spots worden gevuld.
-        lines = new Shape[] {this.fieldRect, centerCircle, centerLine, leftPenaltyArea, rightPenaltyArea, leftGoalArea, rightGoalArea};
-        spots = new Shape[] {centerSpot};
+        this.lines = new Shape[] {fieldRect, centerCircle, centerLine, leftPenaltyArea, rightPenaltyArea, leftGoalArea, rightGoalArea};
+        this.spots = new Shape[] {centerSpot};
     }
 
     @Override public int getX()

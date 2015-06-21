@@ -15,11 +15,12 @@ import java.awt.image.BufferedImage;
  */
 public class HUD implements Drawable, Updatable
 {
+    private final static BufferedImage BANNER_IMAGE_WEST, BANNER_IMAGE_EAST;
     private final static int OFFSET_x, OFFSET_Y;
     private final static int SCORE_MARGIN_HORIZONTAL;
     private final static int BANNER_MARGIN_TOP;
-    private final static BufferedImage BANNER_IMAGE_WEST, BANNER_IMAGE_EAST;
-    private final static double BANNER_IMAGE_SCALE = .2;
+    private final static double BANNER_IMAGE_SCALE;
+    private final static boolean SHOW_FPS;
 
     private static HUD instance = null;
 
@@ -29,12 +30,15 @@ public class HUD implements Drawable, Updatable
     private int fps;
 
     static {
+        BANNER_IMAGE_WEST = Image.get("teambanner_blue.png");
+        BANNER_IMAGE_EAST = Image.get("teambanner_red.png");
+
         OFFSET_x = OFFSET_Y = 10;
         SCORE_MARGIN_HORIZONTAL = 15;
         BANNER_MARGIN_TOP = 20;
+        BANNER_IMAGE_SCALE = .2;
 
-        BANNER_IMAGE_WEST = Image.get("teambanner_blue.png");
-        BANNER_IMAGE_EAST = Image.get("teambanner_red.png");
+        SHOW_FPS = Resource.getBoolean("bool.show_fps");
     }
 
     private HUD()
@@ -75,9 +79,11 @@ public class HUD implements Drawable, Updatable
         final int centerX = this.parentWidth/2;
 
         // Tekent FPS-meter.
-        g2d.setFont(new Font("Arial", Font.BOLD, 14));
-        final String fps = "FPS " + this.fps;
-        g2d.drawString(fps, OFFSET_x, Text.Integer.getHeight(g2d, fps) + OFFSET_Y);
+        if (SHOW_FPS) {
+            g2d.setFont(new Font("Arial", Font.BOLD, 14));
+            final String fps = "FPS " + this.fps;
+            g2d.drawString(fps, OFFSET_x, Text.Integer.getHeight(g2d, fps) + OFFSET_Y);
+        }
 
         // Tekent scores.
         g2d.setFont(new Font("Arial Black", Font.BOLD + Font.ITALIC, 32));
