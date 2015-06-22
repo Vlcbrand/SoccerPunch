@@ -362,7 +362,11 @@ class SoccerController extends WiimoteAdapter implements Runnable
             controlledFieldPlayer.setMovement(toPoints(je));
             controlledFieldPlayer.setAngle(getJoystickAngle(je));
 
-            // Bal pasen met de c-knop van de nunchuk.
+            // Bal pasen met de z-knop van de nunchuk.
+            if (ne.getButtonsEvent().isButtonZJustPressed() && controlledFieldPlayer.getEllipse().contains(view.getBall().getBall()))
+                view.getBall().accelerate(35, this.joystickAngle);
+
+            // Bal schoppen met de c-knop van de nunchuk.
             if (ne.getButtonsEvent().isButtonCJustPressed() && controlledFieldPlayer.getEllipse().contains(view.getBall().getBall()))
                 view.getBall().accelerate(45, this.joystickAngle);
 
