@@ -95,6 +95,7 @@ local.properties
 .mtj.tmp/
 
 # Package Files #
+*.MF
 *.jar
 !wiiusej.jar
 *.war

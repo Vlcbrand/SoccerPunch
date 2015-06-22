@@ -62,12 +62,11 @@ public class Player implements Drawable
     public void setPosition(int x, int y)
     {
         if (x != 0 &&
-            y != 0 &&
-            field.getX() < x - 20 &&
-            field.getY() < y &&
-            field.getWidth() + field.getX() - SIZE + 40 > x &&
-            field.getHeight() + field.getY() - SIZE > y)
-        {
+                y != 0 &&
+                field.getX() < x - 20 &&
+                field.getY() < y &&
+                field.getWidth() + field.getX() - SIZE + 40 > x &&
+                field.getHeight() + field.getY() - SIZE > y) {
             this.x = x;
             this.y = y;
 
@@ -160,7 +159,7 @@ public class Player implements Drawable
         } else {
             if (imgCount >= (3 - 1))
                 return sprites[imgCount = 0];
-            else if (count%6 == 0)
+            else if (count%10 == 0)
                 imgCount++;
         }
 
@@ -171,7 +170,7 @@ public class Player implements Drawable
     {
         if (imgCount >= 5)
             imgCount = 3;
-        else if (count%6 == 0)
+        else if (count%10 == 0)
             imgCount++;
 
         return sprites[imgCount];
